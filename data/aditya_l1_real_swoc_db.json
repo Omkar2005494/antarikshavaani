@@ -1,0 +1,87 @@
+{
+  "mission": "Aditya-L1 Space Weather Operations Centre (SWOC)",
+  "halo_orbit_location": "Sun-Earth Lagrange Point 1 (L1: 1.496 x 10^6 km from Earth)",
+  "real_time_payloads": {
+    "SUIT": "Solar Ultraviolet Imaging Telescope (200-400nm: 11 filter bands, Mg II k, Ca II h)",
+    "VELC": "Visible Emission Line Coronagraph (Fe XIV 530.3nm green line, 1.05 to 3.0 R_sun)",
+    "ASPEX": "Aditya Solar wind Particle Experiment (SWIS low-energy, STEPS high-energy spectrometer)",
+    "PAPA": "Plasma Analyser Package for Aditya (Solar wind protons 1-3000 eV & alpha particles)",
+    "SoLEXS": "Solar Low Energy X-ray Spectrometer (1-30 keV Soft X-rays)",
+    "HEL1OS": "High Energy L1 Orbiting X-ray Spectrometer (10-150 keV Hard X-rays)",
+    "MAG": "Digital Tri-axial Magnetometer (Interplanetary Magnetic Field vectors)"
+  },
+  "recent_solar_events": [
+    {
+      "event_id": "swoc_flare_2026_x5_8",
+      "timestamp": "2026-08-24T14:32:00Z",
+      "active_region": "AR3780",
+      "flare_classification": "X5.8 (Major Extreme Flare)",
+      "peak_xray_flux_w_m2": "5.8 x 10^-4",
+      "velc_coronagraph_log": "Broadband coronal mass eruption observed in Fe XIV 530.3nm band at 1.25 solar radii.",
+      "suit_uv_observations": "Rapid flash heating observed in 279.6nm Mg II core filter indicating magnetic reconnection.",
+      "cme_parameters": {
+        "velocity_km_s": 1420,
+        "angular_width_deg": 180,
+        "earth_directed": true,
+        "estimated_arrival": "2026-08-26T02:00:00Z"
+      },
+      "papa_aspex_telemetry": {
+        "solar_wind_speed_km_s": 780,
+        "proton_density_n_cm3": 24.5,
+        "alpha_to_proton_ratio": 0.078,
+        "imf_bz_component_nt": -14.2
+      },
+      "space_weather_forecast": {
+        "geomagnetic_storm_scale": "G4 (Severe)",
+        "kp_index": 7.8,
+        "radio_blackout_scale": "R3 (Strong HF Blackout across 3-30 MHz)",
+        "solar_radiation_storm": "S2 (Moderate Proton Flux > 100 MeV)",
+        "affected_spacecraft": [
+          {
+            "name": "GSAT-24",
+            "orbit": "GEO",
+            "risk": "Surface electrostatic charging, switch to safe power state"
+          },
+          {
+            "name": "Cartosat-3",
+            "orbit": "SSO-LEO",
+            "risk": "Elevated thermospheric drag; star tracker blinding"
+          },
+          {
+            "name": "EOS-04",
+            "orbit": "LEO",
+            "risk": "HF communications relay degradation"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "swoc_flare_2026_m2_4",
+      "timestamp": "2026-08-26T08:15:00Z",
+      "active_region": "AR3785",
+      "flare_classification": "M2.4 (Moderate Solar Flare)",
+      "peak_xray_flux_w_m2": "2.4 x 10^-5",
+      "velc_coronagraph_log": "Quiescent loop activity; no large-scale CME liftoff.",
+      "suit_uv_observations": "Localized bright loop footpoint heating at 283.2nm.",
+      "cme_parameters": {
+        "velocity_km_s": 420,
+        "angular_width_deg": 45,
+        "earth_directed": false,
+        "estimated_arrival": "N/A"
+      },
+      "papa_aspex_telemetry": {
+        "solar_wind_speed_km_s": 440,
+        "proton_density_n_cm3": 8.2,
+        "alpha_to_proton_ratio": 0.041,
+        "imf_bz_component_nt": 2.1
+      },
+      "space_weather_forecast": {
+        "geomagnetic_storm_scale": "G0 (Nominal / Quiet)",
+        "kp_index": 2.6,
+        "radio_blackout_scale": "R1 (Minor)",
+        "solar_radiation_storm": "S0 (None)",
+        "affected_spacecraft": []
+      }
+    }
+  ]
+}

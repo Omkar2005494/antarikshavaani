@@ -1,0 +1,300 @@
+{
+  "mission": "Chandrayaan-2 / Chandrayaan-3 Planetary Science Archive (PDS4 Standard)",
+  "archive_facility": "Indian Space Science Data Centre (ISSDC) - PRADAN Portal",
+  "instruments": [
+    "IIRS (Imaging Infrared Spectrometer: 256 bands, 0.8-5.0 \u00b5m, 20m spatial res)",
+    "TMC-2 (Terrain Mapping Camera-2: 5m res, 3D stereo triplet DEM)",
+    "CLASS (Chandrayaan-2 Large Area Soft X-ray Spectrometer)",
+    "LIBS (Laser-Induced Breakdown Spectroscope: 200-800nm, 0.1nm spectral res)",
+    "APXS (Alpha Particle X-ray Spectrometer: Curium-244 source)",
+    "ChaSTE (Chandra's Surface Thermophysical Experiment: 10 Platinum RTD sensors, 0-100mm depth)",
+    "RAMBHA-LP (Radio Anatomy of Moon Bound Hypersensitive Ionosphere and Atmosphere - Langmuir Probe)"
+  ],
+  "sites": [
+    {
+      "id": "site_shiv_shakti_point",
+      "name": "Shiv Shakti Point (Chandrayaan-3 Touchdown Site)",
+      "pds4_product_id": "urn:isro:ch3:pds4:ch3_lan_apxs_libs_0023",
+      "coordinates": {
+        "lat": -69.373,
+        "lon": 32.319,
+        "elevation_km": -2.48,
+        "region": "Between Manzinus C & Simpelius N"
+      },
+      "iirs_spectroscopy": {
+        "water_ice_detected": true,
+        "ibd_3um_absorption_depth": 0.185,
+        "reflectance_2800nm_to_1550nm_ratio": 0.842,
+        "estimated_h2o_concentration_ppm": 620,
+        "subsurface_temp_kelvin": 115.0,
+        "confidence": 0.82,
+        "spectral_curve": [
+          {
+            "wavelength_um": 1.0,
+            "reflectance": 0.12
+          },
+          {
+            "wavelength_um": 1.55,
+            "reflectance": 0.18
+          },
+          {
+            "wavelength_um": 2.0,
+            "reflectance": 0.21
+          },
+          {
+            "wavelength_um": 2.81,
+            "reflectance": 0.16
+          },
+          {
+            "wavelength_um": 3.0,
+            "reflectance": 0.13
+          },
+          {
+            "wavelength_um": 3.5,
+            "reflectance": 0.19
+          }
+        ]
+      },
+      "pragyan_libs_apxs_elemental_wt_pct": {
+        "silicon_si": 21.4,
+        "aluminum_al": 13.2,
+        "iron_fe": 8.6,
+        "calcium_ca": 6.8,
+        "magnesium_mg": 4.5,
+        "titanium_ti": 1.2,
+        "sulfur_s_in_situ_discovery": {
+          "detected": true,
+          "concentration_wt_pct": 0.42,
+          "characteristic_spectral_lines_nm": [
+            282.8,
+            286.3,
+            303.4
+          ],
+          "scientific_significance": "First unambiguous in-situ confirmation of Sulfur in lunar south pole regolith"
+        }
+      },
+      "chaste_thermal_profile": {
+        "sensors_depth_mm": [
+          0,
+          -10,
+          -20,
+          -30,
+          -40,
+          -50,
+          -60,
+          -70,
+          -80,
+          -90
+        ],
+        "temperature_celsius": [
+          50.2,
+          38.4,
+          25.1,
+          14.8,
+          4.2,
+          -3.1,
+          -7.5,
+          -9.8,
+          -10.5,
+          -11.2
+        ],
+        "thermal_conductivity_w_mk": 0.0028,
+        "summary": "Steep 61.4\u00b0C thermal drop across top 90mm due to extreme vacuum insulation of fine regolith."
+      },
+      "rambha_lp_plasma_data": {
+        "electron_density_per_cm3": "1.06 x 10^4",
+        "electron_temperature_ev": 1.8,
+        "assessment": "Hyper-sparse lunar daytime plasma environment, optimal for undisturbed radio astronomy."
+      },
+      "tmc2_terrain": {
+        "slope_degrees": 4.2,
+        "roughness_index": 0.15,
+        "boulder_density_m2": 0.005,
+        "hazard_status": "OPTIMAL_SAFE",
+        "recommendation": "Validated touchdown zone with minimal rock distribution."
+      }
+    },
+    {
+      "id": "site_cabeus_crater",
+      "name": "Cabeus Crater - Central Floor (PSR)",
+      "pds4_product_id": "urn:isro:ch2:pds4:ch2_iir_ncn_20200115t142851120_d18",
+      "coordinates": {
+        "lat": -84.9,
+        "lon": -35.5,
+        "elevation_km": -4.12,
+        "region": "South Pole Deep Volatile Trap"
+      },
+      "iirs_spectroscopy": {
+        "water_ice_detected": true,
+        "ibd_3um_absorption_depth": 0.418,
+        "reflectance_2800nm_to_1550nm_ratio": 0.612,
+        "estimated_h2o_concentration_ppm": 2100,
+        "ice_purity_percentage": 31.0,
+        "subsurface_temp_kelvin": 32.5,
+        "confidence": 0.96,
+        "spectral_curve": [
+          {
+            "wavelength_um": 1.0,
+            "reflectance": 0.08
+          },
+          {
+            "wavelength_um": 1.55,
+            "reflectance": 0.14
+          },
+          {
+            "wavelength_um": 2.0,
+            "reflectance": 0.16
+          },
+          {
+            "wavelength_um": 2.81,
+            "reflectance": 0.09
+          },
+          {
+            "wavelength_um": 3.0,
+            "reflectance": 0.05
+          },
+          {
+            "wavelength_um": 3.5,
+            "reflectance": 0.15
+          }
+        ]
+      },
+      "elemental_composition": {
+        "anorthosite_plagioclase": 62.1,
+        "bound_hydroxyl_oh": 3.8,
+        "volatiles_co2_ch4_nh3": 1.4,
+        "iron_oxide_feo": 5.1,
+        "sulfur_detected": true,
+        "sulfur_concentration_wt_pct": 0.28
+      },
+      "tmc2_terrain": {
+        "slope_degrees": 11.8,
+        "roughness_index": 0.45,
+        "boulder_density_m2": 0.03,
+        "hazard_status": "MODERATE_HAZARD",
+        "recommendation": "Deep crater shadow; requires laser altimeter guidance for descent."
+      }
+    },
+    {
+      "id": "site_shackleton_crater",
+      "name": "Shackleton Crater - South Pole Rim",
+      "pds4_product_id": "urn:isro:ch2:pds4:ch2_iir_ncn_20191024t062132644_d18",
+      "coordinates": {
+        "lat": -89.9,
+        "lon": 0.0,
+        "elevation_km": -3.85,
+        "region": "South Pole Extreme Peak"
+      },
+      "iirs_spectroscopy": {
+        "water_ice_detected": true,
+        "ibd_3um_absorption_depth": 0.342,
+        "reflectance_2800nm_to_1550nm_ratio": 0.694,
+        "estimated_h2o_concentration_ppm": 1450,
+        "ice_purity_percentage": 24.5,
+        "subsurface_temp_kelvin": 38.2,
+        "confidence": 0.94,
+        "spectral_curve": [
+          {
+            "wavelength_um": 1.0,
+            "reflectance": 0.09
+          },
+          {
+            "wavelength_um": 1.55,
+            "reflectance": 0.15
+          },
+          {
+            "wavelength_um": 2.0,
+            "reflectance": 0.18
+          },
+          {
+            "wavelength_um": 2.81,
+            "reflectance": 0.11
+          },
+          {
+            "wavelength_um": 3.0,
+            "reflectance": 0.07
+          },
+          {
+            "wavelength_um": 3.5,
+            "reflectance": 0.16
+          }
+        ]
+      },
+      "elemental_composition": {
+        "anorthosite_plagioclase": 68.2,
+        "pyroxene": 14.5,
+        "olivine": 8.1,
+        "iron_oxide_feo": 4.2,
+        "titanium_dioxide_tio2": 0.8,
+        "sulfur_detected": false
+      },
+      "tmc2_terrain": {
+        "slope_degrees": 28.4,
+        "roughness_index": 0.72,
+        "boulder_density_m2": 0.08,
+        "hazard_status": "HIGH_HAZARD",
+        "recommendation": "Steep rim slope; optimal for solar power towers, hazardous for landing."
+      }
+    },
+    {
+      "id": "site_shoemaker_crater",
+      "name": "Shoemaker Crater",
+      "pds4_product_id": "urn:isro:ch2:pds4:ch2_iir_ncn_20200311t091215880_d18",
+      "coordinates": {
+        "lat": -88.1,
+        "lon": 45.9,
+        "elevation_km": -3.2,
+        "region": "South Pole High-Hydrogen Basin"
+      },
+      "iirs_spectroscopy": {
+        "water_ice_detected": true,
+        "ibd_3um_absorption_depth": 0.295,
+        "reflectance_2800nm_to_1550nm_ratio": 0.735,
+        "estimated_h2o_concentration_ppm": 1280,
+        "ice_purity_percentage": 18.2,
+        "subsurface_temp_kelvin": 41.0,
+        "confidence": 0.89,
+        "spectral_curve": [
+          {
+            "wavelength_um": 1.0,
+            "reflectance": 0.1
+          },
+          {
+            "wavelength_um": 1.55,
+            "reflectance": 0.16
+          },
+          {
+            "wavelength_um": 2.0,
+            "reflectance": 0.19
+          },
+          {
+            "wavelength_um": 2.81,
+            "reflectance": 0.13
+          },
+          {
+            "wavelength_um": 3.0,
+            "reflectance": 0.09
+          },
+          {
+            "wavelength_um": 3.5,
+            "reflectance": 0.17
+          }
+        ]
+      },
+      "elemental_composition": {
+        "anorthosite_plagioclase": 65.0,
+        "pyroxene": 16.2,
+        "ilmenite_fe_tio3": 3.4,
+        "iron_oxide_feo": 6.8,
+        "sulfur_detected": false
+      },
+      "tmc2_terrain": {
+        "slope_degrees": 16.5,
+        "roughness_index": 0.52,
+        "boulder_density_m2": 0.04,
+        "hazard_status": "MODERATE_HAZARD",
+        "recommendation": "Traverse possible along western spur."
+      }
+    }
+  ]
+}

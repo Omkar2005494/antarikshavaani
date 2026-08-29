@@ -1,0 +1,83 @@
+{
+  "mission": "Aditya-L1",
+  "orbit": "Halo Orbit around Sun-Earth Lagrange Point 1 (1.5M km from Earth)",
+  "instruments": [
+    "VELC (Coronagraph)",
+    "SUIT (UV Telescope)",
+    "ASPEX (Solar Wind Particles)",
+    "PAPA (Plasma Analyzer)",
+    "SoLEXS (Soft X-ray)",
+    "HEL1OS (Hard X-ray)",
+    "MAG (Magnetometer)"
+  ],
+  "recent_solar_events": [
+    {
+      "event_id": "solar_flare_x5_8_aug2026",
+      "timestamp": "2026-08-24T14:32:00Z",
+      "active_region": "AR3780",
+      "flare_class": "X5.8",
+      "classification": "Major Solar Flare (Extreme Radiation)",
+      "peak_xray_flux_watts_m2": 0.00058,
+      "cme_associated": true,
+      "cme_speed_km_s": 1420,
+      "geomagnetic_storm_forecast": {
+        "kp_index": 7.8,
+        "storm_level": "G4 (Severe)",
+        "earth_arrival_time": "2026-08-26T02:00:00Z",
+        "satellites_at_risk": [
+          "GSAT-24 (GEO Drag / Charging)",
+          "Cartosat-3 (Star Tracker Blinding)",
+          "EOS-04 (HF Radio Blackout)"
+        ]
+      },
+      "suit_ultraviolet_observations": "Intense chromospheric heating across 200-400nm bands; coronal mass eruption observed moving westward.",
+      "recommended_actions": [
+        "Place low-Earth orbit satellites in safe Sun-pointing mode",
+        "Power down sensitive electro-optical sensors during Van Allen belt traversal",
+        "Switch polar transponders to backup low-noise amplifiers"
+      ]
+    },
+    {
+      "event_id": "solar_flare_m2_4_aug2026",
+      "timestamp": "2026-08-26T08:15:00Z",
+      "active_region": "AR3785",
+      "flare_class": "M2.4",
+      "classification": "Moderate Solar Flare",
+      "peak_xray_flux_watts_m2": 2.4e-05,
+      "cme_associated": false,
+      "cme_speed_km_s": 450,
+      "geomagnetic_storm_forecast": {
+        "kp_index": 3.2,
+        "storm_level": "G0 (Quiet/Unsettled)",
+        "earth_arrival_time": "N/A",
+        "satellites_at_risk": []
+      },
+      "suit_ultraviolet_observations": "Localized magnetic reconnection in the active region penumbra.",
+      "recommended_actions": [
+        "Nominal operations continue; monitor ASPEX proton flux levels."
+      ]
+    },
+    {
+      "event_id": "coronal_hole_high_speed_stream_aug2026",
+      "timestamp": "2026-08-27T04:00:00Z",
+      "active_region": "CH-119 (Equatorial Coronal Hole)",
+      "flare_class": "N/A (Solar Wind Stream)",
+      "classification": "High-Speed Solar Wind Ejection",
+      "solar_wind_velocity_km_s": 680,
+      "proton_density_cm3": 14.2,
+      "magnetic_field_bt_nt": 11.5,
+      "geomagnetic_storm_forecast": {
+        "kp_index": 5.1,
+        "storm_level": "G1 (Minor)",
+        "earth_arrival_time": "2026-08-28T18:00:00Z",
+        "satellites_at_risk": [
+          "LEO constellation orbital drag elevated by 18%"
+        ]
+      },
+      "suit_ultraviolet_observations": "Extended open magnetic field lines in solar corona.",
+      "recommended_actions": [
+        "Increase orbital propagation tracking frequency at ISTRAC."
+      ]
+    }
+  ]
+}

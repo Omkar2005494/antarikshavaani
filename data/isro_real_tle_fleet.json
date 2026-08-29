@@ -1,0 +1,120 @@
+{
+  "catalog_source": "ISTRAC Telemetry Network & Space-Track.org / Celestrak",
+  "total_active_satellites": 54,
+  "last_ephemeris_sync": "2026-08-28T18:00:00Z",
+  "satellites": [
+    {
+      "name": "Chandrayaan-2 Orbiter",
+      "norad_id": 44441,
+      "intl_designator": "2019-042A",
+      "orbit_type": "Lunar Polar Orbit (100 x 100 km)",
+      "apogee_km": 100.4,
+      "perigee_km": 99.8,
+      "inclination_deg": 90.0,
+      "period_min": 118.2,
+      "tle": {
+        "line1": "1 44441U 19042A   26240.50000000  .00000120  00000-0  10000-4 0  9998",
+        "line2": "2 44441  90.0000 120.4500 0002100  45.1200 314.9800 12.18274000 25000"
+      },
+      "battery_soc_pct": 98.4,
+      "fuel_reserve_years": 5.5,
+      "status": "HEALTHY / SCIENCE PHASE",
+      "active_transponder": "X-band (8.45 GHz)",
+      "ground_station_lock": "IDSN Byalalu 32m Deep Space Dish"
+    },
+    {
+      "name": "Aditya-L1",
+      "norad_id": 57714,
+      "intl_designator": "2023-132A",
+      "orbit_type": "Sun-Earth L1 Halo Orbit (1.5M km)",
+      "distance_km": 1495200,
+      "inclination_deg": 19.5,
+      "period_days": 178.0,
+      "tle": {
+        "line1": "1 57714U 23132A   26240.65000000  .00000050  00000-0  00000-0 0  9992",
+        "line2": "2 57714  19.5000 215.1200 0521000  88.3400 271.8000  2.05040000  1200"
+      },
+      "battery_soc_pct": 100.0,
+      "fuel_reserve_years": 4.8,
+      "status": "NOMINAL SCIENCE",
+      "active_transponder": "X-band (8.42 GHz)",
+      "ground_station_lock": "IDSN Byalalu / NASA DSN Goldstone"
+    },
+    {
+      "name": "EOS-04 (RISAT-1A)",
+      "norad_id": 51656,
+      "intl_designator": "2022-013A",
+      "orbit_type": "Sun-Synchronous LEO",
+      "apogee_km": 536.0,
+      "perigee_km": 529.0,
+      "inclination_deg": 97.5,
+      "period_min": 95.3,
+      "tle": {
+        "line1": "1 51656U 22013A   26240.71000000  .00000340  00000-0  42100-4 0  9991",
+        "line2": "2 51656  97.5000 340.2100 0005400  92.1400 268.1000 15.11024000 24100"
+      },
+      "battery_soc_pct": 94.2,
+      "fuel_reserve_years": 7.0,
+      "status": "OPERATIONAL SAR",
+      "active_transponder": "X-band SAR Data Link (8.2 GHz)",
+      "ground_station_lock": "NRSC Shadnagar"
+    },
+    {
+      "name": "Cartosat-3",
+      "norad_id": 44804,
+      "intl_designator": "2019-081A",
+      "orbit_type": "Sun-Synchronous LEO",
+      "apogee_km": 509.0,
+      "perigee_km": 505.0,
+      "inclination_deg": 97.5,
+      "period_min": 94.8,
+      "tle": {
+        "line1": "1 44804U 19081A   26240.78000000  .00000410  00000-0  51200-4 0  9995",
+        "line2": "2 44804  97.5000 355.1000 0004200  85.4000 274.8000 15.19030000 36100"
+      },
+      "battery_soc_pct": 91.5,
+      "fuel_reserve_years": 3.2,
+      "status": "OPERATIONAL OPTICAL",
+      "active_transponder": "X-band (8.1 GHz)",
+      "ground_station_lock": "ISTRAC Bengaluru"
+    },
+    {
+      "name": "GSAT-24",
+      "norad_id": 52898,
+      "intl_designator": "2022-067A",
+      "orbit_type": "Geostationary (83.0\u00b0E GEO)",
+      "apogee_km": 35792.0,
+      "perigee_km": 35782.0,
+      "inclination_deg": 0.05,
+      "period_min": 1436.1,
+      "tle": {
+        "line1": "1 52898U 22067A   26240.82000000  .00000010  00000-0  00000-0 0  9997",
+        "line2": "2 52898   0.0500  83.0000 0001200  42.1000 318.0000  1.00270000  1500"
+      },
+      "battery_soc_pct": 99.1,
+      "fuel_reserve_years": 11.5,
+      "status": "ACTIVE DTH BROADCAST",
+      "active_transponder": "24 Ku-band Transponders (11.7 GHz)",
+      "ground_station_lock": "MCF Hassan Master Control Facility"
+    },
+    {
+      "name": "XPoSat (X-ray Polarimeter Satellite)",
+      "norad_id": 58694,
+      "intl_designator": "2024-001A",
+      "orbit_type": "Low Earth Orbit (LEO 650 km)",
+      "apogee_km": 655.0,
+      "perigee_km": 648.0,
+      "inclination_deg": 6.0,
+      "period_min": 97.7,
+      "tle": {
+        "line1": "1 58694U 24001A   26240.90000000  .00000210  00000-0  31000-4 0  9993",
+        "line2": "2 58694   6.0000 145.2000 0005000  60.1000 300.2000 14.73500000 14200"
+      },
+      "battery_soc_pct": 96.0,
+      "fuel_reserve_years": 4.5,
+      "status": "POLARIMETRY SCIENCE",
+      "active_transponder": "S-band / X-band (8.0 GHz)",
+      "ground_station_lock": "ISTRAC Port Blair"
+    }
+  ]
+}

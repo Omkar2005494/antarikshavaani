@@ -1,0 +1,66 @@
+[
+  {
+    "doc_id": "isro_pragyan_libs_sulfur_2023",
+    "title": "In-Situ Detection of Sulfur on the Lunar South Pole by Pragyan LIBS",
+    "authors": "ISRO Space Applications Centre (SAC) & Laboratory for Electro-Optics Systems (LEOS)",
+    "source": "Current Science / Nature Astronomy Special Publication",
+    "keywords": [
+      "Sulfur",
+      "LIBS",
+      "Pragyan",
+      "282.8 nm",
+      "286.3 nm",
+      "Shiv Shakti",
+      "Elemental Abundance"
+    ],
+    "abstract": "The Laser-Induced Breakdown Spectroscope (LIBS) instrument onboard the Chandrayaan-3 Pragyan rover conducted the first-ever in-situ spectroscopic measurements on the lunar surface near the south pole (69.373\u00b0S). LIBS atomic emission spectra unambiguously identified neutral Sulfur (S I) emission peaks at 282.8 nm, 286.3 nm, and 303.4 nm with estimated abundance of 0.42 wt%. Other confirmed elements include Aluminum, Calcium, Iron, Chromium, Titanium, Manganese, Silicon, and Oxygen."
+  },
+  {
+    "doc_id": "isro_chaste_thermal_insulation",
+    "title": "Lunar Regolith Thermal Gradient and Insulation Measured by ChaSTE",
+    "authors": "Physical Research Laboratory (PRL) & Space Physics Laboratory (SPL) ISRO",
+    "source": "ISRO Lunar Science Findings Bulletin",
+    "keywords": [
+      "ChaSTE",
+      "Thermal conductivity",
+      "Regolith",
+      "-10 C",
+      "+50 C",
+      "Temperature depth profile"
+    ],
+    "abstract": "Chandra's Surface Thermophysical Experiment (ChaSTE) deployed a 10-sensor platinum RTD temperature probe penetrating 100mm into the lunar topsoil at Shiv Shakti Point. The data revealed an unprecedented thermal gradient: the surface temperature of +50.2\u00b0C plummeted to -10.5\u00b0C at a depth of only 80mm. The measured bulk thermal conductivity of 0.0028 W/m\u00b7K demonstrates that lunar regolith functions as a near-perfect vacuum insulator."
+  },
+  {
+    "doc_id": "isro_ch2_iirs_pds4_volatiles",
+    "title": "Chandrayaan-2 IIRS PDS4 3.0-Micron Absorption Mapping of Hydroxyl and Water-Ice",
+    "authors": "ISRO Indian Space Science Data Centre (ISSDC)",
+    "source": "PDS4 Planetary Data System User Guide & Archive",
+    "keywords": [
+      "IIRS",
+      "PDS4",
+      "Water-Ice",
+      "Cabeus",
+      "Shackleton",
+      "3.0 micron",
+      "Integrated Band Depth"
+    ],
+    "abstract": "The Imaging Infrared Spectrometer (IIRS) on Chandrayaan-2 operates across 256 contiguous spectral channels (0.8 to 5.0 \u00b5m). Processing of PDS4 calibrated radiance datasets demonstrates significant 2.81 to 3.0 \u00b5m Integrated Band Depth (IBD) absorption in Permanently Shadowed Regions. Cabeus Crater (84.9\u00b0S) central floor exhibits up to 2100 PPM water-ice concentration, with an absorption depth ratio of 0.418 at sub-35 Kelvin."
+  },
+  {
+    "doc_id": "isro_aditya_l1_swoc_coronagraph",
+    "title": "Aditya-L1 Space Weather Operations at Sun-Earth Lagrange Point 1",
+    "authors": "Indian Institute of Astrophysics (IIA) & ISRO Satellite Centre (URSC)",
+    "source": "ISRO Solar Physics Mission Reports",
+    "keywords": [
+      "Aditya-L1",
+      "VELC",
+      "SUIT",
+      "Fe XIV",
+      "530.3 nm",
+      "CME",
+      "Geomagnetic Storm",
+      "Kp Index"
+    ],
+    "abstract": "Stationed in a halo orbit around the Sun-Earth L1 Lagrangian point, Aditya-L1's Visible Emission Line Coronagraph (VELC) monitors coronal mass ejections down to 1.05 R_sun using the Fe XIV 530.3 nm green coronal line. Combined with SUIT 11-channel UV imaging and PAPA plasma analyzers, the system provides 24-hour advance warning of severe G4/G5 geomagnetic storms prior to terrestrial and satellite impact."
+  }
+]

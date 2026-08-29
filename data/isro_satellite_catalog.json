@@ -1,0 +1,177 @@
+{
+  "total_active_satellites": 54,
+  "last_updated": "2026-08-27T12:00:00Z",
+  "tracking_network": "ISTRAC (ISRO Telemetry, Tracking and Command Network) Bengaluru",
+  "ground_stations": [
+    "Bengaluru",
+    "Shadnagar (NRSC)",
+    "Port Blair",
+    "Mauritius",
+    "Svalbard",
+    "Biarritz"
+  ],
+  "satellites": [
+    {
+      "norad_id": 44441,
+      "name": "Chandrayaan-2 Orbiter",
+      "type": "Lunar Exploration / Science",
+      "orbit_type": "Lunar Polar Orbit",
+      "altitude_km": 100,
+      "inclination_deg": 90.0,
+      "status": "HEALTHY / OPERATIONAL",
+      "battery_soc_pct": 98.4,
+      "fuel_reserve_years": 5.5,
+      "active_instruments": [
+        "IIRS",
+        "TMC-2",
+        "CLASS",
+        "OHRC",
+        "DFSAR"
+      ],
+      "current_target": "Moon South Pole Permanent Shadowed Craters",
+      "downlink_frequency_ghz": 8.45,
+      "last_contact_ground_station": "IDSN Byalalu (32m Deep Space Antenna)",
+      "telemetry_health_score": 99.8
+    },
+    {
+      "norad_id": 57714,
+      "name": "Aditya-L1",
+      "type": "Solar Physics & Space Weather",
+      "orbit_type": "Sun-Earth Lagrange L1 Halo Orbit",
+      "distance_from_earth_km": 1495000,
+      "status": "NOMINAL SCIENCE PHASE",
+      "battery_soc_pct": 100.0,
+      "fuel_reserve_years": 4.8,
+      "active_instruments": [
+        "VELC",
+        "SUIT",
+        "ASPEX",
+        "PAPA",
+        "SoLEXS",
+        "HEL1OS",
+        "MAG"
+      ],
+      "current_target": "Solar Photosphere & Corona Active Regions",
+      "downlink_frequency_ghz": 8.42,
+      "last_contact_ground_station": "IDSN Byalalu / NASA DSN Goldstone",
+      "telemetry_health_score": 100.0
+    },
+    {
+      "norad_id": 51656,
+      "name": "EOS-04 (RISAT-1A)",
+      "type": "Radar Earth Observation",
+      "orbit_type": "Sun-Synchronous LEO",
+      "altitude_km": 529,
+      "inclination_deg": 97.5,
+      "status": "OPERATIONAL",
+      "battery_soc_pct": 94.2,
+      "fuel_reserve_years": 7.0,
+      "active_instruments": [
+        "C-band Synthetic Aperture Radar (SAR)"
+      ],
+      "current_target": "All-Weather Agriculture & Flood Inundation Mapping (Assam & Gujarat)",
+      "downlink_frequency_ghz": 8.2,
+      "last_contact_ground_station": "NRSC Shadnagar Ground Station",
+      "telemetry_health_score": 98.6
+    },
+    {
+      "norad_id": 44804,
+      "name": "Cartosat-3",
+      "type": "High-Resolution Optical Imaging",
+      "orbit_type": "Sun-Synchronous LEO",
+      "altitude_km": 505,
+      "inclination_deg": 97.5,
+      "status": "OPERATIONAL",
+      "battery_soc_pct": 91.5,
+      "fuel_reserve_years": 3.2,
+      "active_instruments": [
+        "Panchromatic (0.28m resolution)",
+        "Multispectral (1.12m)",
+        "MWIR"
+      ],
+      "current_target": "Urban Infrastructure & Border Surveillance",
+      "downlink_frequency_ghz": 8.1,
+      "last_contact_ground_station": "ISTRAC Bengaluru",
+      "telemetry_health_score": 97.2
+    },
+    {
+      "norad_id": 52898,
+      "name": "GSAT-24",
+      "type": "Communication (Ku-Band)",
+      "orbit_type": "Geostationary (GEO)",
+      "longitude_deg": 83.0,
+      "altitude_km": 35786,
+      "status": "COMMERCIAL SERVICE ACTIVE",
+      "battery_soc_pct": 99.1,
+      "fuel_reserve_years": 11.5,
+      "active_instruments": [
+        "24 Ku-band Transponders (DTH Pan-India Coverage)"
+      ],
+      "current_target": "Tata Play DTH Broadcast & Enterprise VSAT",
+      "downlink_frequency_ghz": 11.7,
+      "last_contact_ground_station": "MCF Hassan Master Control Facility",
+      "telemetry_health_score": 99.9
+    },
+    {
+      "norad_id": 58694,
+      "name": "XPoSat (X-ray Polarimeter Satellite)",
+      "type": "Astrophysics / Black Hole Studies",
+      "orbit_type": "Low Earth Orbit (LEO)",
+      "altitude_km": 650,
+      "inclination_deg": 6.0,
+      "status": "SCIENCE OBSERVATION",
+      "battery_soc_pct": 96.0,
+      "fuel_reserve_years": 4.5,
+      "active_instruments": [
+        "POLIX (Polarimeter in X-rays)",
+        "XSPECT (X-ray Spectroscopy and Timing)"
+      ],
+      "current_target": "Crab Nebula & Cygnus X-1 Black Hole Polarimetry",
+      "downlink_frequency_ghz": 8.0,
+      "last_contact_ground_station": "ISTRAC Port Blair",
+      "telemetry_health_score": 99.5
+    },
+    {
+      "norad_id": 54361,
+      "name": "Oceansat-3 (EOS-06)",
+      "type": "Oceanography & Marine Climate",
+      "orbit_type": "Sun-Synchronous Polar LEO",
+      "altitude_km": 720,
+      "inclination_deg": 98.3,
+      "status": "OPERATIONAL",
+      "battery_soc_pct": 95.8,
+      "fuel_reserve_years": 6.0,
+      "active_instruments": [
+        "OCM-3 (Ocean Colour Monitor)",
+        "SSTM-1 (Sea Surface Temp)",
+        "Ku-band Scatterometer",
+        "ARGOS-4"
+      ],
+      "current_target": "Arabian Sea Chlorophyll & Cyclone Tracking",
+      "downlink_frequency_ghz": 8.25,
+      "last_contact_ground_station": "NRSC Shadnagar",
+      "telemetry_health_score": 99.1
+    },
+    {
+      "norad_id": 40930,
+      "name": "AstroSat",
+      "type": "Multi-Wavelength Space Observatory",
+      "orbit_type": "Low Earth Orbit",
+      "altitude_km": 650,
+      "inclination_deg": 6.0,
+      "status": "OPERATIONAL (Extended Mission)",
+      "battery_soc_pct": 89.2,
+      "fuel_reserve_years": 2.0,
+      "active_instruments": [
+        "UVIT",
+        "LAXPC",
+        "SXT",
+        "CZTI"
+      ],
+      "current_target": "Active Galactic Nuclei & Neutron Star Mergers",
+      "downlink_frequency_ghz": 8.05,
+      "last_contact_ground_station": "ISTRAC Bengaluru",
+      "telemetry_health_score": 95.0
+    }
+  ]
+}

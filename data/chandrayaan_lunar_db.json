@@ -1,0 +1,186 @@
+{
+  "mission": "Chandrayaan-2 / Chandrayaan-3",
+  "instruments": [
+    "IIRS (Infrared Spectrometer)",
+    "TMC-2 (Terrain Mapping)",
+    "CLASS (X-ray Spectrometer)",
+    "LIBS/APXS (Pragyan Rover)",
+    "ChaSTE (Thermal Probe)"
+  ],
+  "sites": [
+    {
+      "id": "site_shackleton_crater",
+      "name": "Shackleton Crater - South Pole Rim",
+      "coordinates": {
+        "lat": -89.9,
+        "lon": 0.0,
+        "region": "South Pole PSR"
+      },
+      "iirs_spectral_analysis": {
+        "water_ice_detected": true,
+        "absorption_band_3um_depth": 0.342,
+        "estimated_h2o_concentration_ppm": 1450,
+        "ice_purity_percentage": 24.5,
+        "shadow_type": "Permanently Shadowed Region (PSR)",
+        "subsurface_temp_kelvin": 38.2,
+        "confidence": 0.94
+      },
+      "tmc2_hazard_analysis": {
+        "slope_degrees": 28.4,
+        "roughness_factor": 0.72,
+        "boulder_density_per_m2": 0.08,
+        "landing_safety": "HIGH_HAZARD",
+        "recommendation": "Unsafe for direct landing; rim traverse recommended"
+      },
+      "elemental_composition": {
+        "anorthosite_plagioclase": 68.2,
+        "pyroxene": 14.5,
+        "olivine": 8.1,
+        "iron_oxide_feo": 4.2,
+        "titanium_dioxide_tio2": 0.8,
+        "sulfur_detected": false
+      }
+    },
+    {
+      "id": "site_shiv_shakti_point",
+      "name": "Shiv Shakti Point (Chandrayaan-3 Touchdown Site)",
+      "coordinates": {
+        "lat": -69.373,
+        "lon": 32.319,
+        "region": "Manzinus C - Simpelius N"
+      },
+      "iirs_spectral_analysis": {
+        "water_ice_detected": true,
+        "absorption_band_3um_depth": 0.185,
+        "estimated_h2o_concentration_ppm": 620,
+        "ice_purity_percentage": 7.8,
+        "shadow_type": "Sunlit with diurnal frost cycles",
+        "subsurface_temp_kelvin": 115.0,
+        "confidence": 0.82
+      },
+      "tmc2_hazard_analysis": {
+        "slope_degrees": 4.2,
+        "roughness_factor": 0.15,
+        "boulder_density_per_m2": 0.005,
+        "landing_safety": "SAFE",
+        "recommendation": "Optimal touchdown zone; validated by Vikram lander"
+      },
+      "elemental_composition": {
+        "anorthosite_plagioclase": 54.0,
+        "silicon_si": 21.4,
+        "aluminum_al": 13.2,
+        "iron_fe": 8.6,
+        "calcium_ca": 6.8,
+        "titanium_ti": 1.2,
+        "magnesium_mg": 4.5,
+        "sulfur_detected": true,
+        "sulfur_concentration_wt_pct": 0.42
+      },
+      "chaste_thermal_data": {
+        "surface_temp_celsius": 50.0,
+        "depth_80mm_temp_celsius": -10.0,
+        "thermal_gradient": "Extremely sharp drop within 10cm topsoil"
+      }
+    },
+    {
+      "id": "site_cabeus_crater",
+      "name": "Cabeus Crater - Central Floor",
+      "coordinates": {
+        "lat": -84.9,
+        "lon": -35.5,
+        "region": "South Pole Volatile Trap"
+      },
+      "iirs_spectral_analysis": {
+        "water_ice_detected": true,
+        "absorption_band_3um_depth": 0.418,
+        "estimated_h2o_concentration_ppm": 2100,
+        "ice_purity_percentage": 31.0,
+        "shadow_type": "Deep PSR",
+        "subsurface_temp_kelvin": 32.5,
+        "confidence": 0.96
+      },
+      "tmc2_hazard_analysis": {
+        "slope_degrees": 11.8,
+        "roughness_factor": 0.45,
+        "boulder_density_per_m2": 0.03,
+        "landing_safety": "MODERATE_HAZARD",
+        "recommendation": "Precision landing radar required due to rim shadow occlusion"
+      },
+      "elemental_composition": {
+        "anorthosite_plagioclase": 62.1,
+        "volatiles_ch4_nh3_traces": 1.4,
+        "iron_oxide_feo": 5.1,
+        "hydroxyl_oh_bound": 3.8,
+        "sulfur_detected": true,
+        "sulfur_concentration_wt_pct": 0.28
+      }
+    },
+    {
+      "id": "site_shoemaker_crater",
+      "name": "Shoemaker Crater",
+      "coordinates": {
+        "lat": -88.1,
+        "lon": 45.9,
+        "region": "South Pole High-Hydrogen Zone"
+      },
+      "iirs_spectral_analysis": {
+        "water_ice_detected": true,
+        "absorption_band_3um_depth": 0.295,
+        "estimated_h2o_concentration_ppm": 1280,
+        "ice_purity_percentage": 18.2,
+        "shadow_type": "Permanently Shadowed Floor",
+        "subsurface_temp_kelvin": 41.0,
+        "confidence": 0.89
+      },
+      "tmc2_hazard_analysis": {
+        "slope_degrees": 16.5,
+        "roughness_factor": 0.52,
+        "boulder_density_per_m2": 0.04,
+        "landing_safety": "MODERATE_HAZARD",
+        "recommendation": "Traverse pathway viable from western ridge"
+      },
+      "elemental_composition": {
+        "anorthosite_plagioclase": 65.0,
+        "pyroxene": 16.2,
+        "ilmenite_fe_tio3": 3.4,
+        "iron_oxide_feo": 6.8,
+        "sulfur_detected": false
+      }
+    },
+    {
+      "id": "site_oceanus_procellarum",
+      "name": "Oceanus Procellarum (Mare Basalt Plain)",
+      "coordinates": {
+        "lat": 18.4,
+        "lon": -57.4,
+        "region": "Equatorial Mare"
+      },
+      "iirs_spectral_analysis": {
+        "water_ice_detected": false,
+        "absorption_band_3um_depth": 0.012,
+        "estimated_h2o_concentration_ppm": 15,
+        "ice_purity_percentage": 0.0,
+        "shadow_type": "Full Direct Solar Exposure",
+        "subsurface_temp_kelvin": 385.0,
+        "confidence": 0.99
+      },
+      "tmc2_hazard_analysis": {
+        "slope_degrees": 1.8,
+        "roughness_factor": 0.08,
+        "boulder_density_per_m2": 0.001,
+        "landing_safety": "OPTIMAL_SAFE",
+        "recommendation": "Flat basalt plain; prime site for high-speed robotic roving"
+      },
+      "elemental_composition": {
+        "high_titanium_basalt": 38.5,
+        "ilmenite_fe_tio3": 12.4,
+        "iron_oxide_feo": 18.9,
+        "silicon_si": 20.1,
+        "titanium_dioxide_tio2": 9.2,
+        "rare_earth_elements_kreep": 0.65,
+        "sulfur_detected": true,
+        "sulfur_concentration_wt_pct": 0.55
+      }
+    }
+  ]
+}

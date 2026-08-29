@@ -1,0 +1,65 @@
+[
+  {
+    "doc_id": "isro_ch3_findings_2023_2024",
+    "title": "Chandrayaan-3 Scientific Discoveries and South Pole In-Situ Analysis",
+    "category": "Lunar Science",
+    "keywords": [
+      "Chandrayaan-3",
+      "Vikram",
+      "Pragyan",
+      "Sulfur",
+      "ChaSTE",
+      "LIBS",
+      "Shiv Shakti",
+      "Water-ice"
+    ],
+    "content": "On August 23, 2023, ISRO made historic history by successfully soft-landing Chandrayaan-3's Vikram lander at Shiv Shakti Point (69.373\u00b0S, 32.319\u00b0E) near the Moon's South Pole. The Pragyan rover deployed the Laser-Induced Breakdown Spectroscope (LIBS) and Alpha Particle X-ray Spectrometer (APXS), confirming the unambiguous presence of Sulfur (S) in the lunar topsoil for the first time in-situ. Other detected elements include Aluminum (Al), Calcium (Ca), Iron (Fe), Chromium (Cr), Titanium (Ti), Manganese (Mn), Silicon (Si), and Oxygen (O). The ChaSTE payload measured a drastic thermal gradient: the surface temperature of 50\u00b0C dropped to -10\u00b0C at just 80mm depth, demonstrating the high thermal insulation of lunar regolith."
+  },
+  {
+    "doc_id": "isro_ch2_iirs_water_ice",
+    "title": "Chandrayaan-2 IIRS Infrared Spectrometer Water-Ice & Hydroxyl Mapping",
+    "category": "Lunar Spectroscopy",
+    "keywords": [
+      "Chandrayaan-2",
+      "IIRS",
+      "Water-ice",
+      "Hydroxyl",
+      "3.0 micron",
+      "Shackleton",
+      "Cabeus",
+      "Shoemaker",
+      "PSR"
+    ],
+    "content": "Chandrayaan-2 carries the Imaging Infrared Spectrometer (IIRS), operating across 0.8 to 5.0 micrometers. IIRS confirmed unambiguous 3.0 micrometer absorption features indicating both molecular water (H2O) and hydroxyl (OH) adsorbed across lunar high-latitude regions and concentrated in Permanently Shadowed Regions (PSRs). Craters like Cabeus, Shackleton, Faustini, and Shoemaker exhibit estimated water-ice concentrations up to 2100 ppm, with temperatures remaining below 40 Kelvin, making them prime targets for future ISRU (In-Situ Resource Utilization) water extraction."
+  },
+  {
+    "doc_id": "isro_aditya_l1_mission_overview",
+    "title": "Aditya-L1 Space Weather Observation at Sun-Earth Lagrange Point 1",
+    "category": "Solar Physics",
+    "keywords": [
+      "Aditya-L1",
+      "Lagrange L1",
+      "VELC",
+      "SUIT",
+      "Solar Flare",
+      "CME",
+      "Space Weather",
+      "Coronagraph"
+    ],
+    "content": "Aditya-L1 is India's first dedicated solar observatory, stationed in a halo orbit around the Sun-Earth L1 point, 1.5 million kilometers from Earth. The primary payload, VELC (Visible Emission Line Coronagraph), captures continuous solar corona images down to 1.05 solar radii. The SUIT payload records solar ultraviolet imaging (200-400 nm) to study photospheric dynamic features, solar flares, and coronal mass ejections (CMEs). ASPEX and PAPA continuously monitor solar wind speed, proton flux, and plasma density to forecast geomagnetic storms before they impact Earth's satellite constellation."
+  },
+  {
+    "doc_id": "isro_future_missions_ch4_gaganyaan",
+    "title": "Upcoming ISRO Missions: Chandrayaan-4, Gaganyaan, and SpaDeX",
+    "category": "Mission Roadmap",
+    "keywords": [
+      "Chandrayaan-4",
+      "Sample Return",
+      "Gaganyaan",
+      "Human Spaceflight",
+      "SpaDeX",
+      "Space Docking"
+    ],
+    "content": "ISRO's upcoming mission roadmap includes Chandrayaan-4 (Lunar Sample Return Mission), aiming to collect lunar rock samples from the South Pole and return them to Earth using a modular lander, ascender, transfer module, and re-entry capsule. Gaganyaan will launch Indian astronauts (Vyomnauts) into a 400 km LEO orbit for a 3-day mission. SpaDeX (Space Docking Experiment) tests autonomous rendezvous and docking between two small spacecraft, laying the foundation for India's Bharatiya Antariksha Station (BAS)."
+  }
+]
