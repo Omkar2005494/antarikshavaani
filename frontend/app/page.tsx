@@ -7,6 +7,8 @@ import SolarTimelineCard from "@/components/SolarTimelineCard";
 import SatelliteRadarCard from "@/components/SatelliteRadarCard";
 import MineralHazardCard from "@/components/MineralHazardCard";
 import SpaceCanvas from "@/components/SpaceCanvas";
+import AuthModal, { UserSession } from "@/components/AuthModal";
+import { onAuthStateChanged, signOut, auth } from "@/lib/firebase";
 import { 
   Send, Sparkles, Satellite, BookOpen, Bot, User, 
   Plus, Copy, Check, ChevronRight, Loader2,
@@ -88,9 +90,50 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState({ code: "auto-detect", label: "🌐 Auto-Detect" });
   const [showLangMenu, setShowLangMenu] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserSession | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+
+    const stored = localStorage.getItem("antariksha_user");
+    if (stored) {
+      try {
+        setCurrentUser(JSON.parse(stored));
+      } catch (e) {}
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+      if (fbUser) {
+        const session: UserSession = {
+          uid: fbUser.uid,
+          displayName: fbUser.displayName || fbUser.email?.split("@")[0] || "Space Explorer",
+          email: fbUser.email,
+          photoURL: fbUser.photoURL,
+          role: "Verified Researcher",
+          organization: "Stackverse-labs • DSU Bangalore"
+        };
+        setCurrentUser(session);
+        localStorage.setItem("antariksha_user", JSON.stringify(session));
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (e) {}
+    localStorage.removeItem("antariksha_user");
+    localStorage.removeItem("antariksha_token");
+    setCurrentUser(null);
+    setShowUserMenu(false);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -491,6 +534,53 @@ export default function Home() {
               )}
             </div>
 
+            {/* User Authentication Pill / Avatar */}
+            {currentUser ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 pl-2 pr-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-cyan-500/50 transition-all text-xs font-mono"
+                >
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
+                    {currentUser.displayName ? currentUser.displayName.slice(0, 2).toUpperCase() : "OB"}
+                  </div>
+                  <div className="hidden md:flex flex-col text-left">
+                    <span className="text-[11px] font-semibold text-white leading-none">
+                      {currentUser.displayName || "Researcher"}
+                    </span>
+                    <span className="text-[9px] text-cyan-400 leading-tight">
+                      {currentUser.role || "Lead AI"}
+                    </span>
+                  </div>
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-1.5 w-56 bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-2xl shadow-2xl z-50 p-2 text-xs font-mono">
+                    <div className="p-2.5 border-b border-slate-800 mb-1">
+                      <p className="font-bold text-white truncate">{currentUser.displayName}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{currentUser.email}</p>
+                      <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[9px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                        {currentUser.organization}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-between"
+                    >
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-90 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/10 transition-opacity"
+              >
+                <span>Sign In</span>
+              </button>
+            )}
+
             {/* New Chat Button */}
             {messages.length > 0 && (
               <button
@@ -503,6 +593,16 @@ export default function Home() {
             )}
           </div>
         </header>
+
+        {/* Firebase Auth Modal */}
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onAuthSuccess={(user) => {
+            setCurrentUser(user);
+            setShowAuthModal(false);
+          }}
+        />
 
         {/* Scrollable Conversation Stream */}
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 pb-40 custom-scrollbar">
