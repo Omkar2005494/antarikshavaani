@@ -109,7 +109,7 @@ export default function Home() {
 
   const fetchTokens = async (uid?: string | null, isAuth: boolean = false) => {
     if (isAuth) {
-      setTokensTotal(500);
+      setTokensTotal(1000);
     } else {
       setTokensTotal(50);
     }
@@ -119,12 +119,12 @@ export default function Home() {
       const data = await res.json();
       if (data.tokens_remaining !== undefined) {
         setTokensRemaining(data.tokens_remaining);
-        setTokensTotal(data.tokens_total || (isAuth ? 500 : 50));
+        setTokensTotal(data.tokens_total || (isAuth ? 1000 : 50));
       }
     } catch (e) {
       if (isAuth) {
-        setTokensTotal(500);
-        setTokensRemaining(500);
+        setTokensTotal(1000);
+        setTokensRemaining(1000);
       }
     }
   };
@@ -137,8 +137,8 @@ export default function Home() {
       try {
         const parsed = JSON.parse(stored);
         setCurrentUser(parsed);
-        setTokensTotal(500);
-        setTokensRemaining(500);
+        setTokensTotal(1000);
+        setTokensRemaining(1000);
         fetchTokens(parsed.uid, true);
       } catch (e) {}
     } else {
@@ -156,8 +156,8 @@ export default function Home() {
           organization: "Stackverse-labs • DSU Bangalore"
         };
         setCurrentUser(session);
-        setTokensTotal(500);
-        setTokensRemaining(500);
+        setTokensTotal(1000);
+        setTokensRemaining(1000);
         localStorage.setItem("antariksha_user", JSON.stringify(session));
         fetchTokens(session.uid, true);
       } else if (!stored) {
@@ -172,7 +172,7 @@ export default function Home() {
 
   useEffect(() => {
     if (currentUser) {
-      setTokensTotal(500);
+      setTokensTotal(1000);
       fetchTokens(currentUser.uid, true);
     } else {
       setTokensTotal(50);
@@ -572,7 +572,7 @@ export default function Home() {
             {/* Token Quota Live Badge */}
             <div 
               onClick={() => { if (!currentUser) setShowAuthModal(true); }}
-              title={currentUser ? "Authenticated Researcher Quota (500 Tokens)" : "Guest Quota (50 Tokens). Click to Sign In for 500 Tokens!"}
+              title={currentUser ? "Authenticated Researcher Quota (1000 Tokens)" : "Guest Quota (50 Tokens). Click to Sign In for 1000 Tokens!"}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
                 tokensRemaining <= 10 
                   ? "bg-red-500/10 border-red-500/30 text-red-400 animate-pulse shadow-sm shadow-red-500/10" 
@@ -685,8 +685,8 @@ export default function Home() {
           onClose={() => setShowAuthModal(false)}
           onAuthSuccess={(user) => {
             setCurrentUser(user);
-            setTokensTotal(500);
-            setTokensRemaining(500);
+            setTokensTotal(1000);
+            setTokensRemaining(1000);
             setShowAuthModal(false);
             fetchTokens(user.uid, true);
           }}

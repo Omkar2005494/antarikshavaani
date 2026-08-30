@@ -7,7 +7,7 @@ This software is an open-source educational and scientific research tool develop
 Bhartiya Antriksh Hackathon 2026 / National Space Day. It is not an official ISRO entity.
 Data ingested from ISSDC PRADAN (https://pradan.issdc.gov.in) and NASA PDS4 is governed by 
 Open Access and Academic Fair Use (Section 107 of the Copyright Act).
-Rate limiting & Token Quotas (500 Auth / 50 Guest) are strictly enforced to prevent automated scraping.
+Rate limiting & Token Quotas (1000 Auth / 50 Guest) are strictly enforced to prevent automated scraping.
 """
 
 import json
@@ -49,7 +49,7 @@ def health_check():
         "status": "ONLINE",
         "system": "AntarikshaVaani Core",
         "rate_limiting": "ACTIVE (Max 20 req/min per IP)",
-        "token_quotas": "500 Tokens (Authenticated) / 50 Tokens (Guest)",
+        "token_quotas": "1000 Tokens (Authenticated) / 50 Tokens (Guest)",
         "legal_status": "Academic Open Access & Fair Use",
         "active_satellites_indexed": len(db_manager.search_satellites()),
         "lunar_sites_indexed": len(db_manager.search_lunar_sites())
@@ -74,7 +74,7 @@ def get_legal_disclaimer():
             "ISRO Space Weather Operations Centre (SWOC)",
             "Space-Track.org / ISTRAC Two-Line Element (TLE) Ephemeris"
         ],
-        "token_policy": "500 Space Tokens for Authenticated Researchers; 50 Tokens for Guest Explorers.",
+        "token_policy": "1000 Space Tokens for Authenticated Researchers; 50 Tokens for Guest Explorers.",
         "rate_limit_policy": "Strict rate limit of 20 queries/minute per IP is enforced."
     }
 
@@ -111,9 +111,9 @@ async def execute_query(req: QueryRequest, request: Request, dependencies=Depend
     quota = token_manager.get_or_create_quota(identifier, bool(req.is_authenticated))
     if quota["tokens_remaining"] < required_tokens:
         if is_img:
-            limit_msg = f"⚡ AI Space Image Generation requires 200 Space Tokens. You currently have {quota['tokens_remaining']}/{quota['tokens_total']} tokens. Please Sign In to get 500 Space Tokens!"
+            limit_msg = f"⚡ AI Space Image Generation requires 200 Space Tokens. You currently have {quota['tokens_remaining']}/{quota['tokens_total']} tokens. Please Sign In to get 1000 Space Tokens!"
         else:
-            limit_msg = "⚡ Guest Token Quota Exhausted (0/50 tokens). Please Sign In with Google/Email to unlock 500 Space Tokens!" if not req.is_authenticated else "⚡ Token quota limit reached (0/500 tokens)."
+            limit_msg = "⚡ Guest Token Quota Exhausted (0/50 tokens). Please Sign In with Google/Email to unlock 1000 Space Tokens!" if not req.is_authenticated else "⚡ Token quota limit reached (0/1000 tokens)."
         raise HTTPException(status_code=403, detail=limit_msg)
 
     final_result = None
@@ -168,7 +168,7 @@ async def websocket_query_endpoint(websocket: WebSocket):
             quota = token_manager.get_or_create_quota(identifier, is_auth)
             if quota["tokens_remaining"] < required_tokens:
                 if is_img_query:
-                    quota_msg = f"⚡ **Insufficient Tokens for AI Imagery:** Image generation requires **200 Space Tokens**.\n\nYou currently have **{quota['tokens_remaining']}/{quota['tokens_total']} tokens**.\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to claim **500 Space Tokens**!"
+                    quota_msg = f"⚡ **Insufficient Tokens for AI Imagery:** Image generation requires **200 Space Tokens**.\n\nYou currently have **{quota['tokens_remaining']}/{quota['tokens_total']} tokens**.\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to claim **1000 Space Tokens**!"
                 else:
                     quota_msg = "⚡ **Guest Token Quota Exhausted (0/50 tokens).**\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to unlock **500 Free Space Tokens**!"
                 await websocket.send_json({
@@ -183,7 +183,7 @@ async def websocket_query_endpoint(websocket: WebSocket):
                 })
                 continue
             if quota["tokens_remaining"] <= 0:
-                quota_msg = "⚡ **Guest Token Quota Exhausted (0/50 tokens).**\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to unlock **500 Free Space Tokens**!" if not is_auth else "⚡ **Token quota limit reached (0/500 tokens).**"
+                quota_msg = "⚡ **Guest Token Quota Exhausted (0/50 tokens).**\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to unlock **500 Free Space Tokens**!" if not is_auth else "⚡ **Token quota limit reached (0/1000 tokens).**"
                 await websocket.send_json({
                     "error": "TOKEN_QUOTA_EXHAUSTED",
                     "step": 0,
