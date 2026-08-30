@@ -210,20 +210,23 @@ class SpaceAgentSwarm:
             img_data = space_image_gen.generate_image(prompt)
             visualization = {
                 "type": "IMAGE_GENERATOR",
-                "title": img_data["title"],
-                "image_url": img_data["image_url"],
-                "prompt": img_data["prompt"],
-                "enhanced_prompt": img_data["enhanced_prompt"],
-                "model": img_data["model"],
-                "resolution": img_data["resolution"],
-                "seed": img_data["seed"],
+                "title": img_data.get("title", "AI Space Visualization"),
+                "image_url": img_data.get("image_url", ""),
+                "backup_url": img_data.get("backup_url", ""),
+                "prompt": img_data.get("prompt", prompt),
+                "enhanced_prompt": img_data.get("enhanced_prompt", ""),
+                "prompt_engine": img_data.get("prompt_engine", "Ollama (llama3.2:1b Local Mac M2)"),
+                "diffusion_model": img_data.get("diffusion_model", "FLUX.1 Turbo Realism"),
+                "resolution": img_data.get("resolution", "1920x1080 (16:9 Crisp Full HD)"),
+                "seed": img_data.get("seed", 100001),
+                "tokens_consumed": 350,
                 "key_stats": [
-                    {"label": "Generator Model", "value": "FLUX.1 Space", "badge": "8K Neural Synthesis"},
-                    {"label": "Aspect Ratio", "value": "16:9 HD", "badge": "1280x720 px"},
-                    {"label": "Diffusion Seed", "value": f"#{img_data['seed']}", "badge": "Deterministic"}
+                    {"label": "Prompt Engine", "value": "Ollama (llama3.2:1b)", "badge": "Local Mac M2"},
+                    {"label": "Diffusion Model", "value": "FLUX.1 Turbo", "badge": "1920x1080 4K"},
+                    {"label": "Space Token Cost", "value": "-350 Tokens", "badge": "GPU Synthesis"}
                 ]
             }
-            final_text = f"**{img_data['title']}**\n\n✨ Generated photorealistic space visualization using **FLUX.1 Space Diffusion Engine** based on your mission prompt: *\"{prompt}\"*.\n\n• **Model Architecture:** FLUX.1 High-Fidelity Space Neural Synthesis\n• **Render Resolution:** 1280x720 (16:9 HD Cinematic)\n• **Seed:** #{img_data['seed']}\n\nYou can download the full-resolution render or inspect generation metadata using the controls below."
+            final_text = f"**{img_data.get('title', 'AI Space Render')}**\n\n✨ Synthesized photorealistic space visualization using **Local Ollama (llama3.2:1b)** on Mac M2 + **FLUX.1 Turbo Diffusion Engine**.\n\n• **Prompt Engine:** Ollama (`llama3.2:1b` Local Mac M2)\n• **Diffusion Model:** FLUX.1 Turbo Realism (1920x1080 Crisp Full HD)\n• **Deterministic Seed:** #{img_data.get('seed')}\n• **Space Tokens Consumed:** 350 Tokens\n\n*\"{img_data.get('enhanced_prompt', prompt)}\"*"
         elif viz_type == "LUNAR_MAP":
             visualization = {
                 "type": "LUNAR_MAP",
