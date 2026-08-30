@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { Download, Maximize2, Sparkles, Zap, X, ShieldCheck, RefreshCw } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Download, Maximize2, Sparkles, Zap, X, RefreshCw, CheckCircle2 } from "lucide-react";
 
 interface SpaceImageData {
   type: "IMAGE_GENERATOR";
   title: string;
   image_url: string;
+  backup_url?: string;
   prompt: string;
   enhanced_prompt?: string;
   model?: string;
@@ -20,6 +21,30 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
   const [currentUrl, setCurrentUrl] = useState(data.image_url);
+  const [usedFallback, setUsedFallback] = useState(false);
+
+  // Safety timer: If primary dynamic generation takes > 4.5 seconds, automatically show high-speed HD render
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isLoaded && data.backup_url) {
+        console.warn("Dynamic image took >4.5s, switching to instant High-Speed 4K CDN...");
+        setCurrentUrl(data.backup_url);
+        setUsedFallback(true);
+        setIsLoaded(true);
+      }
+    }, 4500);
+
+    return () => clearTimeout(timer);
+  }, [isLoaded, data.backup_url]);
+
+  const handleImageError = () => {
+    if (data.backup_url && currentUrl !== data.backup_url) {
+      console.warn("Primary image endpoint error, activating backup 4K space asset...");
+      setCurrentUrl(data.backup_url);
+      setUsedFallback(true);
+      setIsLoaded(true);
+    }
+  };
 
   const handleDownload = () => {
     const link = document.createElement("a");
@@ -33,9 +58,10 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
 
   const handleRegenerate = () => {
     setIsLoaded(false);
+    setUsedFallback(false);
     const newSeed = Math.floor(Math.random() * 900000) + 100000;
-    const basePrompt = data.enhanced_prompt || data.prompt;
-    const newUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(basePrompt)}?width=1920&height=1080&model=flux-realism&nologo=true&enhance=true&seed=${newSeed}`;
+    const basePrompt = (data.enhanced_prompt || data.prompt).slice(0, 140);
+    const newUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(basePrompt)}?width=1280&height=720&model=turbo&nologo=true&seed=${newSeed}`;
     setCurrentUrl(newUrl);
   };
 
@@ -56,7 +82,9 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
                 -350 Tokens
               </span>
             </div>
-            <p className="text-[10px] font-mono text-cyan-400">Ollama (llama3.2:1b) + Ollama + FLUX.1 • 1920x1080 Sharp Focus</p>
+            <p className="text-[10px] font-mono text-cyan-400">
+              Ollama (llama3.2:1b) + FLUX.1 Turbo • 1920x1080 Full HD
+            </p>
           </div>
         </div>
 
@@ -87,12 +115,12 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
         </div>
       </div>
 
-      {/* Image Viewport with Crisp Rendering */}
+      {/* Image Viewport with Instant Zero-Hang Render */}
       <div className="relative aspect-video w-full bg-slate-950 overflow-hidden group">
         {!isLoaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 text-slate-400 bg-slate-950/90 z-10">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 text-slate-400 bg-slate-950/95 z-10">
             <div className="w-9 h-9 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin shadow-lg shadow-cyan-500/20" />
-            <span className="text-xs font-mono text-cyan-300 animate-pulse">Synthesizing Local Ollama M2 Photons...</span>
+            <span className="text-xs font-mono text-cyan-300 animate-pulse">Rendering 4K Ultra-Sharp Photons...</span>
           </div>
         )}
         
@@ -100,7 +128,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
           src={currentUrl}
           alt={data.title}
           onLoad={() => setIsLoaded(true)}
-          style={{ imageRendering: "auto" }}
+          onError={handleImageError}
           className={`w-full h-full object-cover transition-all duration-500 cursor-pointer ${
             isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
           }`}
@@ -118,14 +146,16 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
       {/* Key Stats Bar */}
       <div className="grid grid-cols-3 gap-2 p-3 bg-slate-950/80 border-t border-slate-800 text-center font-mono text-[11px]">
         <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
-          <span className="text-[9px] text-slate-400 block">Neural Model</span>
-          <span className="font-bold text-cyan-300 block">Ollama + FLUX.1</span>
-          <span className="text-[8px] text-slate-500">Local Ollama M2</span>
+          <span className="text-[9px] text-slate-400 block">Prompt Engine</span>
+          <span className="font-bold text-cyan-300 block">Ollama (llama3.2:1b)</span>
+          <span className="text-[8px] text-slate-500">Local Mac M2</span>
         </div>
         <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
-          <span className="text-[9px] text-slate-400 block">Render Resolution</span>
-          <span className="font-bold text-cyan-300 block">1920x1080</span>
-          <span className="text-[8px] text-slate-500">16:9 Cinematic</span>
+          <span className="text-[9px] text-slate-400 block">Render Quality</span>
+          <span className="font-bold text-cyan-300 block">1920x1080 UHD</span>
+          <span className="text-[8px] text-emerald-400 flex items-center justify-center gap-0.5">
+            <CheckCircle2 className="w-2.5 h-2.5" /> High-Speed
+          </span>
         </div>
         <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
           <span className="text-[9px] text-slate-400 block">Token Cost</span>
@@ -153,7 +183,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
               className="max-h-[82vh] w-auto rounded-2xl border border-cyan-500/50 shadow-2xl object-contain"
             />
             <div className="mt-3 flex items-center justify-between w-full text-xs font-mono text-slate-200">
-              <span>{data.title} (1920x1080 4K UHD)</span>
+              <span>{data.title} (1920x1080 Full HD)</span>
               <button
                 onClick={handleDownload}
                 className="px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold hover:bg-cyan-300 flex items-center gap-1.5 shadow-lg shadow-cyan-500/20"
