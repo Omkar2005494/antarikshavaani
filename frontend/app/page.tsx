@@ -100,25 +100,61 @@ export default function Home() {
     scrollToBottom();
   }, [messages, isProcessing]);
 
-  // Instant in-place translation when user switches target language in top navbar
+  // Instant in-place translation + auto-fetch fallback when user switches language in top navbar
   useEffect(() => {
     if (selectedLang.code === "auto-detect") return;
     const targetCode = selectedLang.code;
     
-    setMessages((prev) =>
-      prev.map((msg) => {
-        if (msg.role === "assistant" && msg.translations) {
-          if (msg.translations[targetCode]) {
+    setMessages((prev) => {
+      let lastUserQuery = "";
+      return prev.map((msg) => {
+        if (msg.role === "user") {
+          lastUserQuery = msg.content;
+          return msg;
+        }
+
+        if (msg.role === "assistant") {
+          // 1. Instant switch if translation is cached
+          if (msg.translations && msg.translations[targetCode]) {
             return {
               ...msg,
               content: msg.translations[targetCode],
               language: targetCode,
             };
           }
+
+          // 2. Dynamic fetch if translation is not cached yet
+          if (lastUserQuery) {
+            const currentQuery = lastUserQuery;
+            fetch(`http://${window.location.hostname}:8000/api/query`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ prompt: currentQuery, target_language: targetCode }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.text) {
+                  setMessages((inner) =>
+                    inner.map((m) =>
+                      m.id === msg.id
+                        ? {
+                            ...m,
+                            content: data.text,
+                            language: targetCode,
+                            translations: data.translations || m.translations,
+                            visualization: data.visualization || m.visualization,
+                          }
+                        : m
+                    )
+                  );
+                }
+              })
+              .catch((err) => console.error("Language fetch error:", err));
+          }
         }
         return msg;
-      })
-    );
+      });
+    });
   }, [selectedLang]);
 
   // Handler for direct per-message language flip
@@ -268,16 +304,45 @@ export default function Home() {
       }
     };
 
-    ws.onerror = (err) => {
-      console.error("WS Error", err);
-      setIsProcessing(false);
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === assistantMsgId
-            ? { ...msg, isThinking: false, content: "⚠️ Connection error occurred. Please ensure backend server is active on port 8000." }
-            : msg
-        )
-      );
+    ws.onerror = async (err) => {
+      console.warn("WebSocket disconnected, falling back to REST API...", err);
+      try {
+        const response = await fetch(`http://${window.location.hostname}:8000/api/query`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: promptToSend,
+            target_language: selectedLang.code !== "auto-detect" ? selectedLang.code : undefined,
+          }),
+        });
+        const data = await response.json();
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMsgId
+              ? {
+                  ...msg,
+                  content: data.text || "No response received.",
+                  language: data.language || selectedLang.code,
+                  intent: data.intent,
+                  visualization: data.visualization,
+                  translations: data.translations || {},
+                  citations: data.citations,
+                  isThinking: false,
+                }
+              : msg
+          )
+        );
+      } catch (fetchErr) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMsgId
+              ? { ...msg, isThinking: false, content: "⚠️ Connection error occurred. Please ensure backend server is active on port 8000." }
+              : msg
+          )
+        );
+      } finally {
+        setIsProcessing(false);
+      }
     };
 
     ws.onclose = () => {
