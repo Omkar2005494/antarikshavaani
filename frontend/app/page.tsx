@@ -99,14 +99,42 @@ export default function Home() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const fetchTokens = async (uid?: string | null, isAuth: boolean = false) => {
+    if (isAuth) {
+      setTokensTotal(500);
+    } else {
+      setTokensTotal(50);
+    }
+    try {
+      const url = `http://${window.location.hostname}:8000/api/tokens?is_authenticated=${isAuth ? "true" : "false"}${uid ? `&user_id=${uid}` : ""}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.tokens_remaining !== undefined) {
+        setTokensRemaining(data.tokens_remaining);
+        setTokensTotal(data.tokens_total || (isAuth ? 500 : 50));
+      }
+    } catch (e) {
+      if (isAuth) {
+        setTokensTotal(500);
+        setTokensRemaining(500);
+      }
+    }
+  };
+
   useEffect(() => {
     textareaRef.current?.focus();
 
     const stored = localStorage.getItem("antariksha_user");
     if (stored) {
       try {
-        setCurrentUser(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        setCurrentUser(parsed);
+        setTokensTotal(500);
+        setTokensRemaining(500);
+        fetchTokens(parsed.uid, true);
       } catch (e) {}
+    } else {
+      fetchTokens(null, false);
     }
 
     const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
@@ -120,9 +148,13 @@ export default function Home() {
           organization: "Stackverse-labs • DSU Bangalore"
         };
         setCurrentUser(session);
+        setTokensTotal(500);
+        setTokensRemaining(500);
         localStorage.setItem("antariksha_user", JSON.stringify(session));
         fetchTokens(session.uid, true);
-      } else {
+      } else if (!stored) {
+        setTokensTotal(50);
+        setTokensRemaining(50);
         fetchTokens(null, false);
       }
     });
@@ -130,22 +162,12 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  const fetchTokens = async (uid?: string | null, isAuth: boolean = false) => {
-    try {
-      const url = `http://${window.location.hostname}:8000/api/tokens?is_authenticated=${isAuth}${uid ? `&user_id=${uid}` : ""}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if (data.tokens_remaining !== undefined) {
-        setTokensRemaining(data.tokens_remaining);
-        setTokensTotal(data.tokens_total);
-      }
-    } catch (e) {}
-  };
-
   useEffect(() => {
     if (currentUser) {
+      setTokensTotal(500);
       fetchTokens(currentUser.uid, true);
     } else {
+      setTokensTotal(50);
       fetchTokens(null, false);
     }
   }, [currentUser]);
@@ -157,6 +179,8 @@ export default function Home() {
     localStorage.removeItem("antariksha_user");
     localStorage.removeItem("antariksha_token");
     setCurrentUser(null);
+    setTokensTotal(50);
+    setTokensRemaining(50);
     setShowUserMenu(false);
   };
 
@@ -653,7 +677,10 @@ export default function Home() {
           onClose={() => setShowAuthModal(false)}
           onAuthSuccess={(user) => {
             setCurrentUser(user);
+            setTokensTotal(500);
+            setTokensRemaining(500);
             setShowAuthModal(false);
+            fetchTokens(user.uid, true);
           }}
         />
 
