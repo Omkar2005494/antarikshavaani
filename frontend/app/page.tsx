@@ -65,13 +65,18 @@ const STARTER_PROMPTS = [
 const INDIC_LANGUAGES = [
   { code: "auto-detect", label: "🌐 Auto-Detect" },
   { code: "english", label: "🇬🇧 English" },
-  { code: "gujarati", label: "🇮🇳 ગુજરાતી (Gujarati)" },
-  { code: "hindi", label: "🇮🇳 हिन्दी (Hindi)" },
-  { code: "punjabi", label: "🇮🇳 ਪੰਜਾਬੀ (Punjabi)" },
-  { code: "kannada", label: "🇮🇳 ಕನ್ನಡ (Kannada)" },
-  { code: "telugu", label: "🇮🇳 తెలుగు (Telugu)" },
-  { code: "tamil", label: "🇮🇳 தமிழ் (Tamil)" },
-  { code: "marathi", label: "🇮🇳 मराठी (Marathi)" }
+  { code: "hinglish", label: "🇮🇳 Hinglish (Hindi in English)" },
+  { code: "gujlish", label: "🇮🇳 Gujlish (Gujarati in English)" },
+  { code: "punglish", label: "🇮🇳 Punglish (Punjabi in English)" },
+  { code: "kanglish", label: "🇮🇳 Kanglish (Kannada in English)" },
+  { code: "tenglish", label: "🇮🇳 Tenglish (Telugu in English)" },
+  { code: "tanglish", label: "🇮🇳 Tanglish (Tamil in English)" },
+  { code: "hindi", label: "🇮🇳 हिन्दी (Hindi Script)" },
+  { code: "gujarati", label: "🇮🇳 ગુજરાતી (Gujarati Script)" },
+  { code: "punjabi", label: "🇮🇳 ਪੰਜਾਬੀ (Punjabi Script)" },
+  { code: "kannada", label: "🇮🇳 ಕನ್ನಡ (Kannada Script)" },
+  { code: "telugu", label: "🇮🇳 తెలుగు (Telugu Script)" },
+  { code: "tamil", label: "🇮🇳 தமிழ் (Tamil Script)" }
 ];
 
 export default function Home() {
