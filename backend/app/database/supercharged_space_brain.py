@@ -294,10 +294,21 @@ class SuperchargedSpaceBrain:
         bullet_points = "\n".join([f"• {a}" for a in key_aspects])
         text = f"**{title}**\n\n{body}\n\n{bullet_points}" if bullet_points else f"**{title}**\n\n{body}"
 
+        # Generate full dictionary of formatted translations for instant in-place switching
+        full_translations_map = {}
+        bullet_points = "\n".join([f"• {a}" for a in key_aspects])
+        
+        # English formatted
+        full_translations_map["english"] = f"**{title}**\n\n{top.get('summary', '')}\n\n{bullet_points}"
+        
+        for k, v in translations.items():
+            full_translations_map[k] = f"**{title}**\n\n{v}\n\n{bullet_points}"
+
         return {
             "title": title,
             "text": text,
-            "viz_type": viz_type
+            "viz_type": viz_type,
+            "translations": full_translations_map
         }
 
 super_brain = SuperchargedSpaceBrain()

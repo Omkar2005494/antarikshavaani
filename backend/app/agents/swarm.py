@@ -262,6 +262,7 @@ class SpaceAgentSwarm:
             "language": lang,
             "intent": top_topic,
             "visualization": visualization,
+            "translations": super_res.get("translations", {}) if super_res else {},
             "citations": [
                 "ISRO Chandrayaan & Aditya-L1 Scientific Publications (ISSDC / Nature)",
                 "ISRO Launch Vehicle Technical Manuals (LVM3, PSLV, SSLV)",

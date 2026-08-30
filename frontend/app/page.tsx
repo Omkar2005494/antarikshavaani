@@ -28,6 +28,7 @@ interface ChatMessage {
   language?: string;
   intent?: string;
   visualization?: any;
+  translations?: Record<string, string>;
   citations?: string[];
   isThinking?: boolean;
   steps?: AgentStep[];
@@ -98,6 +99,43 @@ export default function Home() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isProcessing]);
+
+  // Instant in-place translation when user switches target language in top navbar
+  useEffect(() => {
+    if (selectedLang.code === "auto-detect") return;
+    const targetCode = selectedLang.code;
+    
+    setMessages((prev) =>
+      prev.map((msg) => {
+        if (msg.role === "assistant" && msg.translations) {
+          if (msg.translations[targetCode]) {
+            return {
+              ...msg,
+              content: msg.translations[targetCode],
+              language: targetCode,
+            };
+          }
+        }
+        return msg;
+      })
+    );
+  }, [selectedLang]);
+
+  // Handler for direct per-message language flip
+  const handleMessageLangFlip = (msgId: string, langCode: string) => {
+    setMessages((prev) =>
+      prev.map((msg) => {
+        if (msg.id === msgId && msg.translations && msg.translations[langCode]) {
+          return {
+            ...msg,
+            content: msg.translations[langCode],
+            language: langCode,
+          };
+        }
+        return msg;
+      })
+    );
+  };
 
   const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
@@ -206,6 +244,7 @@ export default function Home() {
                 language: data.final_data.language,
                 intent: data.final_data.intent,
                 visualization: data.final_data.visualization,
+                translations: data.final_data.translations || {},
                 citations: data.final_data.citations,
                 isThinking: false,
                 steps: updatedSteps,
@@ -502,19 +541,47 @@ export default function Home() {
                         {/* Generated Response Card */}
                         {msg.content && (
                           <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-xl space-y-4">
-                            {/* Response Header */}
+                            {/* Response Header with Instant In-Place Language Switcher */}
                             <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-800/80">
                               <div className="flex flex-wrap items-center gap-1.5">
                                 <span className="text-xs font-semibold text-white">AntarikshaVaani</span>
                                 {msg.language && (
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300 uppercase">
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-400 uppercase border border-cyan-500/30">
                                     {msg.language}
                                   </span>
                                 )}
                                 {msg.intent && (
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300">
                                     {msg.intent}
                                   </span>
+                                )}
+
+                                {/* Instant Language Flip Pills */}
+                                {msg.translations && Object.keys(msg.translations).length > 0 && (
+                                  <div className="hidden sm:flex items-center gap-1 ml-1 text-[9px] font-mono">
+                                    {[
+                                      { code: "english", label: "EN" },
+                                      { code: "hinglish", label: "Hinglish" },
+                                      { code: "gujlish", label: "Gujlish" },
+                                      { code: "punglish", label: "Punglish" },
+                                      { code: "hindi", label: "हिन्दी" },
+                                      { code: "gujarati", label: "ગુજરાતી" },
+                                      { code: "punjabi", label: "ਪੰਜਾਬੀ" },
+                                      { code: "kannada", label: "ಕನ್ನಡ" },
+                                    ].map((l) => (
+                                      <button
+                                        key={l.code}
+                                        onClick={() => handleMessageLangFlip(msg.id, l.code)}
+                                        className={`px-1.5 py-0.5 rounded transition-all ${
+                                          msg.language === l.code
+                                            ? "bg-cyan-400 text-slate-950 font-bold shadow-sm"
+                                            : "bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700"
+                                        }`}
+                                      >
+                                        {l.label}
+                                      </button>
+                                    ))}
+                                  </div>
                                 )}
                               </div>
 
