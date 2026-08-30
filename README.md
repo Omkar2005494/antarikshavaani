@@ -124,7 +124,8 @@ sequenceDiagram
 
 ### 1. Lunar Water & Spectroscopy Model (Chandrayaan-2/3)
 * **Absorption Physics:** Evaluates fundamental O-H stretching vibration across 2.81µm to 3.0µm wavelengths using the Integrated Band Depth formula:
-  $$	ext{IBD}_{3.0} = \int_{2.81}^{3.05} \left(1 - rac{R(\lambda)}{R_{	ext{cont}}(\lambda)}ight) d\lambda$$
+  $$	ext{IBD}_{3.0} = \int_{2.81}^{3.05} \left(1 - rac{R(\lambda)}{R_{	ext{cont}}(\lambda)}
+ight) d\lambda$$
 * **Verified PDS4 Ground Truth:** Product URN `urn:isro:ch2:pds4:ch2_iir_ncn_20200115t142851120_d18` confirming **2,100 PPM water-ice** in Cabeus Crater PSRs.
 
 ### 2. Space Weather Operations Centre (SWOC) Dynamics
@@ -199,7 +200,7 @@ chmod +x start.sh
 ---
 
 ## 👥 8. Team Stackverse-labs
-* **Omkar Bhandari** — Team Leader & Core AI / Swarm Lead (USN: `ENG25CS1014`)
+* **Omkar Bhandari** — Team Leader & Core AI Swarm
 * **Parth Italia** — Frontend & Space HUD Lead
 * **Ansh Patel** — PDS4 Space Data Engineer
 * **Preet Patel** — ML / RAG Systems Engineer
