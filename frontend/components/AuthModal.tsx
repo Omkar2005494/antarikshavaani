@@ -2,14 +2,16 @@
 
 import React, { useState } from "react";
 import { 
-  X, Lock, Mail, User as UserIcon, ShieldCheck, Sparkles, Loader2, LogIn, UserPlus 
+  X, Lock, Mail, User as UserIcon, ShieldCheck, AlertCircle, Loader2, LogIn, UserPlus, ExternalLink 
 } from "lucide-react";
 import { 
   auth, 
   googleProvider, 
   signInWithPopup, 
   signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword 
+  createUserWithEmailAndPassword,
+  updateProfile,
+  isFirebaseConfigured
 } from "@/lib/firebase";
 
 export interface UserSession {
@@ -27,6 +29,39 @@ interface AuthModalProps {
   onAuthSuccess: (user: UserSession) => void;
 }
 
+// Map Firebase Error Codes to Clean User Messages
+function getFirebaseErrorMessage(error: any): string {
+  const code = error?.code || "";
+  switch (code) {
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    case "auth/user-disabled":
+      return "This account has been disabled by Firebase administrator.";
+    case "auth/user-not-found":
+      return "No account found with this email. Please register first.";
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "Invalid email or password. Please check your credentials.";
+    case "auth/email-already-in-use":
+      return "This email is already registered. Please switch to Sign In.";
+    case "auth/weak-password":
+      return "Password is too weak. Please use at least 6 characters.";
+    case "auth/popup-closed-by-user":
+      return "Sign-In window was closed before completion.";
+    case "auth/popup-blocked":
+      return "Sign-In popup was blocked by browser. Please allow popups.";
+    case "auth/unauthorized-domain":
+      return "Domain not authorized! Add 'localhost' in Firebase Console > Authentication > Settings > Authorized Domains.";
+    case "auth/api-key-not-valid":
+    case "auth/invalid-api-key":
+      return "Firebase API Key is invalid. Please check your frontend/.env.local keys.";
+    case "auth/operation-not-allowed":
+      return "Authentication method not enabled! Enable 'Email/Password' or 'Google' in Firebase Console > Authentication > Sign-in method.";
+    default:
+      return error?.message || "An unexpected authentication error occurred.";
+  }
+}
+
 export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
   const [tab, setTab] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -38,13 +73,16 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
 
   if (!isOpen) return null;
 
-  // 1. Google One-Click Sign In via Firebase
+  // Real Google Sign-In
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setErrorMsg("");
+
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const fbUser = result.user;
+      const idToken = await fbUser.getIdToken();
+
       const session: UserSession = {
         uid: fbUser.uid,
         displayName: fbUser.displayName || fbUser.email?.split("@")[0] || "Space Explorer",
@@ -53,19 +91,20 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
         role: "Verified Researcher",
         organization: "Stackverse-labs • DSU Bangalore"
       };
+
       localStorage.setItem("antariksha_user", JSON.stringify(session));
+      localStorage.setItem("antariksha_token", idToken);
       onAuthSuccess(session);
       onClose();
     } catch (err: any) {
-      console.warn("Firebase Google popup fallback / demo mode:", err);
-      // Seamless Demo Fallback if API keys are pending setup
-      handleDemoLogin("Google Researcher", "researcher@isro-intel.stackverse.io");
+      console.error("Firebase Google Auth Error:", err);
+      setErrorMsg(getFirebaseErrorMessage(err));
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 2. Email & Password Submit
+  // Real Email/Password Auth
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -79,45 +118,36 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
       } else {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         fbUser = userCred.user;
+        if (username) {
+          await updateProfile(fbUser, { displayName: username });
+        }
       }
 
+      const idToken = await fbUser.getIdToken();
       const session: UserSession = {
         uid: fbUser.uid,
         displayName: username || fbUser.displayName || email.split("@")[0],
         email: fbUser.email,
+        photoURL: fbUser.photoURL,
         role: role,
         organization: "Stackverse-labs • DSU Bangalore"
       };
 
       localStorage.setItem("antariksha_user", JSON.stringify(session));
+      localStorage.setItem("antariksha_token", idToken);
       onAuthSuccess(session);
       onClose();
     } catch (err: any) {
-      console.warn("Firebase Email auth fallback / demo mode:", err);
-      // Seamless Demo Fallback for smooth hackathon demo
-      handleDemoLogin(username || email.split("@")[0], email);
+      console.error("Firebase Email Auth Error:", err);
+      setErrorMsg(getFirebaseErrorMessage(err));
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 3. 1-Click Demo Login
-  const handleDemoLogin = (customName?: string, customEmail?: string) => {
-    const session: UserSession = {
-      uid: "stackverse_omkar_lead_01",
-      displayName: customName || "Omkar Bhandari",
-      email: customEmail || "omkar@stackverse.io",
-      role: "Lead AI Researcher",
-      organization: "Stackverse-labs • DSU Bangalore"
-    };
-    localStorage.setItem("antariksha_user", JSON.stringify(session));
-    onAuthSuccess(session);
-    onClose();
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-md bg-[#0c1322] border border-slate-800/90 rounded-3xl p-6 shadow-2xl text-slate-100 shadow-cyan-500/5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-md bg-[#0c1322] border border-slate-800/90 rounded-3xl p-6 shadow-2xl text-slate-100 shadow-cyan-500/10">
         
         {/* Close Button */}
         <button
@@ -133,17 +163,17 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
             <ShieldCheck className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-bold text-white tracking-tight">Mission Intelligence Passport</h3>
-          <p className="text-xs text-slate-400 font-mono">Firebase Sovereign Authentication • Stackverse-labs</p>
+          <p className="text-xs text-slate-400 font-mono">Firebase Production Authentication</p>
         </div>
 
-        {/* Google 1-Click Sign-In Button */}
+        {/* Google 1-Click Sign-In */}
         <button
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
           className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-cyan-500/50 text-xs font-semibold text-white flex items-center justify-center gap-2.5 transition-all shadow-sm mb-4 group"
         >
-          <svg className="w-4 h-4" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -196,14 +226,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
           </button>
         </div>
 
-        {/* Error Alert */}
+        {/* Real Error Display */}
         {errorMsg && (
-          <div className="p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
-            ⚠️ {errorMsg}
+          <div className="p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>{errorMsg}</span>
           </div>
         )}
 
-        {/* Form */}
+        {/* Email/Password Form */}
         <form onSubmit={handleEmailAuth} className="space-y-3">
           {tab === "register" && (
             <div>
@@ -223,7 +254,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
           )}
 
           <div>
-            <label className="block text-[11px] font-mono text-slate-400 mb-1">Email</label>
+            <label className="block text-[11px] font-mono text-slate-400 mb-1">Email Address</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
@@ -238,12 +269,13 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
           </div>
 
           <div>
-            <label className="block text-[11px] font-mono text-slate-400 mb-1">Passkey</label>
+            <label className="block text-[11px] font-mono text-slate-400 mb-1">Passkey (min 6 characters)</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 type="password"
                 required
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
@@ -277,25 +309,19 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
             {isLoading ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Connecting to Firebase...</span>
+                <span>Verifying with Firebase...</span>
               </>
             ) : (
-              <span>{tab === "login" ? "Authorize Passport" : "Initialize Account"}</span>
+              <span>{tab === "login" ? "Verify & Sign In" : "Create Firebase Account"}</span>
             )}
           </button>
         </form>
 
-        {/* 1-Click Demo Login Footer */}
-        <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-          <span>Demo Account:</span>
-          <button
-            type="button"
-            onClick={() => handleDemoLogin()}
-            className="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 font-semibold"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>1-Click Lead Researcher</span>
-          </button>
+        {/* Firebase Console Guide Link */}
+        <div className="mt-4 pt-3 border-t border-slate-800/80 text-center">
+          <p className="text-[10px] font-mono text-slate-500">
+            Backed by Google Firebase Security Infrastructure
+          </p>
         </div>
       </div>
     </div>
