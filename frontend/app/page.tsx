@@ -6,6 +6,7 @@ import LunarMapCard from "@/components/LunarMapCard";
 import SolarTimelineCard from "@/components/SolarTimelineCard";
 import SatelliteRadarCard from "@/components/SatelliteRadarCard";
 import MineralHazardCard from "@/components/MineralHazardCard";
+import SpaceCanvas from "@/components/SpaceCanvas";
 import { 
   Send, Sparkles, Satellite, BookOpen, Bot, User, 
   Plus, Copy, Check, ChevronRight, Loader2,
@@ -243,8 +244,8 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen stars-bg text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20 relative">
-      <div className="twinkle-layer" />
+    <div className="flex h-screen bg-[#070e1d] text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20 relative">
+      <SpaceCanvas />
       
       {/* Minimalist Collapsible Sidebar (Claude / ChatGPT Style) */}
       <aside
