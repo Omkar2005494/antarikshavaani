@@ -12,7 +12,7 @@ import { onAuthStateChanged, signOut, auth } from "@/lib/firebase";
 import { 
   Send, Sparkles, Satellite, BookOpen, Bot, User, 
   Plus, Copy, Check, ChevronRight, Loader2,
-  Database, FileCode2, ChevronDown, ChevronUp,
+  Database, FileCode2, ChevronDown, Zap, ChevronUp,
   PanelLeftClose, PanelLeft, MessageSquare, Trash2, ArrowUp
 } from "lucide-react";
 
@@ -93,6 +93,8 @@ export default function Home() {
   const [currentUser, setCurrentUser] = useState<UserSession | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [tokensRemaining, setTokensRemaining] = useState(50);
+  const [tokensTotal, setTokensTotal] = useState(50);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -119,11 +121,34 @@ export default function Home() {
         };
         setCurrentUser(session);
         localStorage.setItem("antariksha_user", JSON.stringify(session));
+        fetchTokens(session.uid, true);
+      } else {
+        fetchTokens(null, false);
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  const fetchTokens = async (uid?: string | null, isAuth: boolean = false) => {
+    try {
+      const url = `http://${window.location.hostname}:8000/api/tokens?is_authenticated=${isAuth}${uid ? `&user_id=${uid}` : ""}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.tokens_remaining !== undefined) {
+        setTokensRemaining(data.tokens_remaining);
+        setTokensTotal(data.tokens_total);
+      }
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchTokens(currentUser.uid, true);
+    } else {
+      fetchTokens(null, false);
+    }
+  }, [currentUser]);
 
   const handleLogout = async () => {
     try {
@@ -290,7 +315,9 @@ export default function Home() {
     ws.onopen = () => {
       ws.send(JSON.stringify({ 
         prompt: promptToSend,
-        target_language: selectedLang.code !== "auto-detect" ? selectedLang.code : undefined
+        target_language: selectedLang.code !== "auto-detect" ? selectedLang.code : undefined,
+        user_id: currentUser?.uid,
+        is_authenticated: Boolean(currentUser)
       }));
     };
 
@@ -317,6 +344,10 @@ export default function Home() {
             });
 
             if (data.final_data) {
+              if (data.final_data.token_info) {
+                setTokensRemaining(data.final_data.token_info.tokens_remaining);
+                setTokensTotal(data.final_data.token_info.tokens_total);
+              }
               return {
                 ...msg,
                 content: data.final_data.text,
@@ -506,6 +537,28 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2.5">
+            {/* Token Quota Live Badge */}
+            <div 
+              onClick={() => { if (!currentUser) setShowAuthModal(true); }}
+              title={currentUser ? "Authenticated Researcher Quota (500 Tokens)" : "Guest Quota (50 Tokens). Click to Sign In for 500 Tokens!"}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
+                tokensRemaining <= 10 
+                  ? "bg-red-500/10 border-red-500/30 text-red-400 animate-pulse shadow-sm shadow-red-500/10" 
+                  : currentUser
+                  ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-300 shadow-sm shadow-cyan-500/10"
+                  : "bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700"
+              }`}
+            >
+              <Zap className={`w-3.5 h-3.5 ${tokensRemaining <= 10 ? "text-red-400" : "text-amber-400"}`} />
+              <span className="font-bold">{tokensRemaining}</span>
+              <span className="text-[10px] text-slate-500">/{tokensTotal}</span>
+              {!currentUser && (
+                <span className="hidden sm:inline-block text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 ml-0.5">
+                  Guest
+                </span>
+              )}
+            </div>
+
             {/* Language Selector */}
             <div className="relative">
               <button
