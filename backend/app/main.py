@@ -38,6 +38,7 @@ app.add_middleware(
 
 class QueryRequest(BaseModel):
     prompt: str
+    target_language: Optional[str] = None
 
 @app.get("/health")
 def health_check():
@@ -89,7 +90,7 @@ def get_solar_events(dependencies=Depends(enforce_api_rate_limit)):
 @app.post("/api/query")
 async def execute_query(req: QueryRequest, request: Request, dependencies=Depends(enforce_api_rate_limit)):
     final_result = None
-    async for event in space_swarm.execute_stream(req.prompt):
+    async for event in space_swarm.execute_stream(req.prompt, req.target_language):
         if event.get("final_data"):
             final_result = event["final_data"]
     return final_result or {"error": "Failed to process query"}
@@ -119,12 +120,13 @@ async def websocket_query_endpoint(websocket: WebSocket):
 
             payload = json.loads(data)
             prompt = payload.get("prompt", "")
+            target_lang = payload.get("target_language") or payload.get("language")
             
             if not prompt:
                 await websocket.send_json({"error": "Empty prompt provided"})
                 continue
 
-            async for event in space_swarm.execute_stream(prompt):
+            async for event in space_swarm.execute_stream(prompt, target_lang):
                 await websocket.send_json(event)
                 
     except WebSocketDisconnect:

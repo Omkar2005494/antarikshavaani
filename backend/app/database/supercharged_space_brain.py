@@ -215,7 +215,11 @@ class SuperchargedSpaceBrain:
 
     def universal_synthesize(self, query: str, lang: str = "english") -> Dict[str, Any]:
         detected_lang = self.detect_language(query)
-        effective_lang = detected_lang if detected_lang != "english" else (lang or "english")
+        # If user explicitly selected a target language, enforce it; otherwise use detected language
+        if lang and lang.lower() not in ["auto-detect", "auto", ""]:
+            effective_lang = lang.lower()
+        else:
+            effective_lang = detected_lang if detected_lang != "english" else "english"
         
         matches = self.search_all(query)
         if not matches:

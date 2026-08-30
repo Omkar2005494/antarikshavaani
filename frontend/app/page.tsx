@@ -63,13 +63,14 @@ const STARTER_PROMPTS = [
 ];
 
 const INDIC_LANGUAGES = [
-  { code: "en", label: "English" },
-  { code: "hi", label: "हिन्दी (Hindi)" },
-  { code: "pb", label: "ਪੰਜਾਬੀ (Punjabi)" },
-  { code: "kn", label: "ಕನ್ನಡ (Kannada)" },
-  { code: "te", label: "తెలుగు (Telugu)" },
-  { code: "ta", label: "தமிழ் (Tamil)" },
-  { code: "mr", label: "मराठी (Marathi)" }
+  { code: "auto-detect", label: "🌐 Auto-Detect" },
+  { code: "english", label: "🇬🇧 English" },
+  { code: "hindi", label: "🇮🇳 हिन्दी (Hindi)" },
+  { code: "punjabi", label: "🇮🇳 ਪੰਜਾਬੀ (Punjabi)" },
+  { code: "kannada", label: "🇮🇳 ಕನ್ನಡ (Kannada)" },
+  { code: "telugu", label: "🇮🇳 తెలుగు (Telugu)" },
+  { code: "tamil", label: "🇮🇳 தமிழ் (Tamil)" },
+  { code: "marathi", label: "🇮🇳 मराठी (Marathi)" }
 ];
 
 export default function Home() {
@@ -78,7 +79,7 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState("English");
+  const [selectedLang, setSelectedLang] = useState({ code: "auto-detect", label: "🌐 Auto-Detect" });
   const [showLangMenu, setShowLangMenu] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -164,7 +165,10 @@ export default function Home() {
     }
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({ prompt: promptToSend }));
+      ws.send(JSON.stringify({ 
+        prompt: promptToSend,
+        target_language: selectedLang.code !== "auto-detect" ? selectedLang.code : undefined
+      }));
     };
 
     ws.onmessage = (event) => {
@@ -353,23 +357,24 @@ export default function Home() {
             <div className="relative">
               <button
                 onClick={() => setShowLangMenu(!showLangMenu)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-mono text-slate-300 hover:text-white transition-all"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-cyan-500/30 hover:border-cyan-400 text-xs font-mono text-cyan-300 hover:text-white transition-all shadow-sm shadow-cyan-500/10"
+                title="Select target response language"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span>{selectedLang}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{selectedLang.label}</span>
                 <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
 
               {showLangMenu && (
-                <div className="absolute right-0 mt-1.5 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 py-1 text-xs font-mono">
+                <div className="absolute right-0 mt-1.5 w-48 bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-xl shadow-2xl z-50 py-1 text-xs font-mono">
                   {INDIC_LANGUAGES.map((lang) => (
                     <button
                       key={lang.code}
-                      onClick={() => { setSelectedLang(lang.label.split(" ")[0]); setShowLangMenu(false); }}
-                      className="w-full text-left px-3 py-1.5 text-slate-300 hover:bg-slate-800 hover:text-cyan-400 flex items-center justify-between transition-colors"
+                      onClick={() => { setSelectedLang(lang); setShowLangMenu(false); }}
+                      className="w-full text-left px-3.5 py-2 text-slate-300 hover:bg-slate-800 hover:text-cyan-400 flex items-center justify-between transition-colors"
                     >
                       <span>{lang.label}</span>
-                      {selectedLang === lang.label.split(" ")[0] && <Check className="w-3.5 h-3.5 text-cyan-400" />}
+                      {selectedLang.code === lang.code && <Check className="w-3.5 h-3.5 text-emerald-400" />}
                     </button>
                   ))}
                 </div>

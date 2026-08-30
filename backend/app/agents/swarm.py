@@ -102,7 +102,7 @@ class SpaceAgentSwarm:
 
         return None
 
-    async def execute_stream(self, prompt: str) -> AsyncGenerator[Dict[str, Any], None]:
+    async def execute_stream(self, prompt: str, target_lang: Optional[str] = None) -> AsyncGenerator[Dict[str, Any], None]:
         """Streams step-by-step agent execution events over WebSockets."""
         
         # STEP 1: Query Planner & Intent Router
@@ -115,7 +115,11 @@ class SpaceAgentSwarm:
         }
         await asyncio.sleep(0.3)
         
-        lang = self._detect_language(prompt)
+        if target_lang and target_lang.lower() not in ["auto-detect", "auto", ""]:
+            lang = target_lang.lower()
+        else:
+            lang = self.super_brain.detect_language(prompt)
+
         super_matches = self.super_brain.search_all(prompt) or []
         if super_matches:
             top_topic = super_matches[0].get("title", "Space Science Intelligence")
