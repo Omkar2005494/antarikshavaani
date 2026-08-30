@@ -65,6 +65,7 @@ const STARTER_PROMPTS = [
 const INDIC_LANGUAGES = [
   { code: "auto-detect", label: "🌐 Auto-Detect" },
   { code: "english", label: "🇬🇧 English" },
+  { code: "gujarati", label: "🇮🇳 ગુજરાતી (Gujarati)" },
   { code: "hindi", label: "🇮🇳 हिन्दी (Hindi)" },
   { code: "punjabi", label: "🇮🇳 ਪੰਜਾਬੀ (Punjabi)" },
   { code: "kannada", label: "🇮🇳 ಕನ್ನಡ (Kannada)" },

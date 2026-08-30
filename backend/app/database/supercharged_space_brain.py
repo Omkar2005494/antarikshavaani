@@ -5,12 +5,12 @@ Author: Team Stackverse-labs
 Supports full bilingual & multilingual processing across:
 - English
 - Hindi (हिन्दी)
+- Gujarati (ગુજરાતી)
 - Punjabi (ਪੰਜਾਬੀ)
 - Kannada (ಕನ್ನಡ)
 - Telugu (తెలుగు)
 - Tamil (தமிழ்)
 - Marathi (मराठी)
-- Gujarati (ગુજરાતી)
 """
 
 import re
@@ -21,7 +21,7 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
     "solar_space_weather": [
         {
             "id": "aditya_l1_mission",
-            "keywords": ["aditya", "aditya-l1", "aditya l1", "solar flare", "flare", "geomagnetic storm", "cme", "swoc", "velc", "suit", "papa", "aspex", "solar storm", "coronal mass ejection", "kp index", "sunspot", "solar wind", "आदित्य", "सूर्य", "सौर", "ਸੂਰਜ", "ਅਦਿੱਤਿਆ", "ಸೂರ್ಯ", "ಆದಿತ್ಯ", "సూర్యుడు", "ఆదిత్య", "சூரியன்", "ஆதித்யா"],
+            "keywords": ["aditya", "aditya-l1", "aditya l1", "solar flare", "flare", "geomagnetic storm", "cme", "swoc", "velc", "suit", "papa", "aspex", "solar storm", "coronal mass ejection", "kp index", "sunspot", "solar wind", "આદિત્ય", "સૂર્ય", "સૌર", "सौर", "आदित्य", "ਸੂਰਜ", "ਅਦਿੱਤਿਆ", "ಸೂರ್ಯ", "ಆದಿತ್ಯ", "సూర్యుడు", "ఆదిత్య", "சூரியன்", "ஆதித்யா"],
             "title": "Aditya-L1 Solar Observatory & Space Weather Intelligence (SWOC)",
             "summary": "India's first dedicated solar observatory stationed at Sun-Earth Lagrange Point 1 (L1, 1.5M km from Earth) in a halo orbit providing 24/7 solar flare and CME monitoring.",
             "key_aspects": [
@@ -31,6 +31,7 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
                 "Recent Telemetry Event (AR3780): X5.8 Class major solar flare with 1,420 km/s earth-directed CME driving Kp = 7.8 (G4 Severe Geomagnetic Storm) with R3 HF radio blackout."
             ],
             "translations": {
+                "gujarati": "આદિત્ય-L1 (Aditya-L1) ભારતની પ્રથમ સોલર ઓબ્ઝર્વેટરી છે જે L1 પોઇન્ટ (15 લાખ કિમી દૂર) પરથી સૂર્યના ફ્લેર્સ અને સૌર વાવાઝોડા પર 24/7 નજર રાખે છે. તાજેતરની SWOC ટેલિમેટ્રીમાં AR3780 થી X5.8 ક્લાસનો મોટો સૌર જ્વાળામુખી અને 1,420 km/s ઝડપનો CME શોકવેવ નોંધાયો છે (Kp = 7.8, G4 તીવ્ર વાવાઝોડું).",
                 "hindi": "Aditya-L1 Bharat ki pehli Solar Observatory hai jo Sun-Earth L1 Point (1.5M km door) se 24/7 surya ke flares, CME kinematics aur geomagnetic storms ko monitor karti hai. Recent SWOC telemetry me Active Region AR3780 se X5.8 Class major solar flare aur 1,420 km/s speed ka CME shockwave detect kiya gaya hai jisse Kp = 7.8 (G4 Severe Geomagnetic Storm) generate hua hai.",
                 "punjabi": "ਅਦਿੱਤਿਆ-ਐਲ1 (Aditya-L1) ਭਾਰਤ ਦੀ ਪਹਿਲੀ ਸੂਰਜੀ ਵੇਧਸ਼ਾਲਾ ਹੈ ਜੋ L1 ਪੁਆਇੰਟ ਤੋਂ ਸੂਰਜ ਦੇ ਫਲੇਅਰਾਂ ਅਤੇ ਸੂਰਜੀ ਤੂਫ਼ਾਨਾਂ 'ਤੇ ਨਜ਼ਰ ਰੱਖਦੀ ਹੈ। ਤਾਜ਼ਾ SWOC ਟੈਲੀਮੈਟਰੀ ਵਿੱਚ AR3780 ਤੋਂ X5.8 ਕਲਾਸ ਦਾ ਵੱਡਾ ਸੂਰਜੀ ਤੂਫ਼ਾਨ ਅਤੇ 1,420 ਕਿਮੀ/ਸੈਕਿੰਡ ਦੀ ਰਫ਼ਤਾਰ ਵਾਲਾ CME ਸ਼ਾਕਵੇਵ ਦਰਜ ਕੀਤਾ ਗਿਆ ਹੈ (Kp = 7.8, G4 ਗੰਭੀਰ ਤੂਫ਼ਾਨ)।",
                 "kannada": "ಆದಿತ್ಯ-L1 ಭಾರತದ ಮೊದಲ ಸೌರ ವೀಕ್ಷಣಾಲಯವಾಗಿದ್ದು, L1 ಪಾಯಿಂಟ್‌ನಿಂದ ಸೂರ್ಯನ ಜ್ವಾಲೆಗಳು ಮತ್ತು ಸೌರ ಮಾರುತಗಳನ್ನು 24/7 ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡುತ್ತದೆ. ಇತ್ತೀಚಿನ SWOC ಟೆಲಿಮೆಟ್ರಿಯಲ್ಲಿ AR3780 ನಿಂದ X5.8 ಕ್ಲಾಸ್ ಸೌರ ಜ್ವಾಲೆ ಮತ್ತು 1,420 km/s ವೇಗದ CME ಪತ್ತೆಯಾಗಿದ್ದು, Kp = 7.8 ತೀವ್ರ ಸೌರ ಬಿರುಗಾಳಿ ಉಂಟಾಗಿದೆ.",
@@ -45,7 +46,7 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
     "lunar_missions": [
         {
             "id": "lunar_water_ice_discovery",
-            "keywords": ["paani", "water", "ice", "water-ice", "water on moon", "paani mila", "h2o", "hydroxyl", "iirs", "cabeus", "shackleton", "shoemaker", "3.0 micron", "spectral absorption", "pds4 water", "पानी", "जल", "ਪਾਣੀ", "ਨੀਰੁ", "ನೀರು", "నీరు", "தண்ணீர்", "पाणी", "પાણી"],
+            "keywords": ["paani", "water", "ice", "water-ice", "water on moon", "paani mila", "h2o", "hydroxyl", "iirs", "cabeus", "shackleton", "shoemaker", "3.0 micron", "spectral absorption", "pds4 water", "પાણી", "બરફ", "પાણી મળ્યું", "પાણી છે", "पानी", "जल", "ਪਾਣੀ", "ਨੀਰੁ", "ನೀರು", "ನೀರು", "தண்ணீர்", "पाणी"],
             "title": "Chandrayaan Discovery of Water-Ice & Hydroxyl (H2O / OH) on the Moon",
             "summary": "Chandrayaan-1 and Chandrayaan-2 have established definitive spectroscopic confirmation of water molecules (H2O) and bound hydroxyl (OH) trapped across the Lunar South Pole.",
             "key_aspects": [
@@ -55,6 +56,7 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
                 "Other Volatile Traps: Shackleton Crater (1,450 PPM) and Shoemaker Crater (1,280 PPM)."
             ],
             "translations": {
+                "gujarati": "હા! ચંદ્રયાને ચંદ્રના દક્ષિણ ધ્રુવ પર પાણી (Water-Ice અને Hydroxyl) ની ચોક્કસ વૈજ્ઞાનિક શોધ કરી છે. કેબિયસ ક્રેટર (84.9°S) માં 2,100 PPM પાણીની બરફ પુષ્ટિ થયેલ છે (PDS4 URN: urn:isro:ch2:pds4:ch2_iir_ncn...). IIRS સ્પેક્ટ્રોમીટરે 3.0 માઇક્રોન પર ઊંડી શોષણ રેખા (IBD = 0.418) નોંધી છે.",
                 "hindi": "हाँ! Chandrayaan ne Moon pe paani (Water-Ice & Hydroxyl) ki pakki scientific discovery ki hai. Cabeus Crater (South Pole 84.9°S) me 2,100 PPM water-ice confirm hua hai (PDS4 Product ID: urn:isro:ch2:pds4:ch2_iir_ncn_20200115t142851120_d18). IIRS spectrometer ke 256 bands ne 3.0 micrometer pe deep absorption band (IBD = 0.418) detect kiya jo sub-35 Kelvin craters me molecular H2O ko prove karta hai.",
                 "punjabi": "ਹਾਂਜੀ! ਚੰਦਰਯਾਨ ਨੇ ਚੰਦਰਮਾ ਦੇ ਦੱਖਣੀ ਧਰੁਵ 'ਤੇ ਪਾਣੀ (Water-Ice ਅਤੇ Hydroxyl) ਦੀ ਪੱਕੀ ਵਿਗਿਆਨਕ ਖੋਜ ਕੀਤੀ ਹੈ। ਕੈਬੀਅਸ ਕ੍ਰੇਟਰ (84.9°S) ਵਿੱਚ 2,100 PPM ਪਾਣੀ ਦੀ ਬਰਫ਼ ਦੀ ਪੁਸ਼ਟੀ ਹੋਈ ਹੈ (PDS4 URN: urn:isro:ch2:pds4:ch2_iir_ncn...). IIRS ਸਪੈਕਟ੍ਰੋਮੀਟਰ ਨੇ 3.0 ਮਾਈਕ੍ਰੋਮੀਟਰ 'ਤੇ ਡੂੰਘੀ ਸੋਖਣ ਲਾਈਨ (IBD = 0.418) ਦਰਜ ਕੀਤੀ ਹੈ।",
                 "kannada": "ಹೌದು! ಚಂದ್ರಯಾನವು ಚಂದ್ರನ ದಕ್ಷಿಣ ಧ್ರುವದಲ್ಲಿ ನೀರಿನ ಮಂಜುಗಡ್ಡೆ (Water-Ice) ಮತ್ತು ಹೈಡ್ರಾಕ್ಸಿಲ್ ಇರುವಿಕೆಯನ್ನು ಖಚಿತಪಡಿಸಿದೆ. ಕ್ಯಾಬಿಯಸ್ ಕ್ರೇಟರ್ (84.9°S) ನಲ್ಲಿ 2,100 PPM ಸಾಂದ್ರತೆಯ ನೀರು ದೃಢಪಟ್ಟಿದೆ (PDS4 URN: urn:isro:ch2:pds4:ch2_iir_ncn...). IIRS ಸ್ಪೆಕ್ಟ್ರೋಮೀಟರ್ 3.0 ಮೈಕ್ರಾನ್ ತರಂಗಾಂತರದಲ್ಲಿ ತೀವ್ರ ಹೀರಿಕೊಳ್ಳುವಿಕೆಯನ್ನು (IBD = 0.418) ದಾಖಲಿಸಿದೆ.",
@@ -65,7 +67,7 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
         },
         {
             "id": "chandrayaan_3_shiv_shakti",
-            "keywords": ["chandrayaan-3", "chandrayaan 3", "pragyan", "vikram", "shiv shakti", "libs", "chaste", "sulfur", "thermal gradient", "regolith", "touchdown", "सल्फर", "ਗੰਧਕ", "ਸਲਫਰ", "ಸಲ್ಫರ್", "సల్ఫర్", "கந்தகம்"],
+            "keywords": ["chandrayaan-3", "chandrayaan 3", "pragyan", "vikram", "shiv shakti", "libs", "chaste", "sulfur", "thermal gradient", "regolith", "touchdown", "સલ્ફર", "પ્રજ્ઞાન", "विक्रम", "सल्फर", "ਗੰਧਕ", "ਸਲਫਰ", "ಸಲ್ಫರ್", "సల్ఫర్", "கந்தகம்"],
             "title": "Chandrayaan-3 Shiv Shakti Point: Pragyan LIBS Mineralogy & ChaSTE Thermal Profile",
             "summary": "Historic soft landing at Shiv Shakti Point (69.373°S, 32.319°E) discovering in-situ elemental sulfur and extreme lunar regolith thermal insulation.",
             "key_aspects": [
@@ -74,6 +76,7 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
                 "RAMBHA-LP Plasma Probe: Measured sparse lunar daytime ionospheric plasma density (~1.06 x 10^4 per cm³)."
             ],
             "translations": {
+                "gujarati": "ચંદ્રયાન-3 એ શિવ શક્તિ પોઇન્ટ (69.373°S) પર સફળ લેન્ડિંગ કરીને પ્રજ્ઞાન રોવરના LIBS લેસર દ્વારા પ્રથમ વખત સલ્ફર (Sulfur - 282.8nm) ની શોધ કરી. ChaSTE થર્મલ પ્રોબે સપાટી (+50.2°C) થી 80mm ઊંડાઈ (-10.5°C) સુધી 61.4°C નો તીવ્ર તાપમાન ઘટાડો નોંધ્યો.",
                 "hindi": "Chandrayaan-3 ne Moon ke South Pole (Shiv Shakti Point 69.373°S) pe historic landing karke Pragyan rover ke LIBS laser se pehli baar in-situ Sulfur (S) ki atomic lines (282.8nm, 286.3nm) khoji. ChaSTE thermal probe ne surface (+50.2°C) se 80mm depth (-10.5°C) tak steep 61.4°C ka thermal drop record kiya.",
                 "punjabi": "ਚੰਦਰਯਾਨ-3 ਨੇ ਸ਼ਿਵ ਸ਼ਕਤੀ ਪੁਆਇੰਟ (69.373°S) 'ਤੇ ਇਤਿਹਾਸਕ ਲੈਂਡਿੰਗ ਕਰਕੇ ਪ੍ਰਗਿਆਨ ਰੋਵਰ ਦੇ LIBS ਲੇਜ਼ਰ ਰਾਹੀਂ ਪਹਿਲੀ ਵਾਰ ਗੰਧਕ/ਸਲਫਰ (282.8nm) ਦੀ ਖੋਜ ਕੀਤੀ। ChaSTE ਥਰਮਲ ਪ੍ਰੋਬ ਨੇ ਸਤ੍ਹਾ (+50.2°C) ਤੋਂ 80mm ਡੂੰਘਾਈ (-10.5°C) ਤੱਕ 61.4°C ਦਾ ਵੱਡਾ ਤਾਪਮਾਨ ਗਿਰਾਵਟ ਦਰਜ ਕੀਤਾ।",
                 "kannada": "ಚಂದ್ರಯಾನ-3 ಶಿವಶಕ್ತಿ ಪಾಯಿಂಟ್ (69.373°S) ನಲ್ಲಿ ಲ್ಯಾಂಡಿಂಗ್ ಮಾಡಿ ಪ್ರಜ್ಞಾನ್ ರೋವರ್‌ನ LIBS ಲೇಸರ್ ಮೂಲಕ ಮೊದಲ ಬಾರಿಗೆ ಸಲ್ಫರ್ (Sulfur - 282.8nm) ಅಂಶವನ್ನು ಪತ್ತೆಮಾಡಿದೆ. ChaSTE ತಾಪಮಾನ ತನಿಖೆಯು ಮೇಲ್ಮೈ (+50.2°C) ಯಿಂದ 80mm ಆಳದಲ್ಲಿ (-10.5°C) ತೀವ್ರ 61.4°C ತಾಪಮಾನ ಕುಸಿತವನ್ನು ದಾಖಲಿಸಿದೆ.",
@@ -81,6 +84,26 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
                 "tamil": "சந்திரயான்-3 சிவசக்தி புள்ளியில் (69.373°S) தரையிறங்கி, பிரக்யான் ரோவரின் LIBS லேசர் மூலம் முதன்முறையாக கந்தகம் (Sulfur - 282.8nm) இருப்பதை கண்டறிந்தது. ChaSTE வெப்ப உணரி மேற்பரப்பில் (+50.2°C) இருந்து 80 மிமீ ஆழத்தில் (-10.5°C) வரை 61.4°C செங்குத்தான வெப்பநிலை வீழ்ச்சியை பதிவு செய்தது."
             },
             "viz_type": "MINERAL_HAZARD"
+        },
+        {
+            "id": "chandrayaan_4_lupex",
+            "keywords": ["chandrayaan-4", "chandrayaan 4", "ch-4", "ch4", "lupex", "sample return", "jaxa sample", "lunar sample return", "સેમ્પલ રિટર્ન", "ਸੈਂਪਲ ਰਿਟਰਨ", "ಸ್ಯಾಂಪಲ್ ರಿಟರ್ನ್"],
+            "title": "Chandrayaan-4 & LUPEX (Lunar Polar Exploration Mission)",
+            "summary": "India's next-generation Lunar Sample Return Mission to collect and return 2-3 kg of lunar polar regolith, partnered with JAXA for the LUPEX rover.",
+            "key_aspects": [
+                "Modular Architecture: Lander Module, Ascender Module, Transfer Module, and Re-entry Module launched via LVM3.",
+                "Mission Objective: Drill, collect, and hermetically seal 2–3 kg of lunar polar regolith samples and return them safely to Earth.",
+                "ISRO-JAXA LUPEX Partnership: JAXA provides the H3 heavy rocket and rover; ISRO provides the high-precision soft lander."
+            ],
+            "translations": {
+                "gujarati": "ચંદ્રયાન-4 ઇસરોનું લૂનર સેમ્પલ રિટર્ન મિશન છે જે ચંદ્રના દક્ષિણ ધ્રુવ પરથી 2-3 કિલોગ્રામ માટીના નમૂના પૃથ્વી પર પાછા લાવશે. LUPEX મિશનમાં જાપાન (JAXA) રોવર અને ISRO લેન્ડર આપશે.",
+                "hindi": "Chandrayaan-4 ISRO ka Lunar Sample Return Mission hai jo Moon ke South Pole se mitti aur pathar wapas Earth layega. LUPEX mission me ISRO lander banayega aur Japan (JAXA) rover provide karega.",
+                "punjabi": "ਚੰਦਰਯਾਨ-4 ਇਸਰੋ ਦਾ ਲੂਨਰ ਸੈਂਪਲ ਰਿਟਰਨ ਮਿਸ਼ਨ ਹੈ ਜੋ ਚੰਦਰਮਾ ਦੇ ਦੱਖਣੀ ਧਰੁਵ ਤੋਂ 2-3 ਕਿਲੋਗ੍ਰਾਮ ਮਿੱਟੀ ਦੇ ਨਮੂਨੇ ਧਰਤੀ 'ਤੇ ਵਾਪਸ ਲਿਆਵੇਗਾ। LUPEX ਵਿੱਚ ਜਾਪਾਨ (JAXA) ਰੋਵਰ ਅਤੇ ISRO ਲੈਂਡਰ ਪ੍ਰਦਾਨ ਕਰੇਗਾ।",
+                "kannada": "ಚಂದ್ರಯಾನ-4 ಇಸ್ರೋದ ಮಾದರಿ ಮರುಪಡೆಯುವಿಕೆ (Sample Return) ಮಿಷನ್ ಆಗಿದ್ದು, ಚಂದ್ರನ ದಕ್ಷಿಣ ಧ್ರುವದಿಂದ 2-3 ಕೆಜಿ ಮಣ್ಣಿನ ಮಾದರಿಗಳನ್ನು ಭೂಮಿಗೆ ತರಲಿದೆ. LUPEX ಮಿಷನ್‌ನಲ್ಲಿ JAXA ರೋವರ್ ಮತ್ತು ISRO ಲ್ಯಾಂಡರ್ ಒದಗಿಸಲಿದೆ.",
+                "telugu": "చంద్రయాన్-4 ఇస్రో యొక్క లూనార్ శాంపిల్ రిటర్న్ మిషన్. ఇది చంద్రుని దక్షిణ ధ్రువం నుండి 2-3 కిలోల మట్టి నమూనాలను భూమికి తీసుకువస్తుంది. LUPEX మిషన్‌లో జపాన్ (JAXA) రోవర్‌ను, ఇస్రో ల్యాండర్‌ను అందిస్తుంది.",
+                "tamil": "சந்திரயான்-4 என்பது இஸ்ரோவின் மாதிரி திரும்பப் பெறும் (Sample Return) திட்டமாகும். இது நிலவின் தென் துருவத்திலிருந்து 2-3 கிலோ மண் மாதிரிகளை பூமிக்கு கொண்டு வரும். LUPEX திட்டத்தில் JAXA ரோவரையும், ISRO லேண்டரையும் வழங்கும்."
+            },
+            "viz_type": "LUNAR_MAP"
         }
     ],
 
@@ -88,7 +111,7 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
     "satellite_fleet": [
         {
             "id": "active_satellite_fleet_54",
-            "keywords": ["satellite", "satellites", "kitne satellite", "active fleet", "54 satellite", "norad", "tle", "gsat", "cartosat", "eos-04", "xposat", "navic", "उपग्रह", "ਸੈਟੇਲਾਈਟ", "ਉਪਗ੍ਰਹਿ", "ಉಪಗ್ರಹ", "ఉపగ్రహం", "செயற்கைக்கோள்"],
+            "keywords": ["satellite", "satellites", "kitne satellite", "active fleet", "54 satellite", "norad", "tle", "gsat", "cartosat", "eos-04", "xposat", "navic", "ઉપગ્રહ", "સેટેલાઇટ", "उपग्रह", "ਸੈਟੇਲਾਈਟ", "ਉਪਗ੍ਰਹਿ", "ಉಪಗ್ರಹ", "ఉపగ్రహం", "செயற்கைக்கோள்"],
             "title": "ISRO Active Satellite Fleet & NavIC Constellation (54 Spacecraft)",
             "summary": "Real-time tracking of India's ~54 operational satellites across LEO, GEO, and deep space via Space-Track NORAD TLE orbital propagation.",
             "key_aspects": [
@@ -98,6 +121,7 @@ MEGA_SPACE_KNOWLEDGE_MATRIX = {
                 "Deep Space Assets: Chandrayaan-2 Orbiter (#44441) and Aditya-L1 Solar Observatory (#57714)."
             ],
             "translations": {
+                "gujarati": "ભારત (ઇસરો) પાસે હાલમાં અવકાશમાં આશરે 54 સક્રિય ઉપગ્રહો (Active Satellites) છે જે NavIC નેવિગેશન, સંદેશાવ્યવહાર અને પૃથ્વી અવલોકન પ્રદાન કરે છે. ISTRAC બેંગલુરુ નેટવર્ક આને 24/7 NORAD TLE થી ટ્રેક કરે છે.",
                 "hindi": "Bharat (ISRO) ke paas lagbhag 54 active satellites space me hain jo Earth Observation, NavIC Navigation, Communication aur Deep Space exploration provide karte hain. ISTRAC Bengaluru network inko 24/7 NORAD TLE se track karta hai.",
                 "punjabi": "ਭਾਰਤ (ISRO) ਦੇ ਇਸ ਸਮੇਂ ਲਗਭਗ 54 ਸਰਗਰਮ ਸੈਟੇਲਾਈਟ ਪੁਲਾੜ ਵਿੱਚ ਕੰਮ ਕਰ ਰਹੇ ਹਨ ਜੋ NavIC ਨੈਵੀਗੇਸ਼ਨ, ਸੰਚਾਰ ਅਤੇ ਧਰਤੀ ਨਿਗਰਾਨੀ ਪ੍ਰਦਾਨ ਕਰਦੇ ਹਨ। ISTRAC ਬੈਂਗਲੁਰੂ ਇਹਨਾਂ ਨੂੰ ਰੀਅਲ-ਟਾਈਮ ਟਰੈਕ ਕਰਦਾ ਹੈ।",
                 "kannada": "ಭಾರತ (ಇಸ್ರೋ) ಪ್ರಸ್ತುತ ಬಾಹ್ಯಾಕಾಶದಲ್ಲಿ ಸುಮಾರು 54 ಸಕ್ರಿಯ ಉಪಗ್ರಹಗಳನ್ನು (Active Satellites) ಹೊಂದಿದೆ. ಇವು NavIC ಸಂಚರಣೆ, ಸಂವಹನ ಮತ್ತು ಭೂ ವೀಕ್ಷಣೆಯನ್ನು ನಿರ್ವಹಿಸುತ್ತವೆ.",
@@ -116,29 +140,34 @@ class SuperchargedSpaceBrain:
     def detect_language(self, query: str) -> str:
         q = query.lower()
 
+        # Gujarati script
+        if any('\u0a80' <= char <= '\u0aff' for char in query):
+            return "gujarati"
+        if any(w in q for w in ["chhe", "nathi", "aave", "ketla", "paani", "sobhya", "su", "malya"]):
+            return "gujarati"
+
         # Gurmukhi script (Punjabi)
         if any('\u0a00' <= char <= '\u0a7f' for char in query):
             return "punjabi"
-        if any(w in q for w in ["kinne", "kiddan", "daso", "milya", "chann", "toofan", "paani"]):
-            if any(w in q for w in ["nu", "te", "vich", "hai", "han"]):
-                return "punjabi"
+        if any(w in q for w in ["kinne", "kiddan", "daso", "milya", "chann", "toofan"]):
+            return "punjabi"
 
         # Kannada script
         if any('\u0c80' <= char <= '\u0cff' for char in query):
             return "kannada"
-        if any(w in q for w in ["hege", "yavudu", "sikkitu", "nodona", "beku", "yelli", "neeru"]):
+        if any(w in q for w in ["hege", "yavudu", "sikkitu", "nodona", "beku", "yelli"]):
             return "kannada"
 
         # Telugu script
         if any('\u0c00' <= char <= '\u0c7f' for char in query):
             return "telugu"
-        if any(w in q for w in ["cheppandi", "kanugonnada", "ela", "unna", "neeti"]):
+        if any(w in q for w in ["cheppandi", "kanugonnada", "ela", "unna"]):
             return "telugu"
 
         # Tamil script
         if any('\u0b80' <= char <= '\u0bff' for char in query):
             return "tamil"
-        if any(w in q for w in ["eppadi", "kandupidithada", "solla", "thanneer"]):
+        if any(w in q for w in ["eppadi", "kandupidithada", "solla"]):
             return "tamil"
 
         # Devanagari script (Hindi / Marathi)
@@ -159,7 +188,7 @@ class SuperchargedSpaceBrain:
         # 1. ADITYA-L1 & SOLAR FLARE (Priority 1)
         if any(w in q for w in [
             "aditya", "solar flare", "cme", "geomagnetic storm", "swoc", "velc", "suit", "papa", "sunspot", "solar wind",
-            "आदित्य", "सूर्य", "सौर", "ਸੂਰਜ", "ਅਦਿੱਤਿਆ", "ಸೂರ್ಯ", "ಆದಿತ್ಯ", "సూర్యుడు", "ఆదిత్య", "சூரியன்", "ஆதித்யா"
+            "આદિત્ય", "સૂર્ય", "સૌર", "सौर", "आदित्य", "ਸੂਰਜ", "ਅਦਿੱਤਿਆ", "ಸೂರ್ಯ", "ಆದಿತ್ಯ", "సూర్యుడు", "ఆదిత్య", "சூரியன்", "ஆதித்யா"
         ]):
             for cat, topics in self.categories.items():
                 for t in topics:
@@ -169,7 +198,7 @@ class SuperchargedSpaceBrain:
         # 2. LUNAR WATER DISCOVERY (Priority 2)
         if any(w in q for w in [
             "paani", "water", "ice", "water-ice", "water on moon", "paani mila", "h2o", "hydroxyl", "cabeus", "3.0 micron",
-            "पानी", "जल", "ਬਰਫ਼", "ਪਾਣੀ", "ನೀರು", "ಮಂಜುಗಡ್ಡೆ", "నీరు", "మంచు", "தண்ணீர்", "பனி", "पाणी", "પાણી"
+            "પાણી", "બરફ", "પાણી મળ્યું", "પાણી છે", "पानी", "जल", "ਬਰਫ਼", "ਪਾਣੀ", "ನೀರು", "ಮಂಜುಗಡ್ಡೆ", "నీరు", "మంచు", "தண்ணீர்", "பனி", "पाणी"
         ]):
             for cat, topics in self.categories.items():
                 for t in topics:
@@ -179,7 +208,7 @@ class SuperchargedSpaceBrain:
         # 3. CHANDRAYAAN 3 PRAGYAN & CHASTE (Priority 3)
         if any(w in q for w in [
             "pragyan", "shiv shakti", "libs", "chaste", "sulfur", "thermal gradient", "touchdown",
-            "सल्फर", "ਗੰਧਕ", "ਸਲਫਰ", "ಸಲ್ಫರ್", "సల్ఫర్", "கந்தகம்"
+            "સલ્ફર", "પ્રજ્ઞાન", "विक्रम", "सल्फर", "ਗੰਧਕ", "ਸਲਫਰ", "ಸಲ್ಫರ್", "సల్ఫర్", "கந்தகம்"
         ]):
             for cat, topics in self.categories.items():
                 for t in topics:
@@ -189,7 +218,7 @@ class SuperchargedSpaceBrain:
         # 4. SATELLITE FLEET & ACTIVE CONSTELLATION (Priority 4)
         if any(w in q for w in [
             "satellite", "satellites", "kitne satellite", "active fleet", "54 satellite", "norad", "tle", "gsat", "cartosat", "navic",
-            "उपग्रह", "ਸੈਟੇਲਾਈਟ", "ਉਪਗ੍ਰਹਿ", "ಉಪಗ್ರಹ", "ఉపగ్రహం", "செயற்கைக்கோள்"
+            "ઉપગ્રહ", "સેટેલાઇટ", "उपग्रह", "ਸੈਟੇਲਾਈਟ", "ਉਪਗ੍ਰਹਿ", "ಉಪಗ್ರಹ", "ఉపగ్రహం", "செயற்கைக்கோள்"
         ]):
             for cat, topics in self.categories.items():
                 for t in topics:
@@ -197,7 +226,7 @@ class SuperchargedSpaceBrain:
                         return [t]
 
         # 5. CHANDRAYAAN GENERAL MISSIONS
-        if any(w in q for w in ["chandrayaan", "chandrayan", "moon", "चंद्रयान", "ਚੰਦਰਯਾਨ", "ಚಂದ್ರಯಾನ", "చంద్రయాన్", "சந்திரயான்"]):
+        if any(w in q for w in ["chandrayaan", "chandrayan", "moon", "ચંદ્રયાન", "ચંદ્ર", "चंद्रयान", "ਚੰਦਰਯਾਨ", "ಚಂದ್ರಯಾನ", "చంద్రయాన్", "சந்திரயான்"]):
             for cat, topics in self.categories.items():
                 for t in topics:
                     if t.get("id") == "lunar_water_ice_discovery":
@@ -215,12 +244,11 @@ class SuperchargedSpaceBrain:
 
     def universal_synthesize(self, query: str, lang: str = "english") -> Dict[str, Any]:
         detected_lang = self.detect_language(query)
-        # If user explicitly selected a target language, enforce it; otherwise use detected language
         if lang and lang.lower() not in ["auto-detect", "auto", ""]:
             effective_lang = lang.lower()
         else:
             effective_lang = detected_lang if detected_lang != "english" else "english"
-        
+
         matches = self.search_all(query)
         if not matches:
             return {
