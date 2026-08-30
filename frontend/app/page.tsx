@@ -909,6 +909,10 @@ export default function Home() {
                         {/* Interactive Visualizer Card */}
                         {msg.visualization && (
                           <div className="space-y-2">
+                            {msg.visualization.type === "IMAGE_GENERATOR" && (
+                              <SpaceImageCard data={msg.visualization} />
+                            )}
+
                             {msg.visualization.type === "LUNAR_MAP" && (
                               <LunarMapCard
                                 sites={msg.visualization.sites || []}
