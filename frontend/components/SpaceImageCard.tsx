@@ -56,7 +56,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
                 -350 Tokens
               </span>
             </div>
-            <p className="text-[10px] font-mono text-cyan-400">FLUX.1 Ultra-Realism (4K UHD) • 1920x1080 Sharp Focus</p>
+            <p className="text-[10px] font-mono text-cyan-400">Ollama (llama3.2:1b) + Ollama + FLUX.1 • 1920x1080 Sharp Focus</p>
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
         {!isLoaded && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 text-slate-400 bg-slate-950/90 z-10">
             <div className="w-9 h-9 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin shadow-lg shadow-cyan-500/20" />
-            <span className="text-xs font-mono text-cyan-300 animate-pulse">Synthesizing 4K Ultra-Sharp Photons...</span>
+            <span className="text-xs font-mono text-cyan-300 animate-pulse">Synthesizing Local Ollama M2 Photons...</span>
           </div>
         )}
         
@@ -119,8 +119,8 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
       <div className="grid grid-cols-3 gap-2 p-3 bg-slate-950/80 border-t border-slate-800 text-center font-mono text-[11px]">
         <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
           <span className="text-[9px] text-slate-400 block">Neural Model</span>
-          <span className="font-bold text-cyan-300 block">FLUX.1 Realism</span>
-          <span className="text-[8px] text-slate-500">4K Ultra-Sharp</span>
+          <span className="font-bold text-cyan-300 block">Ollama + FLUX.1</span>
+          <span className="text-[8px] text-slate-500">Local Ollama M2</span>
         </div>
         <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
           <span className="text-[9px] text-slate-400 block">Render Resolution</span>

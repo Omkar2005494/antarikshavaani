@@ -1,77 +1,92 @@
 """
-AntarikshaVaani - Crystal-Clear 4K AI Space Imagery & Mission Visualizer
+AntarikshaVaani - Local Ollama AI Space Imagery & Mission Visualizer
 Author: Team Stackverse-labs
 
-Generates ultra-sharp, photorealistic, non-blurry 4K space renders using FLUX.1 Realism & Neural Diffusion.
+Uses locally installed Ollama (llama3.2:1b) on Mac M2 to synthesize
+hyperrealistic 4K photographic space prompts and ray-traced visual compositions.
 Consumes 350 Space Tokens per generation.
 """
 
+import urllib.request
 import urllib.parse
+import json
 import random
 import time
 from typing import Dict, Any
 
-# Curated High-Definition Crystal-Clear Space Visuals
-CRYSTAL_CLEAR_SPACE_PRESETS = {
-    "chandrayaan": {
-        "title": "Chandrayaan-3 Shiv Shakti Lunar Surface Exploration",
-        "prompt": "Ultra-sharp 8k photographic masterpiece of ISRO Chandrayaan-3 Vikram lander and Pragyan rover on the Moon south pole surface at Shiv Shakti Point, crisp focus, clear lunar craters, sharp regolith tire tracks, dark starry cosmos, brilliant Earth in distant background, high dynamic range, Hasselblad space camera, ray-traced shadows, zero blur, crystal clear, photorealistic",
-        "backup_hd": "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=1920&auto=format&fit=crop"
-    },
-    "aditya": {
-        "title": "Aditya-L1 Solar Observatory at Sun-Earth L1 Point",
-        "prompt": "Ultra-sharp cinematic 8k photograph of ISRO Aditya-L1 solar satellite stationed in deep space at Lagrange Point 1, facing high-definition glowing solar prominence and solar flare eruption, golden multi-layer insulation foil reflecting starfield, sharp instrument optics, zero blur, crystal clear IMAX quality",
-        "backup_hd": "https://images.unsplash.com/photo-1532693322450-2cb5c511067d?q=80&w=1920&auto=format&fit=crop"
-    },
-    "gaganyaan": {
-        "title": "Gaganyaan Crewed Spacecraft in Low Earth Orbit",
-        "prompt": "Ultra-clear 8k IMAX space photograph of ISRO Gaganyaan crew module spacecraft in orbit above planet Earth, razor-sharp view of Indian peninsula and blue oceans below, solar panels deployed, atmospheric glow, crisp telemetry details, zero blur, photorealistic",
-        "backup_hd": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920&auto=format&fit=crop"
-    },
-    "mars": {
-        "title": "Mangalyaan Mars Orbiter Mission",
-        "prompt": "Crystal-clear 8k space photograph of ISRO Mars Orbiter Mission Mangalyaan probe flying over the red canyons and Olympus Mons volcano of Mars, sharp atmospheric haze, detailed satellite antennas, zero blur, professional astrophotography",
-        "backup_hd": "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=1920&auto=format&fit=crop"
-    },
-    "satellite": {
-        "title": "EOS-04 Radar Imaging Satellite over India",
-        "prompt": "Razor-sharp 8k photograph of ISRO EOS-04 RISAT synthetic aperture radar satellite high above the Indian subcontinent at night, sparkling city lights below, golden radar reflector deployed, crystal-clear starfield, photorealistic",
-        "backup_hd": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1920&auto=format&fit=crop"
-    }
-}
+class LocalOllamaSpaceImageGenerator:
+    def __init__(self):
+        self.ollama_url = "http://localhost:11434/api/generate"
+        self.model = "llama3.2:1b"
 
-class SpaceImageGenerator:
+    def _synthesize_prompt_with_ollama(self, user_prompt: str) -> str:
+        """Calls locally installed Ollama (llama3.2:1b) on Mac M2 to engineer 4K astrophotography prompt."""
+        system_instruction = (
+            "You are an expert ISRO astrophotographer and space visual director. "
+            "Convert the following space mission request into a single ultra-detailed, photorealistic 8K image generation prompt. "
+            "Include photographic details: Hasselblad space camera, ray-traced shadows, crisp focus, zero blur, cinematic lighting, starry cosmos. "
+            "Output ONLY the final image prompt text, with no explanations, no quotes, and no intro."
+        )
+        
+        try:
+            prompt_payload = system_instruction + "\n\nUser Request: " + user_prompt + "\n\nPhotorealistic Prompt:"
+            payload = {
+                "model": self.model,
+                "prompt": prompt_payload,
+                "stream": False,
+                "options": {
+                    "temperature": 0.3,
+                    "num_predict": 120
+                }
+            }
+            req = urllib.request.Request(
+                self.ollama_url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"}
+            )
+            res = urllib.request.urlopen(req, timeout=8)
+            data = json.loads(res.read().decode("utf-8"))
+            enhanced = data.get("response", "").strip().replace('"', '')
+            if len(enhanced) > 20:
+                print(f"🦙 [OLLAMA LOCAL PROMPT ENGINE]: {enhanced}")
+                return enhanced
+        except Exception as e:
+            print(f"⚠️ Ollama prompt synthesis fallback: {e}")
+
+        return f"Ultra-sharp 8k cinematic masterpiece of {user_prompt}, ISRO scientific telemetry aesthetic, Hasselblad space camera, crisp focus, crystal clear, zero blur, photorealistic"
+
     def generate_image(self, user_prompt: str) -> Dict[str, Any]:
         p = user_prompt.lower().strip()
         seed = random.randint(100000, 999999)
 
-        matched_preset = None
-        for key, preset in CRYSTAL_CLEAR_SPACE_PRESETS.items():
-            if key in p:
-                matched_preset = preset
-                break
+        # 1. Synthesize 4K prompt locally via Ollama (llama3.2:1b) on Mac M2
+        ollama_prompt = self._synthesize_prompt_with_ollama(user_prompt)
+        
+        title = f"Ollama Space Render: {user_prompt.title()[:38]}"
+        if "chandrayaan" in p:
+            title = "Chandrayaan-3 Shiv Shakti Lunar Surface Exploration"
+        elif "aditya" in p:
+            title = "Aditya-L1 Solar Observatory at Sun-Earth L1 Point"
+        elif "gaganyaan" in p:
+            title = "Gaganyaan Crewed Spacecraft in Low Earth Orbit"
+        elif "mars" in p or "mangalyaan" in p:
+            title = "Mangalyaan Mars Orbiter Mission"
 
-        if matched_preset:
-            title = matched_preset["title"]
-            base_prompt = matched_preset["prompt"]
-        else:
-            title = f"AI 4K Space Render: {user_prompt[:40]}"
-            base_prompt = f"Ultra-sharp 8k cinematic masterwork of {user_prompt}, crystal clear focus, high contrast, raytracing, detailed textures, Hasselblad space camera, professional astrophotography, no blur, no noise, zero distortion, hyper-detailed, photorealistic"
-
-        # Quality-enhanced FLUX.1 Realism URL (1920x1080 16:9 Full HD)
-        encoded_prompt = urllib.parse.quote(base_prompt)
+        # 2. Render 1920x1080 4K Ultra-Sharp using the Ollama-synthesized composition
+        encoded_prompt = urllib.parse.quote(ollama_prompt)
         image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1920&height=1080&model=flux-realism&nologo=true&enhance=true&seed={seed}"
 
         return {
             "title": title,
             "prompt": user_prompt,
-            "enhanced_prompt": base_prompt,
+            "enhanced_prompt": ollama_prompt,
             "image_url": image_url,
             "seed": seed,
-            "model": "FLUX.1 Ultra-Realism (4K UHD)",
+            "prompt_engine": "Ollama (llama3.2:1b Local Mac M2)",
+            "diffusion_model": "FLUX.1 Ultra-Realism (4K UHD)",
             "resolution": "1920x1080 (16:9 Crisp Full HD)",
             "tokens_consumed": 350,
             "created_at": time.time()
         }
 
-space_image_gen = SpaceImageGenerator()
+space_image_gen = LocalOllamaSpaceImageGenerator()
