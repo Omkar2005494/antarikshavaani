@@ -243,7 +243,8 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-[#070e1d] text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20">
+    <div className="flex h-screen stars-bg text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20 relative">
+      <div className="twinkle-layer" />
       
       {/* Minimalist Collapsible Sidebar (Claude / ChatGPT Style) */}
       <aside

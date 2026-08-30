@@ -4,14 +4,47 @@
 
 @layer utilities {
   .glass-panel {
-    background: rgba(15, 23, 42, 0.4);
+    background: rgba(12, 19, 34, 0.75);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
   }
-  .glow-border:hover {
-    box-shadow: 0 0 16px rgba(125, 244, 255, 0.25);
-    border-color: rgba(125, 244, 255, 0.5);
-  }
+}
+
+/* Ambient Starfield & Cosmic Dust */
+.stars-bg {
+  background-color: #070e1d;
+  background-image: 
+    radial-gradient(1px 1px at 25px 35px, #ffffff, rgba(255, 255, 255, 0)),
+    radial-gradient(1px 1px at 85px 120px, rgba(125, 244, 255, 0.8), rgba(255, 255, 255, 0)),
+    radial-gradient(1.5px 1.5px at 150px 80px, #ffffff, rgba(255, 255, 255, 0)),
+    radial-gradient(1px 1px at 220px 290px, rgba(255, 183, 122, 0.7), rgba(255, 255, 255, 0)),
+    radial-gradient(2px 2px at 310px 170px, rgba(125, 244, 255, 0.9), rgba(255, 255, 255, 0)),
+    radial-gradient(1px 1px at 450px 320px, #ffffff, rgba(255, 255, 255, 0)),
+    radial-gradient(1.5px 1.5px at 580px 110px, rgba(125, 244, 255, 0.8), rgba(255, 255, 255, 0)),
+    radial-gradient(1px 1px at 700px 240px, #ffffff, rgba(255, 255, 255, 0)),
+    radial-gradient(2px 2px at 830px 60px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+    radial-gradient(1px 1px at 950px 190px, rgba(125, 244, 255, 0.7), rgba(255, 255, 255, 0));
+  background-size: 550px 550px;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+.twinkle-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(1.5px 1.5px at 40px 70px, #ffffff, rgba(255, 255, 255, 0)),
+    radial-gradient(2px 2px at 180px 220px, rgba(125, 244, 255, 0.9), rgba(255, 255, 255, 0)),
+    radial-gradient(1.5px 1.5px at 380px 90px, #ffffff, rgba(255, 255, 255, 0)),
+    radial-gradient(2px 2px at 520px 270px, rgba(255, 183, 122, 0.8), rgba(255, 255, 255, 0)),
+    radial-gradient(1.5px 1.5px at 690px 140px, #ffffff, rgba(255, 255, 255, 0));
+  background-size: 650px 650px;
+  animation: twinkle 6s ease-in-out infinite alternate;
+  z-index: 0;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -21,15 +54,6 @@
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #2e3545;
+  background: #1e293b;
   border-radius: 4px;
-}
-
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-
-.pulse-glow {
-  animation: pulseGlow 3s ease-in-out infinite;
 }
