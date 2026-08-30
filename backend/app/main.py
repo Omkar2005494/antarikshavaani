@@ -103,10 +103,17 @@ async def execute_query(req: QueryRequest, request: Request, dependencies=Depend
     client_ip = request.client.host if request.client else "unknown"
     identifier = req.user_id if (req.user_id and req.is_authenticated) else client_ip
     
+    # Check if this is an image generation query (costs 200 tokens)
+    is_img = any(w in req.prompt.lower() for w in ["image", "photo", "picture", "generate image", "create image", "visualize", "render"])
+    required_tokens = 200 if is_img else 5
+    
     # Check token quota
     quota = token_manager.get_or_create_quota(identifier, bool(req.is_authenticated))
-    if quota["tokens_remaining"] <= 0:
-        limit_msg = "⚡ Guest Token Quota Exhausted (0/50 tokens). Please Sign In with Google/Email to unlock 500 Space Tokens!" if not req.is_authenticated else "⚡ Token quota limit reached (0/500 tokens)."
+    if quota["tokens_remaining"] < required_tokens:
+        if is_img:
+            limit_msg = f"⚡ AI Space Image Generation requires 200 Space Tokens. You currently have {quota['tokens_remaining']}/{quota['tokens_total']} tokens. Please Sign In to get 500 Space Tokens!"
+        else:
+            limit_msg = "⚡ Guest Token Quota Exhausted (0/50 tokens). Please Sign In with Google/Email to unlock 500 Space Tokens!" if not req.is_authenticated else "⚡ Token quota limit reached (0/500 tokens)."
         raise HTTPException(status_code=403, detail=limit_msg)
 
     final_result = None
@@ -117,8 +124,8 @@ async def execute_query(req: QueryRequest, request: Request, dependencies=Depend
     if not final_result:
         raise HTTPException(status_code=500, detail="Failed to process space intelligence query")
 
-    # Deduct tokens after successful answer generation
-    _, updated_quota = token_manager.consume_tokens(identifier, req.prompt, final_result.get("text", ""), bool(req.is_authenticated))
+    # Deduct tokens after successful answer generation (200 for image, 5-25 for text)
+    _, updated_quota = token_manager.consume_tokens(identifier, req.prompt, final_result.get("text", ""), bool(req.is_authenticated), is_image=is_img)
     final_result["token_info"] = updated_quota
     return final_result
 
@@ -153,8 +160,28 @@ async def websocket_query_endpoint(websocket: WebSocket):
             
             identifier = user_id if (user_id and is_auth) else client_ip
             
+            # Check if this is an image query (costs 200 tokens)
+            is_img_query = any(w in prompt.lower() for w in ["image", "photo", "picture", "generate image", "create image", "visualize", "render"])
+            required_tokens = 200 if is_img_query else 5
+
             # Check Token Quota
             quota = token_manager.get_or_create_quota(identifier, is_auth)
+            if quota["tokens_remaining"] < required_tokens:
+                if is_img_query:
+                    quota_msg = f"⚡ **Insufficient Tokens for AI Imagery:** Image generation requires **200 Space Tokens**.\n\nYou currently have **{quota['tokens_remaining']}/{quota['tokens_total']} tokens**.\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to claim **500 Space Tokens**!"
+                else:
+                    quota_msg = "⚡ **Guest Token Quota Exhausted (0/50 tokens).**\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to unlock **500 Free Space Tokens**!"
+                await websocket.send_json({
+                    "error": "TOKEN_QUOTA_EXHAUSTED",
+                    "step": 0,
+                    "final_data": {
+                        "intent": "Token Quota Limit",
+                        "text": quota_msg,
+                        "token_info": quota,
+                        "citations": ["Stackverse-labs Token Quota Policy"]
+                    }
+                })
+                continue
             if quota["tokens_remaining"] <= 0:
                 quota_msg = "⚡ **Guest Token Quota Exhausted (0/50 tokens).**\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to unlock **500 Free Space Tokens**!" if not is_auth else "⚡ **Token quota limit reached (0/500 tokens).**"
                 await websocket.send_json({
@@ -177,8 +204,8 @@ async def websocket_query_endpoint(websocket: WebSocket):
             async for event in space_swarm.execute_stream(prompt, target_lang):
                 if event.get("final_data"):
                     final_text = event["final_data"].get("text", "")
-                    # Deduct tokens
-                    _, updated_quota = token_manager.consume_tokens(identifier, prompt, final_text, is_auth)
+                    # Deduct tokens (200 for image generation, 5-25 for text)
+                    _, updated_quota = token_manager.consume_tokens(identifier, prompt, final_text, is_auth, is_image=is_img_query)
                     event["final_data"]["token_info"] = updated_quota
                 await websocket.send_json(event)
                 

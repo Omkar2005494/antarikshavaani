@@ -5,16 +5,18 @@ Author: Team Stackverse-labs
 Enforces:
 - 500 Tokens for Authenticated Users (Google / Email Firebase Sign-in)
 - 50 Tokens for Anonymous Guest Users
+- 200 Tokens for Heavy AI Image Generation
 """
 
 import os
 import time
 import sqlite3
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional
 
 DB_PATH = "/Users/omkar/.gemini/antigravity/scratch/antarikshavaani/backend/app/database/token_quota.db"
 AUTH_USER_DEFAULT_TOKENS = 500
 GUEST_DEFAULT_TOKENS = 50
+IMAGE_GEN_TOKEN_COST = 200
 
 def init_token_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -74,13 +76,16 @@ class TokenQuotaManager:
                 "tokens_remaining": total
             }
 
-    def consume_tokens(self, identifier: str, prompt: str, response_text: str, is_authenticated: bool = False) -> Tuple[bool, Dict[str, Any]]:
-        # Calculate tokens consumed (approx 1 token per 4 characters / 1 word, min 5 tokens)
-        word_count = len(prompt.split()) + (len(response_text.split()) // 3)
-        tokens_to_deduct = max(5, min(word_count, 25))
+    def consume_tokens(self, identifier: str, prompt: str, response_text: str, is_authenticated: bool = False, is_image: bool = False) -> Tuple[bool, Dict[str, Any]]:
+        # Image Generation costs 200 Space Tokens
+        if is_image or any(w in prompt.lower() for w in ["image", "photo", "picture", "generate image", "create image", "visualize", "render"]):
+            tokens_to_deduct = IMAGE_GEN_TOKEN_COST
+        else:
+            word_count = len(prompt.split()) + (len(response_text.split()) // 3)
+            tokens_to_deduct = max(5, min(word_count, 25))
 
         quota = self.get_or_create_quota(identifier, is_authenticated)
-        if quota["tokens_remaining"] < tokens_to_deduct and quota["tokens_remaining"] <= 0:
+        if quota["tokens_remaining"] < tokens_to_deduct:
             return False, quota
 
         new_used = quota["tokens_used"] + tokens_to_deduct

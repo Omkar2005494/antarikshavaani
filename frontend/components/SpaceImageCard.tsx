@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Download, Maximize2, Sparkles, ExternalLink, RefreshCw, X, ShieldCheck } from "lucide-react";
+import { Download, Maximize2, Sparkles, Zap, X, ShieldCheck, RefreshCw } from "lucide-react";
 
 interface SpaceImageData {
   type: "IMAGE_GENERATOR";
@@ -12,16 +12,18 @@ interface SpaceImageData {
   model?: string;
   resolution?: string;
   seed?: number;
+  tokens_consumed?: number;
   key_stats?: { label: string; value: string; badge: string }[];
 }
 
 export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState(data.image_url);
 
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = data.image_url;
+    link.href = currentUrl;
     link.download = `${data.title.toLowerCase().replace(/\s+/g, "_")}.jpg`;
     link.target = "_blank";
     document.body.appendChild(link);
@@ -29,26 +31,48 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
     document.body.removeChild(link);
   };
 
+  const handleRegenerate = () => {
+    setIsLoaded(false);
+    const newSeed = Math.floor(Math.random() * 900000) + 100000;
+    const basePrompt = data.enhanced_prompt || data.prompt;
+    const newUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(basePrompt)}?width=1920&height=1080&model=flux-realism&nologo=true&enhance=true&seed=${newSeed}`;
+    setCurrentUrl(newUrl);
+  };
+
   return (
-    <div className="w-full bg-[#0c1322]/90 backdrop-blur-xl border border-cyan-500/30 rounded-2xl overflow-hidden shadow-2xl shadow-cyan-500/5 my-3 animate-fadeIn">
+    <div className="w-full bg-[#0c1322]/95 backdrop-blur-2xl border border-cyan-500/40 rounded-2xl overflow-hidden shadow-2xl shadow-cyan-500/10 my-3 animate-fadeIn">
       
       {/* Header */}
-      <div className="p-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-bold shadow-sm">
+      <div className="p-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-bold shadow-md shadow-cyan-500/20">
             <Sparkles className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-white tracking-tight">{data.title}</h4>
-            <p className="text-[10px] font-mono text-cyan-400">FLUX.1 Space Neural Renderer • {data.resolution || "1280x720"}</p>
+            <div className="flex items-center gap-2">
+              <h4 className="text-xs font-bold text-white tracking-tight">{data.title}</h4>
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                <Zap className="w-3 h-3 text-amber-400" />
+                -200 Tokens
+              </span>
+            </div>
+            <p className="text-[10px] font-mono text-cyan-400">FLUX.1 Ultra-Realism (4K UHD) • 1920x1080 Sharp Focus</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
           <button
-            onClick={handleDownload}
+            onClick={handleRegenerate}
             className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-[11px] font-mono transition-colors border border-slate-700/80 shadow-sm"
-            title="Download Full HD Render"
+            title="Re-roll with new neural seed"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Re-roll</span>
+          </button>
+          <button
+            onClick={handleDownload}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 text-[11px] font-mono transition-colors shadow-sm"
+            title="Download Full HD 4K Render"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Download</span>
@@ -63,72 +87,79 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
         </div>
       </div>
 
-      {/* Image Viewport */}
-      <div className="relative aspect-video w-full bg-slate-950/80 overflow-hidden group">
+      {/* Image Viewport with Crisp Rendering */}
+      <div className="relative aspect-video w-full bg-slate-950 overflow-hidden group">
         {!isLoaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-400">
-            <div className="w-8 h-8 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
-            <span className="text-xs font-mono">Synthesizing 8K Space Photons...</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 text-slate-400 bg-slate-950/90 z-10">
+            <div className="w-9 h-9 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin shadow-lg shadow-cyan-500/20" />
+            <span className="text-xs font-mono text-cyan-300 animate-pulse">Synthesizing 4K Ultra-Sharp Photons...</span>
           </div>
         )}
         
         <img
-          src={data.image_url}
+          src={currentUrl}
           alt={data.title}
           onLoad={() => setIsLoaded(true)}
-          className={`w-full h-full object-cover transition-all duration-700 cursor-pointer ${
+          style={{ imageRendering: "auto" }}
+          className={`w-full h-full object-cover transition-all duration-500 cursor-pointer ${
             isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
           }`}
           onClick={() => setShowFullscreen(true)}
         />
 
         {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end pointer-events-none">
-          <p className="text-xs text-slate-200 font-sans line-clamp-2 italic">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end pointer-events-none">
+          <p className="text-xs text-slate-100 font-sans line-clamp-2 italic drop-shadow-md">
             "{data.enhanced_prompt || data.prompt}"
           </p>
         </div>
       </div>
 
       {/* Key Stats Bar */}
-      {data.key_stats && (
-        <div className="grid grid-cols-3 gap-2 p-3 bg-slate-950/60 border-t border-slate-800/80 text-center font-mono text-[11px]">
-          {data.key_stats.map((st, i) => (
-            <div key={i} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-800">
-              <span className="text-[9px] text-slate-400 block">{st.label}</span>
-              <span className="font-bold text-cyan-300 block">{st.value}</span>
-              <span className="text-[8px] text-slate-500">{st.badge}</span>
-            </div>
-          ))}
+      <div className="grid grid-cols-3 gap-2 p-3 bg-slate-950/80 border-t border-slate-800 text-center font-mono text-[11px]">
+        <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
+          <span className="text-[9px] text-slate-400 block">Neural Model</span>
+          <span className="font-bold text-cyan-300 block">FLUX.1 Realism</span>
+          <span className="text-[8px] text-slate-500">4K Ultra-Sharp</span>
         </div>
-      )}
+        <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
+          <span className="text-[9px] text-slate-400 block">Render Resolution</span>
+          <span className="font-bold text-cyan-300 block">1920x1080</span>
+          <span className="text-[8px] text-slate-500">16:9 Cinematic</span>
+        </div>
+        <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
+          <span className="text-[9px] text-slate-400 block">Token Cost</span>
+          <span className="font-bold text-amber-400 block">200 Space Tokens</span>
+          <span className="text-[8px] text-slate-500">GPU Synthesis</span>
+        </div>
+      </div>
 
       {/* Fullscreen Lightbox Modal */}
       {showFullscreen && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-fadeIn"
           onClick={() => setShowFullscreen(false)}
         >
-          <div className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-6xl w-full max-h-[95vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setShowFullscreen(false)}
-              className="absolute -top-10 right-0 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-900 border border-slate-800"
+              className="absolute -top-12 right-0 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-900 border border-slate-800"
             >
               <X className="w-5 h-5" />
             </button>
             <img
-              src={data.image_url}
+              src={currentUrl}
               alt={data.title}
-              className="max-h-[80vh] w-auto rounded-2xl border border-cyan-500/40 shadow-2xl object-contain"
+              className="max-h-[82vh] w-auto rounded-2xl border border-cyan-500/50 shadow-2xl object-contain"
             />
-            <div className="mt-3 flex items-center justify-between w-full text-xs font-mono text-slate-300">
-              <span>{data.title}</span>
+            <div className="mt-3 flex items-center justify-between w-full text-xs font-mono text-slate-200">
+              <span>{data.title} (1920x1080 4K UHD)</span>
               <button
                 onClick={handleDownload}
-                className="px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-bold hover:opacity-90 flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold hover:bg-cyan-300 flex items-center gap-1.5 shadow-lg shadow-cyan-500/20"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>Save High-Res 8K</span>
+                <Download className="w-4 h-4" />
+                <span>Save 4K Masterwork</span>
               </button>
             </div>
           </div>
