@@ -16,7 +16,7 @@ from typing import Dict, Any, Tuple, Optional
 DB_PATH = "/Users/omkar/.gemini/antigravity/scratch/antarikshavaani/backend/app/database/token_quota.db"
 AUTH_USER_DEFAULT_TOKENS = 1000
 GUEST_DEFAULT_TOKENS = 50
-IMAGE_GEN_TOKEN_COST = 200
+IMAGE_GEN_TOKEN_COST = 350
 
 def init_token_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)

@@ -53,7 +53,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
               <h4 className="text-xs font-bold text-white tracking-tight">{data.title}</h4>
               <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 <Zap className="w-3 h-3 text-amber-400" />
-                -200 Tokens
+                -350 Tokens
               </span>
             </div>
             <p className="text-[10px] font-mono text-cyan-400">FLUX.1 Ultra-Realism (4K UHD) • 1920x1080 Sharp Focus</p>
@@ -129,7 +129,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
         </div>
         <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
           <span className="text-[9px] text-slate-400 block">Token Cost</span>
-          <span className="font-bold text-amber-400 block">200 Space Tokens</span>
+          <span className="font-bold text-amber-400 block">350 Space Tokens</span>
           <span className="text-[8px] text-slate-500">GPU Synthesis</span>
         </div>
       </div>

@@ -3,7 +3,7 @@ AntarikshaVaani - Crystal-Clear 4K AI Space Imagery & Mission Visualizer
 Author: Team Stackverse-labs
 
 Generates ultra-sharp, photorealistic, non-blurry 4K space renders using FLUX.1 Realism & Neural Diffusion.
-Consumes 200 Space Tokens per generation.
+Consumes 350 Space Tokens per generation.
 """
 
 import urllib.parse
@@ -70,7 +70,7 @@ class SpaceImageGenerator:
             "seed": seed,
             "model": "FLUX.1 Ultra-Realism (4K UHD)",
             "resolution": "1920x1080 (16:9 Crisp Full HD)",
-            "tokens_consumed": 200,
+            "tokens_consumed": 350,
             "created_at": time.time()
         }
 
