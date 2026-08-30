@@ -6,6 +6,8 @@ import LunarMapCard from "@/components/LunarMapCard";
 import SolarTimelineCard from "@/components/SolarTimelineCard";
 import SatelliteRadarCard from "@/components/SatelliteRadarCard";
 import MineralHazardCard from "@/components/MineralHazardCard";
+import SpaceImageCard from "@/components/SpaceImageCard";
+import { Image as ImageIcon, Camera } from "lucide-react";
 import SpaceCanvas from "@/components/SpaceCanvas";
 import AuthModal, { UserSession } from "@/components/AuthModal";
 import { onAuthStateChanged, signOut, auth } from "@/lib/firebase";
@@ -62,6 +64,12 @@ const STARTER_PROMPTS = [
     title: "Pragyan LIBS & ChaSTE",
     subtitle: "In-situ 0.42 wt% sulfur lines & 61.4°C thermal drop",
     query: "chandrayaan 3 pragyan sulfur libs discovery",
+  },
+  {
+    icon: "🎨",
+    title: "AI Space Imagery",
+    subtitle: "Generate 8K photorealistic ISRO mission renders",
+    query: "generate image of Chandrayaan-3 Pragyan rover exploring lunar south pole under starlight",
   }
 ];
 

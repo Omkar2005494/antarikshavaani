@@ -1,3 +1,4 @@
+from app.core.image_generator import space_image_gen
 """
 AntarikshaVaani - Multi-Agent Space Mission Intelligence Swarm (Hybrid Local LLM Engine)
 Author: Team Stackverse-labs
@@ -120,8 +121,16 @@ class SpaceAgentSwarm:
         else:
             lang = self.super_brain.detect_language(prompt)
 
+        # Check if user wants an AI Space Image
+        is_image_query = any(w in prompt.lower() for w in [
+            "image", "photo", "picture", "draw", "generate image", "create image", "visualize", "render", "wallpaper",
+            "ફોટો", "ચિત્ર", "તસવીર", "फोटो", "तस्वीर", "ਚਿੱਤਰ", "ਫੋਟੋ", "ಚಿತ್ರ", "ಫೋಟೋ", "ఫోటో", "చిత్రం", "படம்", "புகைப்படம்"
+        ])
+
         super_matches = self.super_brain.search_all(prompt) or []
-        if super_matches:
+        if is_image_query:
+            top_topic = "AI Space Imagery & Mission Visualizer"
+        elif super_matches:
             top_topic = super_matches[0].get("title", "Space Science Intelligence")
         else:
             top_topic = "General Space Astrophysics"
@@ -210,8 +219,26 @@ class SpaceAgentSwarm:
             dynamic_llm_text = await self._call_dynamic_llm(prompt, lang, retrieved_docs + super_matches)
             final_text = dynamic_llm_text if dynamic_llm_text else best_text
 
-        # Build dynamic visualization
-        if viz_type == "LUNAR_MAP":
+        # Handle dynamic AI Space Image Generator
+        if is_image_query:
+            img_data = space_image_gen.generate_image(prompt)
+            visualization = {
+                "type": "IMAGE_GENERATOR",
+                "title": img_data["title"],
+                "image_url": img_data["image_url"],
+                "prompt": img_data["prompt"],
+                "enhanced_prompt": img_data["enhanced_prompt"],
+                "model": img_data["model"],
+                "resolution": img_data["resolution"],
+                "seed": img_data["seed"],
+                "key_stats": [
+                    {"label": "Generator Model", "value": "FLUX.1 Space", "badge": "8K Neural Synthesis"},
+                    {"label": "Aspect Ratio", "value": "16:9 HD", "badge": "1280x720 px"},
+                    {"label": "Diffusion Seed", "value": f"#{img_data['seed']}", "badge": "Deterministic"}
+                ]
+            }
+            final_text = f"**{img_data['title']}**\n\n✨ Generated photorealistic space visualization using **FLUX.1 Space Diffusion Engine** based on your mission prompt: *\"{prompt}\"*.\n\n• **Model Architecture:** FLUX.1 High-Fidelity Space Neural Synthesis\n• **Render Resolution:** 1280x720 (16:9 HD Cinematic)\n• **Seed:** #{img_data['seed']}\n\nYou can download the full-resolution render or inspect generation metadata using the controls below."
+        elif viz_type == "LUNAR_MAP":
             visualization = {
                 "type": "LUNAR_MAP",
                 "title": "ISSDC PDS4 Calibrated Lunar Spectroscopy & Landing Sites",
