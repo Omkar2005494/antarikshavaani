@@ -123,17 +123,18 @@ sequenceDiagram
 ```
 
 ### 1. Lunar Water & Spectroscopy Model (Chandrayaan-2/3)
-* **Absorption Physics:** Evaluates fundamental O-H stretching vibration across 2.81µm to 3.0µm wavelengths using the Integrated Band Depth formula:
-  $$	ext{IBD}_{3.0} = \int_{2.81}^{3.05} \left(1 - rac{R(\lambda)}{R_{	ext{cont}}(\lambda)}
-ight) d\lambda$$
-* **Verified PDS4 Ground Truth:** Product URN `urn:isro:ch2:pds4:ch2_iir_ncn_20200115t142851120_d18` confirming **2,100 PPM water-ice** in Cabeus Crater PSRs.
+* **Absorption Physics:** Evaluates fundamental O-H stretching vibration across `2.81 µm` to `3.0 µm` wavelengths using the Integrated Band Depth formula:
+  ```
+  IBD(3.0µm) = ∫ [ 1 - ( R(λ) / R_cont(λ) ) ] dλ   (integrated from 2.81µm to 3.05µm)
+  ```
+* **Verified PDS4 Ground Truth:** Product URN `urn:isro:ch2:pds4:ch2_iir_ncn_20200115t142851120_d18` confirming **2,100 PPM water-ice** (31% purity, 96% confidence) in Cabeus Crater PSRs.
 
 ### 2. Space Weather Operations Centre (SWOC) Dynamics
-* **Solar Flare & CME Kinematics:** Tracks Solar Magnetic Active Regions (e.g. AR3780) generating X5.8 flares with coronal shockwave speeds of $1,420	ext{ km/s}$, computing magnetospheric compression and driving planetary $K_p = 7.8$ (G4 Severe Storm).
+* **Solar Flare & CME Kinematics:** Tracks Solar Active Regions (e.g. `AR3780`) generating `X5.8 Class` major flares with coronal shockwave speeds of `1,420 km/s`, driving planetary geomagnetic storm index `Kp = 7.8` (`G4 Severe Storm` with R3 HF radio blackout).
 
 ### 3. In-Situ Surface Mineralogy (Pragyan LIBS & ChaSTE)
-* **Atomic Emission Lines:** Detects characteristic laser-induced neutral Sulfur ($S	ext{ I}$) doublets at $282.8	ext{ nm}$ and $286.3	ext{ nm}$ ($0.42	ext{ wt\%}$ abundance).
-* **Regolith Thermal Barrier:** Ingests ChaSTE 10-sensor probe measurements showing a $+50.2^\circ	ext{C}$ surface dropping sharply to $-10.5^\circ	ext{C}$ at $80	ext{ mm}$ depth ($61.4^\circ	ext{C}$ temperature drop, thermal conductivity $0.0028	ext{ W/m}\cdot	ext{K}$).
+* **Atomic Emission Lines:** Detects characteristic laser-induced neutral Sulfur (`S I`) doublets at `282.8 nm`, `286.3 nm`, and `303.4 nm` (`0.42 wt%` abundance).
+* **Regolith Thermal Barrier:** Ingests ChaSTE 10-sensor probe measurements showing a `+50.2°C` surface dropping sharply to `-10.5°C` at `80 mm` depth (`61.4°C` temperature drop, thermal conductivity `0.0028 W/m·K`).
 
 ---
 
