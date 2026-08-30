@@ -50,56 +50,42 @@ class SpaceAgentSwarm:
         return "hindi" if len(tokens.intersection(hindi_markers)) > 0 else "english"
 
     async def _call_dynamic_llm(self, prompt: str, lang: str, context_docs: List[Dict[str, Any]]) -> Optional[str]:
-        """Calls dynamic LLM: Local Ollama on Mac M2 first, then Cloud APIs, then fallback."""
+        """Calls 100% Local Open-Source Ollama (llama3.2:1b) running locally on Mac M2."""
         
         system_prompt = (
-            "You are AntarikshaVaani, India's leading AI Space Mission Intelligence Agent developed for ISRO space missions and global astrophysics. "
-            "You specialize in Chandrayaan, Aditya-L1, Mangalyaan, Gaganyaan, ISRO launch vehicles, orbital mechanics, and astronomy. "
+            "You are AntarikshaVaani, India's sovereign AI Space Mission Intelligence Agent calibrated on ISRO ISSDC PDS4 science archives. "
+            "You specialize in Chandrayaan-1/2/3 lunar spectroscopy, Aditya-L1 solar flare dynamics, Gaganyaan orbital mechanics, and ISRO satellite constellations. "
             f"Respond clearly, concisely, and authoritatively in {lang.upper()} modality. "
-            "Use markdown bullet points and bold highlights for clarity."
+            "Use clear markdown headings, bullet points, and bold scientific terms."
         )
 
         context_str = "\n\n".join([f"Document: {d.get('title')}\n{d.get('abstract') or d.get('content') or d.get('summary')}" for d in context_docs if d])
         user_content = f"{system_prompt}\n\nISRO Space Knowledge Context:\n{context_str}\n\nUser Question: {prompt}\n\nAntarikshaVaani Intelligence:"
 
-        # 1. Try Local Ollama on Mac M2 (100% Free & Offline)
+        # Strictly use Local Ollama (llama3.2:1b) - Zero Cloud APIs
         try:
             url = "http://localhost:11434/api/generate"
             payload = {
                 "model": "llama3.2:1b",
                 "prompt": user_content,
                 "stream": False,
-                "options": {"temperature": 0.3}
+                "options": {
+                    "temperature": 0.2,
+                    "num_predict": 700
+                }
             }
             req = urllib.request.Request(
                 url,
                 data=json.dumps(payload).encode("utf-8"),
                 headers={"Content-Type": "application/json"}
             )
-            res = urllib.request.urlopen(req, timeout=12)
+            res = urllib.request.urlopen(req, timeout=15)
             data = json.loads(res.read().decode("utf-8"))
             if "response" in data and len(data["response"].strip()) > 10:
-                print("⚡ Generated via Local Mac M2 LLaMA 3.2!")
+                print("⚡ [LOCAL INFERENCE] Generated via Local Ollama (llama3.2:1b) on Mac M2!")
                 return data["response"].strip()
         except Exception as e:
-            # Ollama not yet running or pulling
-            pass
-
-        # 2. Try Gemini API if key exists
-        if GEMINI_API_KEY:
-            try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-                payload = {
-                    "contents": [{"role": "user", "parts": [{"text": user_content}]}],
-                    "generationConfig": {"temperature": 0.2, "maxOutputTokens": 600}
-                }
-                ctx = ssl._create_unverified_context()
-                req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
-                res = urllib.request.urlopen(req, context=ctx, timeout=8)
-                data = json.loads(res.read().decode("utf-8"))
-                return data["candidates"][0]["content"]["parts"][0]["text"]
-            except Exception as e:
-                pass
+            print(f"⚠️ Local Ollama error: {e}")
 
         return None
 
