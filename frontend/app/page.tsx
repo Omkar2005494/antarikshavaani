@@ -119,8 +119,8 @@ export default function Home() {
       const res = await fetch(url);
       const data = await res.json();
       if (data.tokens_remaining !== undefined) {
-        setTokensRemaining(data.tokens_remaining);
-        setTokensTotal(data.tokens_total || (isAuth ? 1000 : 50));
+        setTokensRemaining(data.tokens_remaining || "∞");
+        setTokensTotal(data.tokens_total || "∞");
         if (data.reset_in_seconds !== undefined) {
           setResetInSeconds(data.reset_in_seconds);
         }
