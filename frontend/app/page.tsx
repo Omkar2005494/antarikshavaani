@@ -103,6 +103,7 @@ export default function Home() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [tokensRemaining, setTokensRemaining] = useState(50);
   const [tokensTotal, setTokensTotal] = useState(50);
+  const [resetInSeconds, setResetInSeconds] = useState(1800);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -120,6 +121,9 @@ export default function Home() {
       if (data.tokens_remaining !== undefined) {
         setTokensRemaining(data.tokens_remaining);
         setTokensTotal(data.tokens_total || (isAuth ? 1000 : 50));
+        if (data.reset_in_seconds !== undefined) {
+          setResetInSeconds(data.reset_in_seconds);
+        }
       }
     } catch (e) {
       if (isAuth) {
