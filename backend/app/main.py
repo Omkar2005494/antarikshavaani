@@ -107,14 +107,16 @@ async def execute_query(req: QueryRequest, request: Request, dependencies=Depend
     is_img = any(w in req.prompt.lower() for w in ["image", "photo", "picture", "generate image", "create image", "visualize", "render"])
     required_tokens = 350 if is_img else 5
     
-    # Check token quota
+    # Check token quota (bypassed in 30-Minute Unlimited Pass mode)
     quota = token_manager.get_or_create_quota(identifier, bool(req.is_authenticated))
-    if quota["tokens_remaining"] < required_tokens:
-        if is_img:
-            limit_msg = f"⚡ AI Space Image Generation requires 350 Space Tokens. You currently have {quota['tokens_remaining']}/{quota['tokens_total']} tokens. Please Sign In to get 1000 Space Tokens!"
-        else:
-            limit_msg = "⚡ Guest Token Quota Exhausted (0/50 tokens). Please Sign In with Google/Email to unlock 1000 Space Tokens!" if not req.is_authenticated else "⚡ Token quota limit reached (0/1000 tokens)."
-        raise HTTPException(status_code=403, detail=limit_msg)
+    if not quota.get("is_unlimited"):
+        rem = quota.get("tokens_remaining", 0)
+        if isinstance(rem, (int, float)) and rem < required_tokens:
+            if is_img:
+                limit_msg = f"⚡ AI Space Image Generation requires 350 Space Tokens. You currently have {rem}/{quota['tokens_total']} tokens."
+            else:
+                limit_msg = f"⚡ Token Quota Exhausted ({rem}/{quota['tokens_total']} tokens)."
+            raise HTTPException(status_code=403, detail=limit_msg)
 
     final_result = None
     async for event in space_swarm.execute_stream(req.prompt, req.target_language):
@@ -164,37 +166,23 @@ async def websocket_query_endpoint(websocket: WebSocket):
             is_img_query = any(w in prompt.lower() for w in ["image", "photo", "picture", "generate image", "create image", "visualize", "render"])
             required_tokens = 350 if is_img_query else 5
 
-            # Check Token Quota
+            # Check Token Quota (bypassed in 30-Minute Unlimited Pass mode)
             quota = token_manager.get_or_create_quota(identifier, is_auth)
-            if quota["tokens_remaining"] < required_tokens:
-                if is_img_query:
-                    quota_msg = f"⚡ **Insufficient Tokens for AI Imagery:** Image generation requires **350 Space Tokens**.\n\nYou currently have **{quota['tokens_remaining']}/{quota['tokens_total']} tokens**.\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to claim **1000 Space Tokens**!"
-                else:
-                    quota_msg = "⚡ **Guest Token Quota Exhausted (0/50 tokens).**\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to unlock **500 Free Space Tokens**!"
-                await websocket.send_json({
-                    "error": "TOKEN_QUOTA_EXHAUSTED",
-                    "step": 0,
-                    "final_data": {
-                        "intent": "Token Quota Limit",
-                        "text": quota_msg,
-                        "token_info": quota,
-                        "citations": ["Stackverse-labs Token Quota Policy"]
-                    }
-                })
-                continue
-            if quota["tokens_remaining"] <= 0:
-                quota_msg = "⚡ **Guest Token Quota Exhausted (0/50 tokens).**\n\nPlease **Sign In with Google or Email** (click top-right Sign In) to unlock **500 Free Space Tokens**!" if not is_auth else "⚡ **Token quota limit reached (0/1000 tokens).**"
-                await websocket.send_json({
-                    "error": "TOKEN_QUOTA_EXHAUSTED",
-                    "step": 0,
-                    "final_data": {
-                        "intent": "Token Quota Limit",
-                        "text": quota_msg,
-                        "token_info": quota,
-                        "citations": ["Stackverse-labs Token Quota Policy"]
-                    }
-                })
-                continue
+            if not quota.get("is_unlimited"):
+                rem = quota.get("tokens_remaining", 0)
+                if isinstance(rem, (int, float)) and rem < required_tokens:
+                    quota_msg = f"⚡ **Token Quota Exhausted ({rem}/{quota['tokens_total']} tokens).**"
+                    await websocket.send_json({
+                        "error": "TOKEN_QUOTA_EXHAUSTED",
+                        "step": 0,
+                        "final_data": {
+                            "intent": "Token Quota Limit",
+                            "text": quota_msg,
+                            "token_info": quota,
+                            "citations": ["Stackverse-labs Token Quota Policy"]
+                        }
+                    })
+                    continue
 
             if not prompt:
                 await websocket.send_json({"error": "Empty prompt provided"})
