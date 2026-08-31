@@ -2,7 +2,7 @@
 AntarikshaVaani - Fast & Ultra-Reliable 4K AI Space Imagery Engine
 Author: Team Stackverse-labs
 
-Uses local Ollama (llama3.2:1b) on Mac M2 to synthesize photographic prompts,
+Uses local Ollama (llama3.2:3b) on Mac M2 to synthesize photographic prompts,
 paired with ultra-fast neural diffusion and guaranteed high-res space CDN failover.
 Consumes 350 Space Tokens per generation.
 """
@@ -31,7 +31,7 @@ HD_SPACE_BACKUPS = {
 class FastSpaceImageGenerator:
     def __init__(self):
         self.ollama_url = "http://localhost:11434/api/generate"
-        self.model = "llama3.2:1b"
+        self.model = "llama3.2:3b"
 
     def _synthesize_prompt_with_ollama(self, user_prompt: str) -> str:
         """Synthesizes high-impact concise 4K prompt via local Ollama in <500ms."""
@@ -97,7 +97,7 @@ class FastSpaceImageGenerator:
             "image_url": image_url,
             "backup_url": backup_url,
             "seed": seed,
-            "prompt_engine": "Ollama (llama3.2:1b Local Mac M2)",
+            "prompt_engine": "Ollama (llama3.2:3b Local Mac M2)",
             "diffusion_model": "FLUX.1 Turbo Realism (Fast 4K)",
             "resolution": "1920x1080 (16:9 Crisp Full HD)",
             "tokens_consumed": 350,

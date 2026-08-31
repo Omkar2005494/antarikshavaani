@@ -66,7 +66,7 @@ class SpaceAgentSwarm:
         try:
             url = "http://localhost:11434/api/generate"
             payload = {
-                "model": "llama3.2:1b",
+                "model": "llama3.2:3b",
                 "prompt": user_content,
                 "stream": False,
                 "options": {
