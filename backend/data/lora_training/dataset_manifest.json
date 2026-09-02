@@ -1,0 +1,32 @@
+[
+  {
+    "id": "isro_vikram_lander_01",
+    "url": "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=85&w=1200&auto=format&fit=crop",
+    "trigger": "isro_vikram_lander",
+    "caption": "a photograph of isro_vikram_lander on gray lunar regolith at the moon south pole, four landing legs with footpads, golden MLI thermal insulation foil reflecting sunlight, black starry sky, authentic space mission photograph, 8k resolution"
+  },
+  {
+    "id": "isro_pragyan_rover_01",
+    "url": "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=85&w=1200&auto=format&fit=crop",
+    "trigger": "isro_pragyan_rover",
+    "caption": "a photograph of isro_pragyan_rover on lunar regolith leaving wheel tracks, 6-wheel rocker-bogie mechanism, deployed solar panel, golden chassis with ISRO emblem, authentic space robotics photograph"
+  },
+  {
+    "id": "isro_gaganyaan_capsule_01",
+    "url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=85&w=1200&auto=format&fit=crop",
+    "trigger": "isro_gaganyaan_capsule",
+    "caption": "a photograph of isro_gaganyaan_capsule crew module in low Earth orbit, conical command module with white thermal insulation tiles, deployed solar wings, blue planet Earth with curvature and atmospheric limb below, realistic spaceflight photograph"
+  },
+  {
+    "id": "isro_aditya_l1_01",
+    "url": "https://images.unsplash.com/photo-1532693322450-2cb5c511067d?q=85&w=1200&auto=format&fit=crop",
+    "trigger": "isro_aditya_l1",
+    "caption": "a photograph of isro_aditya_l1 solar observatory satellite in halo orbit at Sun-Earth Lagrange Point 1, golden cubic bus with VELC and SUIT telescopes facing the glowing Sun, solar array reflecting sunlight, authentic satellite photography"
+  },
+  {
+    "id": "isro_antariksh_station_01",
+    "url": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=85&w=1200&auto=format&fit=crop",
+    "trigger": "isro_antariksh_station",
+    "caption": "a photograph of isro_antariksh_station modular space habitat orbiting Earth, docking port connected to a crew capsule, large solar wings glowing in sunlight, blue Earth ocean below, pitch black starry space, authentic space station photography"
+  }
+]
