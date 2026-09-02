@@ -10,6 +10,8 @@ import SpaceImageCard from "@/components/SpaceImageCard";
 import { Image as ImageIcon, Camera } from "lucide-react";
 import SpaceCanvas from "@/components/SpaceCanvas";
 import AuthModal, { UserSession } from "@/components/AuthModal";
+import OnboardingModal from "@/components/OnboardingModal";
+import { HelpCircle, FileText } from "lucide-react";
 import { onAuthStateChanged, signOut, auth } from "@/lib/firebase";
 import { 
   Send, Sparkles, Satellite, BookOpen, Bot, User, 
@@ -125,6 +127,8 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [tokensRemaining, setTokensRemaining] = useState(50);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [copiedBibtexId, setCopiedBibtexId] = useState<string | null>(null);
   const [tokensTotal, setTokensTotal] = useState(50);
   const [resetInSeconds, setResetInSeconds] = useState(1800);
   
@@ -158,6 +162,10 @@ export default function Home() {
 
   useEffect(() => {
     textareaRef.current?.focus();
+    const seenOnboarding = localStorage.getItem("antariksha_onboarding_completed");
+    if (!seenOnboarding) {
+      const timer = setTimeout(() => setShowOnboarding(true), 800);
+    }
 
     const stored = localStorage.getItem("antariksha_user");
     if (stored) {
@@ -320,6 +328,19 @@ export default function Home() {
         msg.id === id ? { ...msg, showRaw: !msg.showRaw } : msg
       )
     );
+  };
+
+  const handleCopyBibtex = (msg: ChatMessage) => {
+    const bibtex = `@misc{antarikshavaani_${msg.id},
+  author = {Team Stackverse-labs and ISRO ISSDC},
+  title = {${msg.intent || "ISRO Planetary Mission Telemetry & Analysis"}},
+  year = {2026},
+  howpublished = {\\url{https://pradan.issdc.gov.in}},
+  note = {Calibrated against ISRO PDS4 ground truth archives via AntarikshaVaani}
+}`;
+    navigator.clipboard.writeText(bibtex);
+    setCopiedBibtexId(msg.id);
+    setTimeout(() => setCopiedBibtexId(null), 2500);
   };
 
   const handleCopy = (text: string, id: string) => {
@@ -622,6 +643,14 @@ export default function Home() {
               )}
             </div>
 
+            {/* Mission Walkthrough & Guide */}
+            <button
+              onClick={() => setShowOnboarding(true)}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors"
+              title="Mission Walkthrough & Guide"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
             {/* Language Selector */}
             <div className="relative">
               <button
@@ -709,6 +738,9 @@ export default function Home() {
             )}
           </div>
         </header>
+
+        {/* First-Visit Onboarding Walkthrough */}
+        <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} />
 
         {/* Firebase Auth Modal */}
         <AuthModal
@@ -944,13 +976,23 @@ export default function Home() {
                             {/* Citations Footer */}
                             {msg.citations && msg.citations.length > 0 && (
                               <div className="pt-3 border-t border-slate-800/80 space-y-2">
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between gap-2 flex-wrap">
                                   <span className="text-[11px] font-mono font-semibold text-slate-400 flex items-center gap-1">
                                     <BookOpen className="w-3 h-3 text-cyan-400" /> Verified Sources:
                                   </span>
-                                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                                    ✅ Verified (PDS4 Ground Truth)
-                                  </span>
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      onClick={() => handleCopyBibtex(msg)}
+                                      className="px-2 py-0.5 rounded text-[9px] font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 border border-slate-700 flex items-center gap-1 transition-all"
+                                      title="Copy academic BibTeX citation for research papers"
+                                    >
+                                      <FileText className="w-2.5 h-2.5 text-cyan-400" />
+                                      <span>{copiedBibtexId === msg.id ? "✅ Copied BibTeX!" : "📋 Copy BibTeX"}</span>
+                                    </button>
+                                    <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                      ✅ Verified (PDS4 Ground Truth)
+                                    </span>
+                                  </div>
                                 </div>
                                 <div className="space-y-1">
                                   {msg.citations.map((cite, idx) => (
