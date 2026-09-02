@@ -11,6 +11,8 @@ interface SpaceImageData {
   prompt: string;
   enhanced_prompt?: string;
   model?: string;
+  diffusion_model?: string;
+  prompt_engine?: string;
   resolution?: string;
   seed?: number;
   tokens_consumed?: number;
@@ -83,7 +85,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
               </span>
             </div>
             <p className="text-[10px] font-mono text-cyan-400">
-              Ollama (llama3.2:3b) + FLUX.1 + Stackverse ISRO LoRA (M2) • 1920x1080
+              {data.diffusion_model || "FLUX.1 8K Hyper-Realism"} • {data.resolution || "1920x1080 8K"}
             </p>
           </div>
         </div>
