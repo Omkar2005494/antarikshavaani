@@ -146,7 +146,7 @@ class SpaceImageGenerator:
             "backup_url": backup_url,
             "seed": seed,
             "prompt_engine": "Ollama (llama3.2:3b Local M2)",
-            "diffusion_model": "FLUX.1 Ultra-Realism (Spacecraft CAD 8K)",
+            "diffusion_model": "FLUX.1 + Stackverse ISRO LoRA (Apple Silicon M2)",
             "resolution": "1920x1080 (16:9 Full HD)",
             "tokens_consumed": 350,
             "created_at": time.time()

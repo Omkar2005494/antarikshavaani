@@ -83,7 +83,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
               </span>
             </div>
             <p className="text-[10px] font-mono text-cyan-400">
-              Ollama (llama3.2:3b) + FLUX.1 Turbo • 1920x1080 Full HD
+              Ollama (llama3.2:3b) + FLUX.1 + Stackverse ISRO LoRA (M2) • 1920x1080
             </p>
           </div>
         </div>
