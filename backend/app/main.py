@@ -21,6 +21,7 @@ from app.database.db_manager import db_manager
 from app.agents.swarm import space_swarm
 from app.core.rate_limiter import enforce_api_rate_limit, ws_limiter
 from app.core.token_quota import token_manager
+from app.core.security import security_shield
 
 app = FastAPI(
     title="AntarikshaVaani Mission Intelligence API",
@@ -36,6 +37,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+@app.middleware("http")
+async def add_security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    for header_name, header_value in security_shield.get_security_headers().items():
+        response.headers[header_name] = header_value
+    return response
+
 
 class QueryRequest(BaseModel):
     prompt: str
@@ -99,7 +107,12 @@ def get_solar_events(dependencies=Depends(enforce_api_rate_limit)):
 
 @app.post("/api/query")
 async def execute_query(req: QueryRequest, request: Request, dependencies=Depends(enforce_api_rate_limit)):
-    """Single-turn query execution with Token Quota enforcement."""
+    """Single-turn query execution with Enterprise Security & Token Quota enforcement."""
+    # Level 3 Security: Adversarial Prompt Injection & XSS Sanitization
+    is_safe, clean_prompt, reason = security_shield.sanitize_input(req.prompt)
+    if not is_safe:
+        raise HTTPException(status_code=400, detail=f"🛡️ Security Shield Block: {reason}")
+    req.prompt = clean_prompt
     client_ip = request.client.host if request.client else "unknown"
     identifier = req.user_id if (req.user_id and req.is_authenticated) else client_ip
     
@@ -156,6 +169,20 @@ async def websocket_query_endpoint(websocket: WebSocket):
 
             payload = json.loads(data)
             prompt = payload.get("prompt", "")
+            # Level 3 Security: Sanitization
+            is_safe, clean_prompt, reason = security_shield.sanitize_input(prompt)
+            if not is_safe:
+                await websocket.send_json({
+                    "error": "SECURITY_SHIELD_BLOCK",
+                    "step": 0,
+                    "final_data": {
+                        "intent": "Security Shield Alert",
+                        "text": f"🛡️ **Security Alert:** {reason}",
+                        "citations": ["Stackverse-labs Security Defense Shield"]
+                    }
+                })
+                continue
+            prompt = clean_prompt
             target_lang = payload.get("target_language") or payload.get("language")
             user_id = payload.get("user_id")
             is_auth = bool(payload.get("is_authenticated", False))
