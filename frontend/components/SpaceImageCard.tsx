@@ -83,7 +83,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
               </span>
             </div>
             <p className="text-[10px] font-mono text-cyan-400">
-              Ollama (llama3.2:1b) + FLUX.1 Turbo • 1920x1080 Full HD
+              Ollama (llama3.2:3b) + FLUX.1 Turbo • 1920x1080 Full HD
             </p>
           </div>
         </div>
@@ -147,7 +147,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
       <div className="grid grid-cols-3 gap-2 p-3 bg-slate-950/80 border-t border-slate-800 text-center font-mono text-[11px]">
         <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
           <span className="text-[9px] text-slate-400 block">Prompt Engine</span>
-          <span className="font-bold text-cyan-300 block">Ollama (llama3.2:1b)</span>
+          <span className="font-bold text-cyan-300 block">Ollama (llama3.2:3b)</span>
           <span className="text-[8px] text-slate-500">Local Mac M2</span>
         </div>
         <div className="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
