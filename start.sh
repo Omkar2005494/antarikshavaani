@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# AntarikshaVaani - One-Click Launcher
+# AntarikshaVaani - One-Click Launcher (Production Mode)
 # Author: Team Stackverse-labs
 
 echo "=================================================="
@@ -17,17 +17,21 @@ lsof -ti:3000 | xargs kill -9 2>/dev/null
 # 2. Start Backend
 echo "⚙️ Starting FastAPI Backend on http://localhost:8000..."
 cd "$DIR/backend"
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
 
-# 3. Start Frontend
-echo "🖥️ Starting Next.js Frontend on http://localhost:3000..."
+# 3. Start Frontend (Production Mode - Zero CSS 404s, Instant Loading)
+echo "🖥️ Starting Next.js Production Frontend on http://localhost:3000..."
 cd "$DIR/frontend"
-npm run dev &
+if [ ! -d ".next" ]; then
+  echo "📦 Building optimized production bundle..."
+  npm run build
+fi
+npm run start &
 FRONTEND_PID=$!
 
 echo "=================================================="
-echo "✅ AntarikshaVaani is LIVE!"
+echo "✅ AntarikshaVaani is LIVE in Production Mode!"
 echo "📡 Backend API:    http://localhost:8000"
 echo "🖥️ Frontend UI:    http://localhost:3000"
 echo "=================================================="
