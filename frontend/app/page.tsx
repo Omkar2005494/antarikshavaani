@@ -11,11 +11,12 @@ import { Image as ImageIcon, Camera } from "lucide-react";
 import SpaceCanvas from "@/components/SpaceCanvas";
 import AuthModal, { UserSession } from "@/components/AuthModal";
 import OnboardingModal from "@/components/OnboardingModal";
+import SettingsModal from "@/components/SettingsModal";
 import CommunityGalleryModal from "@/components/CommunityGalleryModal";
 import ShareModal from "@/components/ShareModal";
 import Interactive3DSpaceTracker from "@/components/Interactive3DSpaceTracker";
 import { Mic, MicOff, Volume2, VolumeX, Globe2 } from "lucide-react";
-import { HelpCircle, FileText, Share2, Compass } from "lucide-react";
+import { HelpCircle, FileText, Share2, Compass, Settings } from "lucide-react";
 import { onAuthStateChanged, signOut, auth } from "@/lib/firebase";
 import { 
   Send, Sparkles, Satellite, BookOpen, Bot, User, 
@@ -132,6 +133,7 @@ export default function Home() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [tokensRemaining, setTokensRemaining] = useState(50);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
   const [show3DTracker, setShow3DTracker] = useState(false);
   const [trackerMode, setTrackerMode] = useState<"earth" | "moon">("earth");
@@ -666,27 +668,20 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Language Selection Section */}
-        <div className="px-4 py-3 border-b border-white/[0.08]">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
-            <span>Response Language</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          </div>
-          <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
-            {INDIC_LANGUAGES.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => setSelectedLang(lang)}
-                className={`px-2.5 py-1.5 rounded-lg text-left transition-all text-[11px] ${
-                  selectedLang.code === lang.code
-                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold"
-                    : "bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.06]"
-                }`}
-              >
-                {lang.label}
-              </button>
-            ))}
-          </div>
+        {/* Sleek Settings Bar Item */}
+        <div className="p-3 border-b border-white/[0.08]">
+          <button
+            onClick={() => { setShowSettingsModal(true); setSidebarOpen(false); }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-500/40 text-xs font-mono text-slate-200 hover:text-white transition-all group shadow-sm"
+          >
+            <div className="flex items-center gap-2.5">
+              <Settings className="w-4 h-4 text-cyan-400 group-hover:rotate-45 transition-transform" />
+              <span className="font-semibold font-sans">Settings & Preferences</span>
+            </div>
+            <span className="text-[10px] px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+              {selectedLang.label}
+            </span>
+          </button>
         </div>
 
         {/* Curated Space Queries */}
@@ -845,6 +840,23 @@ export default function Home() {
 
         {/* First-Visit Onboarding Walkthrough */}
         <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} />
+
+        {/* Unified Mission Settings Modal (Languages, Curated Queries & Telemetry) */}
+        <SettingsModal
+          isOpen={showSettingsModal}
+          onClose={() => setShowSettingsModal(false)}
+          selectedLang={selectedLang}
+          onSelectLang={setSelectedLang}
+          languages={INDIC_LANGUAGES}
+          starterPrompts={STARTER_PROMPTS}
+          onSelectPrompt={(q) => {
+            const query = q === "LUCKY" ? LUCKY_QUERIES[Math.floor(Math.random() * LUCKY_QUERIES.length)] : q;
+            handleSend(query);
+          }}
+          tokensRemaining={tokensRemaining}
+          tokensTotal={tokensTotal}
+          currentUser={currentUser}
+        />
 
         {/* Firebase Auth Modal */}
         <AuthModal
