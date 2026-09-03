@@ -216,7 +216,9 @@ async def websocket_query_endpoint(websocket: WebSocket):
                 continue
 
             final_text = ""
-            async for event in space_swarm.execute_stream(prompt, target_lang):
+            history = payload.get("history", [])
+            model_tier = payload.get("model_tier", "reasoning")
+            async for event in space_swarm.execute_stream(prompt, target_lang, history=history, model_tier=model_tier):
                 if event.get("final_data"):
                     final_text = event["final_data"].get("text", "")
                     # Deduct tokens (350 for image generation, 5-25 for text)

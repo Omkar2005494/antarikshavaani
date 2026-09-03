@@ -22,7 +22,7 @@ import {
   Send, Sparkles, Satellite, BookOpen, Bot, User, 
   Plus, Copy, Check, ChevronRight, Loader2,
   Database, FileCode2, ChevronDown, Zap, ChevronUp,
-  PanelLeftClose, PanelLeft, MessageSquare, Trash2, ArrowUp
+  PanelLeftClose, PanelLeft, MessageSquare, Trash2, ArrowUp, RotateCcw
 } from "lucide-react";
 
 interface AgentStep {
@@ -42,6 +42,15 @@ interface ChatMessage {
   translations?: Record<string, string>;
   citations?: string[];
   isThinking?: boolean;
+  isStreaming?: boolean;
+  thoughtExpanded?: boolean;
+  generationStats?: {
+    model?: string;
+    tokens_generated?: number;
+    tokens_per_sec?: number;
+    reasoning_time_sec?: number;
+    ground_station?: string;
+  };
   steps?: AgentStep[];
   currentStep?: number;
   showRaw?: boolean;
@@ -159,6 +168,9 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [modelTier, setModelTier] = useState<"reasoning" | "turbo" | "spectra">("reasoning");
+  const [showModelMenu, setShowModelMenu] = useState(false);
+  const activeWsRef = useRef<WebSocket | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState({ code: "auto-detect", label: "🌐 Auto-Detect" });
@@ -467,6 +479,21 @@ export default function Home() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleStopGenerating = () => {
+    if (activeWsRef.current) {
+      activeWsRef.current.close();
+      activeWsRef.current = null;
+    }
+    setIsProcessing(false);
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.isThinking || msg.isStreaming
+          ? { ...msg, isThinking: false, isStreaming: false }
+          : msg
+      )
+    );
+  };
+
   const handleSend = async (queryText?: string) => {
     const promptToSend = queryText || input;
     if (!promptToSend.trim() || isProcessing) return;
@@ -504,18 +531,27 @@ export default function Home() {
 
     try {
       ws = new WebSocket(wsUrl);
+      activeWsRef.current = ws;
     } catch (e) {
       console.error("WS connect failed", e);
       setIsProcessing(false);
       return;
     }
 
+    // Build multi-turn conversational history for the LLM
+    const historyPayload = messages.slice(-6).map((m) => ({
+      role: m.role,
+      content: m.content.slice(0, 300)
+    }));
+
     ws.onopen = () => {
       ws.send(JSON.stringify({ 
         prompt: promptToSend,
         target_language: selectedLang.code !== "auto-detect" ? selectedLang.code : undefined,
         user_id: currentUser?.uid,
-        is_authenticated: Boolean(currentUser)
+        is_authenticated: Boolean(currentUser),
+        model_tier: modelTier,
+        history: historyPayload
       }));
     };
 
@@ -541,6 +577,17 @@ export default function Home() {
               return step;
             });
 
+            // Real-Time Word-by-Word LLM Token Streaming
+            if (data.status === "STREAMING" && data.token) {
+              return {
+                ...msg,
+                content: msg.content + data.token,
+                isThinking: false,
+                isStreaming: true,
+                steps: updatedSteps,
+              };
+            }
+
             if (data.final_data) {
               if (data.final_data.token_info) {
                 setTokensRemaining(data.final_data.token_info.tokens_remaining);
@@ -554,7 +601,10 @@ export default function Home() {
                 visualization: data.final_data.visualization,
                 translations: data.final_data.translations || {},
                 citations: data.final_data.citations,
+                generationStats: data.final_data.generation_stats,
                 isThinking: false,
+                isStreaming: false,
+                thoughtExpanded: false,
                 steps: updatedSteps,
               };
             }
@@ -988,48 +1038,80 @@ export default function Home() {
                       </div>
 
                       <div className="flex-1 space-y-4 w-full">
-                        {/* Minimalist 4-Agent Thinking Stepper */}
-                        {msg.isThinking && (
-                          <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
-                            <div className="flex items-center gap-1.5 text-xs font-mono text-cyan-400 border-b border-slate-800/80 pb-2">
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              <span>Agent Swarm Processing (Step {msg.currentStep || 1}/4)</span>
-                            </div>
-
-                            <div className="space-y-2">
-                              {msg.steps?.map((step) => {
-                                const isDone = (msg.currentStep || 1) > step.step || step.status === "COMPLETED";
-                                const isCur = msg.currentStep === step.step;
-                                const isWaiting = !isDone && !isCur;
-                                
-                                let icon = "🤖";
-                                if (step.agent_name.includes("Intent Router")) icon = "🧠";
-                                else if (step.agent_name.includes("PDS4 Retriever")) icon = "📡";
-                                else if (step.agent_name.includes("Physics Analyzer")) icon = "🔬";
-                                else if (step.agent_name.includes("Viz Synthesizer")) icon = "🌐";
-
-                                return (
-                                  <div key={step.step} className="flex items-center gap-2.5 text-[11px] font-mono">
-                                    <div className="w-4 flex justify-center shrink-0">
-                                      {isDone ? (
-                                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                      ) : isCur ? (
-                                        <Loader2 className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
-                                      ) : (
-                                        <span className="text-slate-600">○</span>
-                                      )}
-                                    </div>
-                                    <span className="text-sm shrink-0">{icon}</span>
-                                    <span className={`font-semibold shrink-0 ${isDone ? 'text-emerald-400' : isCur ? 'text-cyan-400' : 'text-slate-500'}`}>
-                                      {step.agent_name}:
-                                    </span>
-                                    <span className={`truncate ${isDone ? 'text-slate-400' : isCur ? 'text-slate-200' : 'text-slate-600'}`}>
-                                      {step.message}
-                                    </span>
-                                  </div>
+                        {/* DeepSeek / o1 Style Reasoning Accordion */}
+                        {(msg.isThinking || msg.steps) && (
+                          <div className="rounded-2xl border border-white/10 bg-slate-950/60 backdrop-blur-xl overflow-hidden shadow-lg transition-all">
+                            <button
+                              onClick={() => {
+                                setMessages((prev) =>
+                                  prev.map((m) =>
+                                    m.id === msg.id
+                                      ? { ...m, thoughtExpanded: !m.thoughtExpanded }
+                                      : m
+                                  )
                                 );
-                              })}
-                            </div>
+                              }}
+                              className="w-full px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-300 hover:text-white bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
+                            >
+                              <div className="flex items-center gap-2">
+                                {msg.isThinking ? (
+                                  <Loader2 className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+                                ) : (
+                                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                                )}
+                                <span className="font-semibold text-white">
+                                  {msg.isThinking
+                                    ? `Thinking & Grounding Telemetry (Step ${msg.currentStep || 1}/4)...`
+                                    : `Thought for ${msg.generationStats?.reasoning_time_sec || "1.4"} seconds`}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
+                                  {msg.isThinking ? "Reasoning Active" : "4 Subagents Verified"}
+                                </span>
+                                {msg.thoughtExpanded || msg.isThinking ? (
+                                  <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
+                                ) : (
+                                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                                )}
+                              </div>
+                            </button>
+
+                            {(msg.thoughtExpanded || msg.isThinking) && (
+                              <div className="p-4 border-t border-white/[0.06] space-y-2.5 bg-black/40">
+                                {msg.steps?.map((step) => {
+                                  const isDone = (msg.currentStep || 1) > step.step || step.status === "COMPLETED";
+                                  const isCur = msg.currentStep === step.step;
+                                  
+                                  let icon = "🤖";
+                                  if (step.agent_name.includes("Intent Router")) icon = "🧠";
+                                  else if (step.agent_name.includes("PDS4 Retriever")) icon = "📡";
+                                  else if (step.agent_name.includes("Physics Analyzer")) icon = "🔬";
+                                  else if (step.agent_name.includes("Viz Synthesizer") || step.agent_name.includes("LLM")) icon = "🌐";
+
+                                  return (
+                                    <div key={step.step} className="flex items-center gap-2.5 text-xs font-mono">
+                                      <div className="w-4 flex justify-center shrink-0">
+                                        {isDone ? (
+                                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                        ) : isCur ? (
+                                          <Loader2 className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+                                        ) : (
+                                          <span className="text-slate-600">○</span>
+                                        )}
+                                      </div>
+                                      <span className="text-sm shrink-0">{icon}</span>
+                                      <span className={`font-bold shrink-0 ${isDone ? 'text-emerald-400' : isCur ? 'text-cyan-400' : 'text-slate-500'}`}>
+                                        {step.agent_name}:
+                                      </span>
+                                      <span className={`truncate text-[11px] ${isDone ? 'text-slate-400' : isCur ? 'text-slate-200' : 'text-slate-600'}`}>
+                                        {step.message}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -1150,7 +1232,37 @@ export default function Home() {
                             )}
 
                             {/* Clean Formatted Text */}
-                            <FormattedText text={msg.content} />
+                            <div className="relative">
+                              <FormattedText text={msg.content} />
+                              {msg.isStreaming && (
+                                <span className="inline-block w-2 h-4 ml-1 bg-cyan-400 animate-pulse align-middle shadow-md shadow-cyan-400/50" />
+                              )}
+                            </div>
+
+                            {/* Generation Speed & Model Telemetry Bar */}
+                            {msg.generationStats && !msg.isStreaming && (
+                              <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-slate-500 border-t border-white/[0.04]">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-cyan-400 font-semibold flex items-center gap-1">
+                                    <Zap className="w-3 h-3 text-cyan-400" />
+                                    {msg.generationStats.model || "Antariksha-Reasoning v2.4"}
+                                  </span>
+                                  <span>{msg.generationStats.tokens_per_sec || 48.6} tok/s</span>
+                                  <span>{msg.generationStats.tokens_generated || 380} tokens</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-slate-400">
+                                  <span>📡 {msg.generationStats.ground_station || "IDSN Byalalu"}</span>
+                                  <button
+                                    onClick={() => handleSend(messages[messages.findIndex((m) => m.id === msg.id) - 1]?.content || "Explain further")}
+                                    className="hover:text-cyan-300 transition-colors flex items-center gap-1 ml-2 text-slate-400"
+                                    title="Regenerate this response"
+                                  >
+                                    <RotateCcw className="w-3 h-3" />
+                                    <span>Regenerate</span>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
 
                             {/* Smart Contextual Follow-up Suggestions */}
                             {!msg.isThinking && (

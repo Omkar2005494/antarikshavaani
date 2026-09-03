@@ -89,7 +89,8 @@ class SpaceAgentSwarm:
 
         return None
 
-    async def execute_stream(self, prompt: str, target_lang: Optional[str] = None) -> AsyncGenerator[Dict[str, Any], None]:
+    async def execute_stream(self, prompt: str, target_lang: Optional[str] = None, history: Optional[List[Dict[str, str]]] = None, model_tier: Optional[str] = "reasoning") -> AsyncGenerator[Dict[str, Any], None]:
+        """Streams step-by-step agent execution and real-time LLM token stream over WebSockets."""
         """Streams step-by-step agent execution events over WebSockets."""
         
         # STEP 1: Query Planner & Intent Router
