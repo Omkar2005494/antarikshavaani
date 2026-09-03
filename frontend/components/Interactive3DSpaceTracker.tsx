@@ -280,66 +280,239 @@ export default function Interactive3DSpaceTracker({
       scene.add(globe);
     }
 
-    // 6. High-Fidelity 3D ISRO Satellite Assembly Builder
+    // 6. Authentic ISRO Spacecraft CAD Builders (Each Satellite has a Unique Real-World Model)
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xeab308, metalness: 0.85, roughness: 0.25 });
+    const solarMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.8, roughness: 0.2 });
+    const whiteMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
+    const metalMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
+    const darkOpticMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.6, metalness: 0.8 });
+
+    // MODEL 1: Cartosat-3 (High-Res Optical Reconnaissance with Large Telescope Barrel)
+    const buildCartosat3 = (): THREE.Group => {
+      const g = new THREE.Group();
+      // Hexagonal cuboid bus
+      const bus = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.22), goldMat);
+      g.add(bus);
+
+      // Giant Optical Telescope Cylinder pointing nadir (Earthward)
+      const telescope = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.2, 24), darkOpticMat);
+      telescope.position.z = 0.16;
+      telescope.rotation.x = Math.PI / 2;
+      g.add(telescope);
+
+      // Blue camera aperture glass lens
+      const lens = new THREE.Mesh(new THREE.CircleGeometry(0.065, 24), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+      lens.position.z = 0.261;
+      g.add(lens);
+
+      // Star trackers
+      const st1 = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.04, 12), metalMat);
+      st1.position.set(0.09, 0.06, 0.05);
+      st1.rotation.z = -Math.PI / 3;
+      g.add(st1);
+
+      // Dual tilted solar wings
+      const leftWing = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.14, 0.012), solarMat);
+      leftWing.position.set(-0.32, 0, 0);
+      leftWing.rotation.y = 0.2;
+      g.add(leftWing);
+
+      const rightWing = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.14, 0.012), solarMat);
+      rightWing.position.set(0.32, 0, 0);
+      rightWing.rotation.y = -0.2;
+      g.add(rightWing);
+
+      g.scale.set(1.5, 1.5, 1.5);
+      return g;
+    };
+
+    // MODEL 2: RISAT-2BR1 (Radar Satellite with Giant 3.6m Deployable Radial Umbrella SAR Antenna)
+    const buildRISAT = (): THREE.Group => {
+      const g = new THREE.Group();
+      // Cylindrical bus
+      const bus = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.22, 16), goldMat);
+      g.add(bus);
+
+      // Giant Deployable Radial Rib Umbrella SAR Antenna Dish (Golden Wireframe Mesh)
+      const umbrellaGeom = new THREE.SphereGeometry(0.28, 24, 12, 0, Math.PI * 2, 0, Math.PI * 0.42);
+      const umbrellaMat = new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.85,
+        side: THREE.DoubleSide,
+      });
+      const umbrella = new THREE.Mesh(umbrellaGeom, umbrellaMat);
+      umbrella.position.z = 0.18;
+      umbrella.rotation.x = Math.PI;
+      g.add(umbrella);
+
+      // Central Antenna Feed Horn Mast & Tower
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.2, 12), metalMat);
+      mast.position.z = 0.18;
+      mast.rotation.x = Math.PI / 2;
+      g.add(mast);
+
+      // Single long cross-wing solar panel
+      const wing = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.15, 0.012), solarMat);
+      wing.position.set(0, -0.25, 0);
+      g.add(wing);
+
+      g.scale.set(1.5, 1.5, 1.5);
+      return g;
+    };
+
+    // MODEL 3: GSAT-30 (Heavy Geostationary Comms with Dual Giant East/West Dishes & Huge 4-Panel Wings)
+    const buildGSAT30 = (): THREE.Group => {
+      const g = new THREE.Group();
+      // Large heavy cubical bus with white thermal radiators
+      const bus = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.24), whiteMat);
+      g.add(bus);
+
+      // Gold foil insulation accents
+      const foil = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.245), goldMat);
+      g.add(foil);
+
+      // East Parabolic Comms Reflector Dish (Left)
+      const leftDish = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.45), goldMat);
+      leftDish.position.set(-0.22, 0, 0.08);
+      leftDish.rotation.set(0.3, Math.PI / 2.5, 0);
+      g.add(leftDish);
+
+      // West Parabolic Comms Reflector Dish (Right)
+      const rightDish = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.45), goldMat);
+      rightDish.position.set(0.22, 0, 0.08);
+      rightDish.rotation.set(0.3, -Math.PI / 2.5, 0);
+      g.add(rightDish);
+
+      // Extended Multi-Segment Solar Wings (Giant 1.2m Wingspan)
+      const leftWing = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.16, 0.012), solarMat);
+      leftWing.position.set(-0.52, 0, -0.05);
+      g.add(leftWing);
+
+      const rightWing = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.16, 0.012), solarMat);
+      rightWing.position.set(0.52, 0, -0.05);
+      g.add(rightWing);
+
+      // Earth-facing communication horn antennas
+      const horn1 = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.06, 12), metalMat);
+      horn1.position.set(-0.04, 0.05, 0.14);
+      horn1.rotation.x = Math.PI / 2;
+      g.add(horn1);
+
+      const horn2 = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.06, 12), metalMat);
+      horn2.position.set(0.04, 0.05, 0.14);
+      horn2.rotation.x = Math.PI / 2;
+      g.add(horn2);
+
+      g.scale.set(1.4, 1.4, 1.4);
+      return g;
+    };
+
+    // MODEL 4: Aditya-L1 (Deep-Space Solar Observatory with VELC Coronagraph & Instrument Booms)
+    const buildAdityaL1 = (): THREE.Group => {
+      const g = new THREE.Group();
+      // Hexagonal spacecraft bus
+      const bus = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.22, 6), goldMat);
+      g.add(bus);
+
+      // VELC Solar Coronagraph Telescope Tube pointing at Sun
+      const coronagraph = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.24, 16), whiteMat);
+      coronagraph.position.set(0, 0.14, 0.08);
+      g.add(coronagraph);
+
+      // Gold Sunshield Baffle Cone at telescope aperture
+      const sunBaffle = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.06, 16, 1, true), goldMat);
+      sunBaffle.position.set(0, 0.27, 0.08);
+      g.add(sunBaffle);
+
+      // SUIT Ultraviolet Telescope Module
+      const suitBox = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.12), darkOpticMat);
+      suitBox.position.set(0.07, 0.08, 0.05);
+      g.add(suitBox);
+
+      // Magnetometer Sensor Boom extending 0.35m outwards
+      const magBoom = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.35, 8), metalMat);
+      magBoom.position.set(-0.25, 0, -0.05);
+      magBoom.rotation.z = Math.PI / 2;
+      g.add(magBoom);
+
+      // Deep Space Parabolic Dish Antenna pointing at Earth
+      const dish = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.4), goldMat);
+      dish.position.set(0, -0.14, 0.1);
+      dish.rotation.x = Math.PI / 1.5;
+      g.add(dish);
+
+      // Folded high-efficiency solar wings
+      const leftWing = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.14, 0.012), solarMat);
+      leftWing.position.set(-0.32, -0.05, 0);
+      g.add(leftWing);
+
+      const rightWing = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.14, 0.012), solarMat);
+      rightWing.position.set(0.32, -0.05, 0);
+      g.add(rightWing);
+
+      g.scale.set(1.5, 1.5, 1.5);
+      return g;
+    };
+
+    // MODEL 5: EOS-04 (Radar Earth Observation with Massive 6m x 2m Rectangular Planar SAR Phased Array)
+    const buildEOS4 = (): THREE.Group => {
+      const g = new THREE.Group();
+      // Massive Rectangular Planar SAR Phased Array Antenna Panel
+      const sarPanel = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.2, 0.025), goldMat);
+      sarPanel.position.set(0, 0, 0.12);
+      g.add(sarPanel);
+
+      // High-precision radar antenna microstrip grid lines
+      const gridMat = new THREE.MeshBasicMaterial({ color: 0xd97706, wireframe: true });
+      const grid = new THREE.Mesh(new THREE.PlaneGeometry(0.53, 0.18, 12, 6), gridMat);
+      grid.position.set(0, 0, 0.134);
+      g.add(grid);
+
+      // Spacecraft Service Bus mounted behind the radar panel
+      const bus = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.16, 0.16), whiteMat);
+      bus.position.set(0, 0, 0.02);
+      g.add(bus);
+
+      // Dual deployable solar panels mounted top and bottom
+      const topWing = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.14, 0.012), solarMat);
+      topWing.position.set(0, 0.2, -0.02);
+      topWing.rotation.x = 0.2;
+      g.add(topWing);
+
+      const botWing = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.14, 0.012), solarMat);
+      botWing.position.set(0, -0.2, -0.02);
+      botWing.rotation.x = -0.2;
+      g.add(botWing);
+
+      g.scale.set(1.5, 1.5, 1.5);
+      return g;
+    };
+
     const createSpacecraftModel = (sat: SatelliteData): THREE.Group => {
-      const group = new THREE.Group();
+      let model: THREE.Group;
+      if (sat.id === "cartosat") {
+        model = buildCartosat3();
+      } else if (sat.id === "risat") {
+        model = buildRISAT();
+      } else if (sat.id === "gsat30") {
+        model = buildGSAT30();
+      } else if (sat.id === "aditya") {
+        model = buildAdityaL1();
+      } else {
+        model = buildEOS4();
+      }
 
-      // Golden Kapton Bus
-      const busGeom = new THREE.BoxGeometry(0.14, 0.14, 0.22);
-      const busMat = new THREE.MeshStandardMaterial({ color: 0xeab308, metalness: 0.85, roughness: 0.25 });
-      const bus = new THREE.Mesh(busGeom, busMat);
-      group.add(bus);
+      // Add active telemetry beacon
+      const beacon = new THREE.Mesh(
+        new THREE.SphereGeometry(0.03, 8, 8),
+        new THREE.MeshBasicMaterial({ color: sat.color })
+      );
+      beacon.position.set(0, 0, 0.22);
+      model.add(beacon);
 
-      // Radiator
-      const radGeom = new THREE.PlaneGeometry(0.12, 0.2);
-      const radMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
-      const rad1 = new THREE.Mesh(radGeom, radMat);
-      rad1.position.x = 0.071;
-      rad1.rotation.y = Math.PI / 2;
-      group.add(rad1);
-
-      // Solar Wings
-      const panelGeom = new THREE.BoxGeometry(0.36, 0.13, 0.012);
-      const panelMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.8, roughness: 0.2 });
-      const hingeMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 });
-
-      const leftWing = new THREE.Mesh(panelGeom, panelMat);
-      leftWing.position.x = -0.28;
-      group.add(leftWing);
-
-      const leftHingeGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.1);
-      const leftHinge = new THREE.Mesh(leftHingeGeom, hingeMat);
-      leftHinge.position.x = -0.12;
-      leftHinge.rotation.z = Math.PI / 2;
-      group.add(leftHinge);
-
-      const rightWing = new THREE.Mesh(panelGeom, panelMat);
-      rightWing.position.x = 0.28;
-      group.add(rightWing);
-
-      const rightHingeGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.1);
-      const rightHinge = new THREE.Mesh(rightHingeGeom, hingeMat);
-      rightHinge.position.x = 0.12;
-      rightHinge.rotation.z = Math.PI / 2;
-      group.add(rightHinge);
-
-      // Parabolic Dish Antenna
-      const dishGeom = new THREE.SphereGeometry(0.08, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.4);
-      const dishMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.2, side: THREE.DoubleSide });
-      const dish = new THREE.Mesh(dishGeom, dishMat);
-      dish.position.z = 0.14;
-      dish.rotation.x = Math.PI;
-      group.add(dish);
-
-      // Beacon LED
-      const beaconGeom = new THREE.SphereGeometry(0.025, 8, 8);
-      const beaconMat = new THREE.MeshBasicMaterial({ color: sat.color });
-      const beacon = new THREE.Mesh(beaconGeom, beaconMat);
-      beacon.position.z = 0.18;
-      group.add(beacon);
-
-      group.scale.set(1.4, 1.4, 1.4);
-      return group;
+      return model;
     };
 
     // 7. Holographic Selection Reticle
