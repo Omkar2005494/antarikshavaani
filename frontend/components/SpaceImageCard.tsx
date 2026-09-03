@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Download, Maximize2, Sparkles, Zap, X, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Download, Maximize2, Sparkles, Zap, X, RefreshCw, CheckCircle2, Share2 } from "lucide-react";
+import ShareModal from "@/components/ShareModal";
 
 interface SpaceImageData {
   type: "IMAGE_GENERATOR";
@@ -24,6 +25,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
   const [showFullscreen, setShowFullscreen] = useState(false);
   const [currentUrl, setCurrentUrl] = useState(data.image_url);
   const [usedFallback, setUsedFallback] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Safety timer: If primary dynamic generation takes > 4.5 seconds, automatically show high-speed HD render
   useEffect(() => {
@@ -108,6 +110,13 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
             <span className="hidden sm:inline">Download</span>
           </button>
           <button
+            onClick={() => setShowShareModal(true)}
+            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors border border-slate-700/80 shadow-sm"
+            title="Share to LinkedIn / Twitter / WhatsApp"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+          </button>
+          <button
             onClick={() => setShowFullscreen(true)}
             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors border border-slate-700/80 shadow-sm"
             title="Fullscreen Zoom"
@@ -165,6 +174,15 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
           <span className="text-[8px] text-slate-500">GPU Synthesis</span>
         </div>
       </div>
+
+      {/* 1-Click Social Share Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        title={data.title}
+        text={data.prompt}
+        imageUrl={currentUrl}
+      />
 
       {/* Fullscreen Lightbox Modal */}
       {showFullscreen && (

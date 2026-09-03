@@ -11,7 +11,9 @@ import { Image as ImageIcon, Camera } from "lucide-react";
 import SpaceCanvas from "@/components/SpaceCanvas";
 import AuthModal, { UserSession } from "@/components/AuthModal";
 import OnboardingModal from "@/components/OnboardingModal";
-import { HelpCircle, FileText } from "lucide-react";
+import CommunityGalleryModal from "@/components/CommunityGalleryModal";
+import ShareModal from "@/components/ShareModal";
+import { HelpCircle, FileText, Share2, Compass } from "lucide-react";
 import { onAuthStateChanged, signOut, auth } from "@/lib/firebase";
 import { 
   Send, Sparkles, Satellite, BookOpen, Bot, User, 
@@ -128,6 +130,11 @@ export default function Home() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [tokensRemaining, setTokensRemaining] = useState(50);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareData, setShareData] = useState<{ title: string; text?: string; imageUrl?: string }>({
+    title: "ISRO Space Mission Intelligence",
+  });
   const [copiedBibtexId, setCopiedBibtexId] = useState<string | null>(null);
   const [tokensTotal, setTokensTotal] = useState(50);
   const [resetInSeconds, setResetInSeconds] = useState(1800);
@@ -512,7 +519,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-[#070e1d] text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20 relative">
+    <div className="flex h-screen h-[100dvh] bg-[#070e1d] text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20 relative">
       <SpaceCanvas />
       
       {/* Minimalist Collapsible Sidebar (Claude / ChatGPT Style) */}
@@ -540,13 +547,20 @@ export default function Home() {
         </div>
 
         {/* New Chat Button */}
-        <div className="p-3">
+        <div className="p-3 space-y-2">
           <button
             onClick={() => { handleNewChat(); setSidebarOpen(false); }}
             className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 text-xs font-medium text-slate-200 hover:text-white transition-all shadow-sm group"
           >
             <Plus className="w-4 h-4 text-cyan-400 group-hover:rotate-90 transition-transform" />
             <span>New Space Query</span>
+          </button>
+          <button
+            onClick={() => { setShowGallery(true); setSidebarOpen(false); }}
+            className="w-full flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20 border border-cyan-500/30 text-xs font-medium text-cyan-300 hover:text-white transition-all shadow-sm group"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Community 8K Gallery</span>
           </button>
         </div>
 
@@ -643,6 +657,15 @@ export default function Home() {
               )}
             </div>
 
+            {/* 8K Space Gallery Button */}
+            <button
+              onClick={() => setShowGallery(true)}
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-xs font-mono text-slate-300 hover:text-cyan-300 transition-all shadow-sm"
+              title="Open Community 8K Space Gallery"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>8K Gallery</span>
+            </button>
             {/* Mission Walkthrough & Guide */}
             <button
               onClick={() => setShowOnboarding(true)}
@@ -738,6 +761,26 @@ export default function Home() {
             )}
           </div>
         </header>
+
+        {/* Community 8K Space Gallery */}
+        <CommunityGalleryModal
+          isOpen={showGallery}
+          onClose={() => setShowGallery(false)}
+          onSelectPrompt={(p) => handleSend(p)}
+          onShareItem={(t, p, img) => {
+            setShareData({ title: t, text: p, imageUrl: img });
+            setShowShareModal(true);
+          }}
+        />
+
+        {/* 1-Click Social Share Modal */}
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          title={shareData.title}
+          text={shareData.text}
+          imageUrl={shareData.imageUrl}
+        />
 
         {/* First-Visit Onboarding Walkthrough */}
         <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} />
@@ -936,6 +979,20 @@ export default function Home() {
                                 </button>
 
                                 <button
+                                  onClick={() => {
+                                    setShareData({
+                                      title: msg.intent || "ISRO Space Mission Intelligence",
+                                      text: msg.content.slice(0, 220) + "...",
+                                      imageUrl: msg.visualization?.type === "IMAGE_GENERATOR" ? msg.visualization.image_url : undefined
+                                    });
+                                    setShowShareModal(true);
+                                  }}
+                                  className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-cyan-300 transition-all"
+                                  title="Share to LinkedIn / Twitter / WhatsApp"
+                                >
+                                  <Share2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
                                   onClick={() => handleCopy(msg.content, msg.id)}
                                   className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-all"
                                   title="Copy text"
@@ -1057,7 +1114,7 @@ export default function Home() {
         </div>
 
         {/* Minimalist Floating Input Dock (ChatGPT / Claude Style) */}
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-40">
+        <div className="absolute bottom-16 sm:bottom-5 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-40">
           <div className="bg-slate-900/90 backdrop-blur-2xl border border-slate-800 rounded-2xl p-2 shadow-2xl shadow-black/40 focus-within:border-cyan-500/50 transition-all flex items-end gap-2">
             <textarea
               ref={textareaRef}
@@ -1081,6 +1138,38 @@ export default function Home() {
             AntarikshaVaani by Stackverse-labs • Calibrated on ISRO ISSDC PDS4 telemetry
           </p>
         </div>
+
+        {/* Mobile Bottom Navigation Bar (Clean mobile-native feel) */}
+        <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0c1322]/95 backdrop-blur-2xl border-t border-slate-800/90 px-6 py-2 flex items-center justify-around">
+          <button
+            onClick={() => handleNewChat()}
+            className="flex flex-col items-center gap-1 text-cyan-400 py-1"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span className="text-[10px] font-mono font-medium">Chat</span>
+          </button>
+          <button
+            onClick={() => setShowGallery(true)}
+            className="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-300 py-1"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span className="text-[10px] font-mono font-medium">8K Gallery</span>
+          </button>
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-300 py-1"
+          >
+            <Satellite className="w-4 h-4" />
+            <span className="text-[10px] font-mono font-medium">Missions</span>
+          </button>
+          <button
+            onClick={() => setShowOnboarding(true)}
+            className="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-300 py-1"
+          >
+            <HelpCircle className="w-4 h-4" />
+            <span className="text-[10px] font-mono font-medium">Guide</span>
+          </button>
+        </nav>
 
       </div>
     </div>

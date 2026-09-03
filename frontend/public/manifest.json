@@ -1,0 +1,17 @@
+{
+  "name": "AntarikshaVaani - Mission Intelligence AI",
+  "short_name": "AntarikshaVaani",
+  "description": "AI-Powered Sovereign Mission Intelligence Agent for Indian Space Science (ISRO PDS4 & SWOC)",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070e1d",
+  "theme_color": "#070e1d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
