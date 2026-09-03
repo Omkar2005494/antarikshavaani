@@ -596,59 +596,103 @@ export default function Home() {
     <div className="flex h-screen h-[100dvh] cosmic-void-bg text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20 selection:text-cyan-200 relative">
       <SpaceCanvas />
       
-      {/* Minimalist Collapsible Sidebar (Claude / ChatGPT Style) */}
+      {/* Comprehensive Aerospace Sidebar (All Tools, Features & Account) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#030712]/95 backdrop-blur-3xl border-r border-white/10 transition-all duration-300 ease-in-out flex flex-col ${
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-[#030712]/95 backdrop-blur-3xl border-r border-white/10 transition-all duration-300 ease-in-out flex flex-col ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-4 flex items-center justify-between border-b border-slate-800/60">
+        {/* Sidebar Header */}
+        <div className="p-4 flex items-center justify-between border-b border-white/[0.08]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-sm shadow-cyan-500/20">
               <Satellite className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-xs font-bold text-white tracking-tight">AntarikshaVaani</h2>
-              <p className="text-[10px] font-mono text-slate-400">Stackverse-labs</p>
+              <h2 className="text-sm font-display font-bold text-white tracking-tight">AntarikshaVaani</h2>
+              <p className="text-[10px] font-mono text-slate-400">ISRO Mission Intelligence</p>
             </div>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
           >
             <PanelLeftClose className="w-4 h-4" />
           </button>
         </div>
 
-        {/* New Chat Button */}
-        <div className="p-3 space-y-2">
+        {/* Core Navigation Tools */}
+        <div className="p-3 space-y-1.5 border-b border-white/[0.08]">
           <button
             onClick={() => { handleNewChat(); setSidebarOpen(false); }}
-            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 text-xs font-medium text-slate-200 hover:text-white transition-all shadow-sm group"
+            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-white transition-all shadow-sm group"
           >
             <Plus className="w-4 h-4 text-cyan-400 group-hover:rotate-90 transition-transform" />
             <span>New Space Query</span>
           </button>
-          <button
-            onClick={() => { setShowGallery(true); setSidebarOpen(false); }}
-            className="w-full flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20 border border-cyan-500/30 text-xs font-medium text-cyan-300 hover:text-white transition-all shadow-sm group"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Community 8K Gallery</span>
-          </button>
+
           <button
             onClick={() => { setTrackerMode("earth"); setShow3DTracker(true); setSidebarOpen(false); }}
-            className="w-full flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-medium text-cyan-300 hover:text-white transition-all shadow-sm group"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/25 text-xs font-semibold text-cyan-300 hover:text-white transition-all shadow-sm group"
           >
-            <Globe2 className="w-3.5 h-3.5 text-cyan-400" />
-            <span>3D Mission Control</span>
+            <div className="flex items-center gap-2.5">
+              <Globe2 className="w-4 h-4 text-cyan-400 group-hover:animate-spin-slow" />
+              <span>3D Orbit Tracker</span>
+            </div>
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              Interactive
+            </span>
+          </button>
+
+          <button
+            onClick={() => { setShowGallery(true); setSidebarOpen(false); }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-xs font-medium text-slate-200 hover:text-white transition-all group"
+          >
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              <span>Community 8K Gallery</span>
+            </div>
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-slate-400">
+              Renders
+            </span>
+          </button>
+
+          <button
+            onClick={() => { setShowOnboarding(true); setSidebarOpen(false); }}
+            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-xs font-medium text-slate-300 hover:text-white transition-all"
+          >
+            <HelpCircle className="w-4 h-4 text-slate-400" />
+            <span>Mission Guide & Walkthrough</span>
           </button>
         </div>
 
-        {/* Recent Queries */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1 custom-scrollbar text-xs">
+        {/* Language Selection Section */}
+        <div className="px-4 py-3 border-b border-white/[0.08]">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+            <span>Response Language</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          </div>
+          <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
+            {INDIC_LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => setSelectedLang(lang)}
+                className={`px-2.5 py-1.5 rounded-lg text-left transition-all text-[11px] ${
+                  selectedLang.code === lang.code
+                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold"
+                    : "bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.06]"
+                }`}
+              >
+                {lang.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Curated Space Queries */}
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1 custom-scrollbar text-xs">
           <div className="px-2 py-1 text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">
-            Curated Missions
+            Curated Space Queries
           </div>
           {STARTER_PROMPTS.map((p, i) => (
             <button
@@ -658,18 +702,65 @@ export default function Home() {
                 handleSend(q); 
                 setSidebarOpen(false); 
               }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-slate-300 hover:text-cyan-300 hover:bg-slate-800/60 transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-slate-300 hover:text-cyan-300 hover:bg-white/[0.04] transition-colors text-left group"
             >
               <span className="text-sm">{p.icon}</span>
-              <span className="truncate">{p.title}</span>
+              <span className="truncate flex-1 group-hover:translate-x-0.5 transition-transform">{p.title}</span>
             </button>
           ))}
         </div>
 
-        {/* Sidebar Footer */}
-        <div className="p-3.5 border-t border-slate-800/60 text-[11px] font-mono text-slate-400 flex items-center justify-between">
-          <span>Stackverse-labs</span>
-          <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px]">20 req/min</span>
+        {/* Sidebar Footer: Quota & User Account */}
+        <div className="p-3 border-t border-white/[0.08] space-y-2 bg-[#02050c]">
+          {/* Token Quota Display */}
+          <div 
+            onClick={() => { if (!currentUser) setShowAuthModal(true); }}
+            className={`flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono cursor-pointer transition-all ${
+              currentUser
+                ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-300"
+                : "bg-white/[0.03] border-white/[0.08] text-slate-300 hover:border-cyan-500/30"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Zap className={`w-3.5 h-3.5 ${tokensRemaining <= 10 ? "text-red-400" : "text-amber-400"}`} />
+              <div>
+                <span className="font-bold text-white">{tokensRemaining}</span>
+                <span className="text-slate-500">/{tokensTotal} Tokens</span>
+              </div>
+            </div>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300">
+              {currentUser ? "Researcher" : "Sign In"}
+            </span>
+          </div>
+
+          {/* User Account / Sign In */}
+          {currentUser ? (
+            <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+              <div className="flex items-center gap-2 truncate">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-[10px] font-bold text-white shrink-0">
+                  {currentUser.displayName ? currentUser.displayName.slice(0, 2).toUpperCase() : "OB"}
+                </div>
+                <div className="truncate text-left">
+                  <p className="text-xs font-semibold text-white truncate leading-none">{currentUser.displayName}</p>
+                  <p className="text-[10px] text-cyan-400 truncate mt-0.5 leading-none">{currentUser.role || "Lead AI"}</p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="px-2 py-1 rounded-lg text-[10px] font-mono text-red-400 hover:bg-red-500/10 transition-colors"
+                title="Sign Out"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-95 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all text-center"
+            >
+              Sign In (1000 Tokens)
+            </button>
+          )}
         </div>
       </aside>
 
@@ -686,20 +777,21 @@ export default function Home() {
         
 
 
-        {/* Minimalist Top Navbar */}
-        <header className="h-14 shrink-0 flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.08] bg-[#030712]/70 backdrop-blur-2xl z-30">
+        {/* Ultra-Clean, Minimalist Top Navbar */}
+        <header className="h-14 shrink-0 flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.08] bg-[#030712]/60 backdrop-blur-2xl z-30">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
-              title="Toggle Sidebar"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent hover:border-white/10 transition-all flex items-center gap-2 group"
+              title="Open Navigation Menu"
             >
-              <PanelLeft className="w-4 h-4" />
+              <PanelLeft className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline text-xs font-mono text-slate-400 group-hover:text-slate-200">Menu</span>
             </button>
 
             <button
               onClick={handleNewChat}
-              className="flex items-center gap-2 text-left group"
+              className="flex items-center gap-2 text-left group ml-1"
             >
               <span className="font-display font-bold text-base tracking-tight bg-gradient-to-r from-white via-slate-100 to-cyan-300 bg-clip-text text-transparent group-hover:to-cyan-200 transition-colors">
                 AntarikshaVaani
@@ -710,140 +802,25 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            {/* Token Quota Live Badge */}
-            <div 
-              onClick={() => { if (!currentUser) setShowAuthModal(true); }}
-              title={currentUser ? "Authenticated Researcher Quota (1000 Tokens)" : "Guest Quota (50 Tokens). Click to Sign In for 1000 Tokens!"}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
-                tokensRemaining <= 10 
-                  ? "bg-red-500/10 border-red-500/30 text-red-400 animate-pulse shadow-sm shadow-red-500/10" 
-                  : currentUser
-                  ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-300 shadow-sm shadow-cyan-500/10"
-                  : "bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700"
-              }`}
-            >
-              <Zap className={`w-3.5 h-3.5 ${tokensRemaining <= 10 ? "text-red-400" : "text-amber-400"}`} />
-              <span className="font-bold">{tokensRemaining}</span>
-              <span className="text-[10px] text-slate-500">/{tokensTotal}</span>
-              {!currentUser && (
-                <span className="hidden sm:inline-block text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 ml-0.5">
-                  Guest
-                </span>
-              )}
-            </div>
-
-            {/* 3D Space Tracker */}
+          <div className="flex items-center gap-2">
+            {/* Quick 3D Tracker Action Pill */}
             <button
               onClick={() => { setTrackerMode("earth"); setShow3DTracker(true); }}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-xs font-mono text-cyan-300 hover:text-white transition-all shadow-sm shadow-cyan-500/20 backdrop-blur-xl"
-              title="Launch Interactive 3D Satellite & Moon Tracker"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-mono text-cyan-300 hover:text-white transition-all shadow-sm shadow-cyan-500/20"
+              title="Launch 3D Planet & Space Tracker"
             >
               <Globe2 className="w-3.5 h-3.5 text-cyan-400 animate-spin-slow" />
-              <span>3D Tracker</span>
+              <span className="hidden sm:inline">3D Tracker</span>
             </button>
-            {/* 8K Space Gallery Button */}
+
+            {/* Quick New Chat Button */}
             <button
-              onClick={() => setShowGallery(true)}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-500/40 text-xs font-mono text-slate-300 hover:text-cyan-300 transition-all shadow-sm backdrop-blur-xl"
-              title="Open Community 8K Space Gallery"
+              onClick={handleNewChat}
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent hover:border-white/10 transition-all"
+              title="Start New Query"
             >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span>8K Gallery</span>
+              <Plus className="w-4 h-4" />
             </button>
-            {/* Mission Walkthrough & Guide */}
-            <button
-              onClick={() => setShowOnboarding(true)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors"
-              title="Mission Walkthrough & Guide"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
-            {/* Language Selector */}
-            <div className="relative">
-              <button
-                onClick={() => setShowLangMenu(!showLangMenu)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-cyan-500/30 hover:border-cyan-400 text-xs font-mono text-cyan-300 hover:text-white transition-all shadow-sm shadow-cyan-500/10"
-                title="Select target response language"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>{selectedLang.label}</span>
-                <ChevronDown className="w-3 h-3 text-slate-400" />
-              </button>
-
-              {showLangMenu && (
-                <div className="absolute right-0 mt-1.5 w-48 bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-xl shadow-2xl z-50 py-1 text-xs font-mono">
-                  {INDIC_LANGUAGES.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => { setSelectedLang(lang); setShowLangMenu(false); }}
-                      className="w-full text-left px-3.5 py-2 text-slate-300 hover:bg-slate-800 hover:text-cyan-400 flex items-center justify-between transition-colors"
-                    >
-                      <span>{lang.label}</span>
-                      {selectedLang.code === lang.code && <Check className="w-3.5 h-3.5 text-emerald-400" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* User Authentication Pill / Avatar */}
-            {currentUser ? (
-              <div className="relative">
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 pl-2 pr-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-cyan-500/50 transition-all text-xs font-mono"
-                >
-                  <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                    {currentUser.displayName ? currentUser.displayName.slice(0, 2).toUpperCase() : "OB"}
-                  </div>
-                  <div className="hidden md:flex flex-col text-left">
-                    <span className="text-[11px] font-semibold text-white leading-none">
-                      {currentUser.displayName || "Researcher"}
-                    </span>
-                    <span className="text-[9px] text-cyan-400 leading-tight">
-                      {currentUser.role || "Lead AI"}
-                    </span>
-                  </div>
-                </button>
-
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-1.5 w-56 bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-2xl shadow-2xl z-50 p-2 text-xs font-mono">
-                    <div className="p-2.5 border-b border-slate-800 mb-1">
-                      <p className="font-bold text-white truncate">{currentUser.displayName}</p>
-                      <p className="text-[10px] text-slate-400 truncate">{currentUser.email}</p>
-                      <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[9px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                        {currentUser.organization}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-between"
-                    >
-                      <span>Sign Out</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-90 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/10 transition-opacity"
-              >
-                <span>Sign In</span>
-              </button>
-            )}
-
-            {/* New Chat Button */}
-            {messages.length > 0 && (
-              <button
-                onClick={handleNewChat}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                title="New Chat"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            )}
           </div>
         </header>
 
