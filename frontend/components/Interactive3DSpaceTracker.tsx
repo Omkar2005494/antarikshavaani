@@ -202,11 +202,7 @@ export default function Interactive3DSpaceTracker({
     controls.maxDistance = 22.0;
     controls.autoRotate = false; // We manage rotation dynamically
 
-    // User drag breaks camera lock so user can explore freely
-    controls.addEventListener("start", () => {
-      cameraLockedRef.current = false;
-      setCameraLocked(false);
-    });
+    // OrbitControls keeps constant camera radius while rotating (zero unwanted zoom)
 
     // 3. Starfield
     const starGeometry = new THREE.BufferGeometry();
@@ -602,21 +598,12 @@ export default function Interactive3DSpaceTracker({
         });
       }
 
-      // Handle Reticle and Camera Flight
+      // Update Reticle Position (NO forced camera zooming or fighting mouse drag)
       if (mode === "earth" && activeSatMesh) {
         const satPos = (activeSatMesh as THREE.Group).position;
         reticleGroup.position.copy(satPos);
         reticleGroup.lookAt(camera.position);
         reticleGroup.visible = true;
-
-        // Smoothly fly camera to lock on satellite if locked
-        if (cameraLockedRef.current) {
-          controls.target.lerp(satPos, 0.06);
-
-          // Position camera at a close-up cinematic angle
-          const targetCamPos = satPos.clone().add(new THREE.Vector3(1.2, 0.9, 1.4));
-          camera.position.lerp(targetCamPos, 0.05);
-        }
       } else if (mode === "moon") {
         const activeSite = LUNAR_SITES.find((s) => s.id === targetFocusRef.current.id);
         if (activeSite) {
@@ -624,26 +611,14 @@ export default function Interactive3DSpaceTracker({
           reticleGroup.position.copy(worldPos);
           reticleGroup.lookAt(camera.position);
           reticleGroup.visible = true;
-
-          if (cameraLockedRef.current) {
-            controls.target.lerp(worldPos, 0.06);
-            const targetCamPos = worldPos.clone().add(new THREE.Vector3(1.0, 0.8, 1.2));
-            camera.position.lerp(targetCamPos, 0.05);
-          }
         }
-      } else if (targetFocusRef.current.type === "overview") {
+      } else {
         reticleGroup.visible = false;
-        controls.target.lerp(new THREE.Vector3(0, 0, 0), 0.06);
-        camera.position.lerp(new THREE.Vector3(0, 3.5, 9.5), 0.05);
       }
 
-      // Idle auto-rotation when user isn't dragging and in overview mode
-      if (isRotatingRef.current && !cameraLockedRef.current && targetFocusRef.current.type === "overview") {
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.6;
-      } else {
-        controls.autoRotate = false;
-      }
+      // Controlled auto-rotation when play is active (maintains exact user zoom distance)
+      controls.autoRotate = isRotatingRef.current;
+      controls.autoRotateSpeed = 0.6;
 
       controls.update();
       renderer.render(scene, camera);
@@ -681,21 +656,15 @@ export default function Interactive3DSpaceTracker({
   const handleSelectSatellite = (sat: SatelliteData) => {
     setSelectedSatellite(sat);
     targetFocusRef.current = { id: sat.id, type: "sat" };
-    cameraLockedRef.current = true;
-    setCameraLocked(true);
   };
 
   const handleSelectLunarSite = (site: LunarSiteData) => {
     setSelectedSite(site);
     targetFocusRef.current = { id: site.id, type: "site" };
-    cameraLockedRef.current = true;
-    setCameraLocked(true);
   };
 
   const handleResetOverview = () => {
     targetFocusRef.current = { id: "overview", type: "overview" };
-    cameraLockedRef.current = false;
-    setCameraLocked(false);
   };
 
   const handleAskAboutSatellite = () => {
@@ -726,8 +695,8 @@ export default function Interactive3DSpaceTracker({
               <h3 className="text-sm font-bold text-white tracking-tight">
                 {mode === "earth" ? "NASA Blue Marble • ISRO Fleet" : "NASA LROC Moon • Chandrayaan-3"}
               </h3>
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                Camera Lock Active
+<span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                Full 360° Orbit
               </span>
             </div>
             <p className="text-[10px] font-mono text-slate-400">
@@ -814,18 +783,6 @@ export default function Interactive3DSpaceTracker({
             </div>
 
             <div className="pt-2 border-t border-slate-800/80 flex flex-col gap-1.5">
-              <button
-                onClick={() => {
-                  cameraLockedRef.current = true;
-                  setCameraLocked(true);
-                }}
-                className={`w-full py-1.5 rounded-lg text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all ${
-                  cameraLocked ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                }`}
-              >
-                <Target className="w-3 h-3" />
-                <span>{cameraLocked ? "Camera Locked on Spacecraft" : "Lock Camera to Satellite"}</span>
-              </button>
 
               {onQueryMission && (
                 <button
@@ -854,16 +811,7 @@ export default function Interactive3DSpaceTracker({
                 {selectedSite.discovery}
               </p>
             </div>
-            <button
-              onClick={() => {
-                cameraLockedRef.current = true;
-                setCameraLocked(true);
-              }}
-              className="w-full py-1.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-500 text-slate-950 flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20"
-            >
-              <Target className="w-3 h-3" />
-              <span>Zoom Into Landing Site</span>
-            </button>
+
           </div>
         )}
       </div>
@@ -876,7 +824,7 @@ export default function Interactive3DSpaceTracker({
               key={sat.id}
               onClick={() => handleSelectSatellite(sat)}
               className={`px-4 py-2.5 rounded-2xl text-xs font-mono transition-all shrink-0 border backdrop-blur-2xl shadow-xl flex items-center gap-2 ${
-                selectedSatellite?.id === sat.id && cameraLocked
+                selectedSatellite?.id === sat.id
                   ? "bg-cyan-500 text-slate-950 font-bold border-cyan-300 shadow-cyan-500/30 scale-105"
                   : "bg-slate-900/85 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700"
               }`}
@@ -891,7 +839,7 @@ export default function Interactive3DSpaceTracker({
               key={site.id}
               onClick={() => handleSelectLunarSite(site)}
               className={`px-4 py-2.5 rounded-2xl text-xs font-mono transition-all shrink-0 border backdrop-blur-2xl shadow-xl flex items-center gap-2 ${
-                selectedSite?.id === site.id && cameraLocked
+                selectedSite?.id === site.id
                   ? "bg-emerald-500 text-slate-950 font-bold border-emerald-300 shadow-emerald-500/30 scale-105"
                   : "bg-slate-900/85 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700"
               }`}
