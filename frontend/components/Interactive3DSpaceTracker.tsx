@@ -594,33 +594,74 @@ export default function Interactive3DSpaceTracker({
       satelliteMeshes.push({ group: satModel, data: sat, orbitLine });
     });
 
-    // If in Moon mode, also add the 3D surface landing sites
-    if (mode === "moon") {
-      LUNAR_SITES.forEach((site) => {
-        const siteGroup = new THREE.Group();
+    // Geodesic spherical coordinate converter for NASA LROC Moon
+    const latLonToVector3 = (latDeg: number, lonDeg: number, radius: number): THREE.Vector3 => {
+      const phi = (90 - latDeg) * (Math.PI / 180);
+      const theta = (lonDeg + 180) * (Math.PI / 180);
+      const x = -(radius * Math.sin(phi) * Math.cos(theta));
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+      const y = radius * Math.cos(phi);
+      return new THREE.Vector3(x, y, z);
+    };
 
+    // If in Moon mode, render authentic NASA/ISRO surface beacons & Vikram Lander
+    if (mode === "moon") {
+      const siteCoords: Record<string, { lat: number; lon: number }> = {
+        shiv_shakti: { lat: -69.373, lon: 32.319 },
+        tiranga: { lat: -70.9, lon: 22.78 },
+        manzinus: { lat: -44.9, lon: 26.3 },
+      };
+
+      LUNAR_SITES.forEach((site) => {
+        const coords = siteCoords[site.id] || { lat: -69.0, lon: 30.0 };
+        const surfacePos = latLonToVector3(coords.lat, coords.lon, globeRadius * 1.002);
+        const normal = surfacePos.clone().normalize();
+
+        const siteGroup = new THREE.Group();
+        siteGroup.position.copy(surfacePos);
+
+        // Align siteGroup upright perpendicular to Moon's spherical curvature
+        const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+        siteGroup.quaternion.copy(quat);
+
+        // 1. Holographic Vertical Light Column Beam (Rising 0.4 units into space)
+        const beamGeom = new THREE.CylinderGeometry(0.012, 0.018, 0.42, 16);
+        const beamMat = new THREE.MeshBasicMaterial({
+          color: site.color,
+          transparent: true,
+          opacity: 0.65,
+        });
+        const beam = new THREE.Mesh(beamGeom, beamMat);
+        beam.position.y = 0.21;
+        siteGroup.add(beam);
+
+        // 2. Floating Diamond / Glowing Beacon Orb at top of pillar
+        const orbGeom = new THREE.OctahedronGeometry(0.045, 0);
+        const orbMat = new THREE.MeshBasicMaterial({ color: site.color });
+        const orb = new THREE.Mesh(orbGeom, orbMat);
+        orb.position.y = 0.44;
+        siteGroup.add(orb);
+
+        // 3. Ground Target Ring flush with surface (No clipping/z-fighting)
+        const groundRingGeom = new THREE.RingGeometry(0.04, 0.08, 32);
+        const groundRingMat = new THREE.MeshBasicMaterial({
+          color: site.color,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.75,
+        });
+        const groundRing = new THREE.Mesh(groundRingGeom, groundRingMat);
+        groundRing.rotation.x = Math.PI / 2;
+        groundRing.position.y = 0.005;
+        siteGroup.add(groundRing);
+
+        // 4. For Shiv Shakti Point: 3D Vikram Lander on the lunar ground!
         if (site.id === "shiv_shakti") {
-          // Add 3D Vikram Lander & Pragyan Rover Model!
-          const vikram = buildVikramLander();
-          siteGroup.add(vikram);
-        } else {
-          // Landing pin for other impact / crater sites
-          const pinGeom = new THREE.SphereGeometry(0.06, 16, 16);
-          const pinMat = new THREE.MeshBasicMaterial({ color: site.color });
-          siteGroup.add(new THREE.Mesh(pinGeom, pinMat));
+          const lander = buildVikramLander();
+          siteGroup.add(lander);
         }
 
-        // Holographic ground beacon ring
-        const ringGeom = new THREE.RingGeometry(0.08, 0.12, 32);
-        const ringMat = new THREE.MeshBasicMaterial({ color: site.color, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
-        const ringMesh = new THREE.Mesh(ringGeom, ringMat);
-        ringMesh.lookAt(0, 0, 0);
-        siteGroup.add(ringMesh);
-
-        siteGroup.position.set(site.x, site.y, site.z);
-        siteGroup.lookAt(site.x * 2, site.y * 2, site.z * 2); // Point straight outward from Moon surface
         globe.add(siteGroup);
-
         siteMeshes.push({ group: siteGroup, data: site });
       });
     }
@@ -654,19 +695,24 @@ export default function Interactive3DSpaceTracker({
         }
       });
 
-      // Reticle targeting
+      // Reticle targeting (Hover cleanly in 3D space, zero clipping into planet)
       if (activeSatMesh) {
         const satPos = (activeSatMesh as THREE.Group).position;
         reticleGroup.position.copy(satPos);
         reticleGroup.lookAt(camera.position);
+        reticleGroup.scale.set(1, 1, 1);
         reticleGroup.visible = true;
       } else if (mode === "moon" && targetFocusRef.current.type === "site") {
         const activeSite = siteMeshes.find((s) => s.data.id === targetFocusRef.current.id);
         if (activeSite) {
           const worldPos = new THREE.Vector3();
           activeSite.group.getWorldPosition(worldPos);
-          reticleGroup.position.copy(worldPos);
+          // Position reticle elevated above the vertical beacon orb in space
+          const normal = worldPos.clone().normalize();
+          const elevatedPos = worldPos.clone().add(normal.multiplyScalar(0.48));
+          reticleGroup.position.copy(elevatedPos);
           reticleGroup.lookAt(camera.position);
+          reticleGroup.scale.set(0.65, 0.65, 0.65);
           reticleGroup.visible = true;
         }
       } else {
