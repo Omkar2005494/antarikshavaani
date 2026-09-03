@@ -896,10 +896,10 @@ export default function Home() {
         />
 
         {/* Scrollable Conversation Stream */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 pb-40 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-8 lg:px-12 py-6 pb-44 custom-scrollbar">
           {messages.length === 0 ? (
             /* Minimalist Empty State (ChatGPT / Claude Style) */
-            <div className="min-h-[65vh] flex flex-col items-center justify-center text-center max-w-2xl mx-auto my-auto space-y-8">
+            <div className="min-h-[65vh] flex flex-col items-center justify-center text-center max-w-5xl mx-auto my-auto space-y-8">
               <div className="space-y-3">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 via-slate-900 to-slate-950 border border-cyan-500/30 mx-auto flex items-center justify-center shadow-xl shadow-cyan-500/5">
                   <Satellite className="w-7 h-7 text-cyan-400" />
@@ -951,12 +951,12 @@ export default function Home() {
             </div>
           ) : (
             /* Active Chat Thread */
-            <div className="max-w-3xl mx-auto space-y-6">
+            <div className="w-full max-w-5xl xl:max-w-6xl mx-auto space-y-6">
               {messages.map((msg) => (
                 <div key={msg.id} className="space-y-3">
                   {/* User Message */}
                   {msg.role === "user" ? (
-                    <div className="flex items-start space-x-3 max-w-2xl ml-auto justify-end">
+                    <div className="flex items-start space-x-3 max-w-3xl ml-auto justify-end">
                       <div className="p-3.5 rounded-2xl bg-slate-800/90 text-white text-sm shadow-sm border border-slate-700/50 leading-relaxed">
                         {msg.content}
                       </div>
@@ -966,12 +966,12 @@ export default function Home() {
                     </div>
                   ) : (
                     /* Assistant Message */
-                    <div className="flex items-start space-x-3 max-w-3xl mr-auto">
+                    <div className="flex items-start space-x-3 w-full">
                       <div className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-slate-950 font-bold shrink-0 shadow-md shadow-cyan-500/20 mt-1">
                         <Bot className="w-3.5 h-3.5" />
                       </div>
 
-                      <div className="flex-1 space-y-4 max-w-2xl sm:max-w-3xl">
+                      <div className="flex-1 space-y-4 w-full">
                         {/* Minimalist 4-Agent Thinking Stepper */}
                         {msg.isThinking && (
                           <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
@@ -1220,7 +1220,7 @@ export default function Home() {
         </div>
 
         {/* Minimalist Floating Input Dock (ChatGPT / Claude Style) */}
-        <div className="absolute bottom-16 sm:bottom-5 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-40">
+        <div className="absolute bottom-16 sm:bottom-5 left-1/2 -translate-x-1/2 w-full max-w-4xl xl:max-w-5xl px-4 z-40">
           <div className="bg-slate-900/90 backdrop-blur-2xl border border-slate-800 rounded-2xl p-2 shadow-2xl shadow-black/40 focus-within:border-cyan-500/50 transition-all flex items-end gap-2">
             <textarea
               ref={textareaRef}
