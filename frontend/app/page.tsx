@@ -13,6 +13,8 @@ import AuthModal, { UserSession } from "@/components/AuthModal";
 import OnboardingModal from "@/components/OnboardingModal";
 import CommunityGalleryModal from "@/components/CommunityGalleryModal";
 import ShareModal from "@/components/ShareModal";
+import Interactive3DSpaceTracker from "@/components/Interactive3DSpaceTracker";
+import { Mic, MicOff, Volume2, VolumeX, Globe2 } from "lucide-react";
 import { HelpCircle, FileText, Share2, Compass } from "lucide-react";
 import { onAuthStateChanged, signOut, auth } from "@/lib/firebase";
 import { 
@@ -131,6 +133,10 @@ export default function Home() {
   const [tokensRemaining, setTokensRemaining] = useState(50);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
+  const [show3DTracker, setShow3DTracker] = useState(false);
+  const [trackerMode, setTrackerMode] = useState<"earth" | "moon">("earth");
+  const [isListening, setIsListening] = useState(false);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareData, setShareData] = useState<{ title: string; text?: string; imageUrl?: string }>({
     title: "ISRO Space Mission Intelligence",
@@ -335,6 +341,74 @@ export default function Home() {
         msg.id === id ? { ...msg, showRaw: !msg.showRaw } : msg
       )
     );
+  };
+
+  // Voice AI - Speech Recognition (STT)
+  const handleVoiceInput = () => {
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser. Please use Chrome, Brave, or Edge.");
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = selectedLang.code === "hindi" ? "hi-IN" : "en-IN";
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        }
+        setIsListening(false);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn("Speech recognition error:", event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (e) {
+      console.warn("Speech recognition init error:", e);
+      setIsListening(false);
+    }
+  };
+
+  // Voice AI - Text-to-Speech (TTS)
+  const handleSpeak = (text: string, id: string) => {
+    if (speakingId === id) {
+      window.speechSynthesis.cancel();
+      setSpeakingId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const cleanText = text.replace(/[*#`_]/g, "").slice(0, 400);
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    utterance.onend = () => setSpeakingId(null);
+    utterance.onerror = () => setSpeakingId(null);
+
+    setSpeakingId(id);
+    window.speechSynthesis.speak(utterance);
   };
 
   const handleCopyBibtex = (msg: ChatMessage) => {
@@ -562,6 +636,13 @@ export default function Home() {
             <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
             <span>Community 8K Gallery</span>
           </button>
+          <button
+            onClick={() => { setTrackerMode("earth"); setShow3DTracker(true); setSidebarOpen(false); }}
+            className="w-full flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-medium text-cyan-300 hover:text-white transition-all shadow-sm group"
+          >
+            <Globe2 className="w-3.5 h-3.5 text-cyan-400" />
+            <span>3D Mission Control</span>
+          </button>
         </div>
 
         {/* Recent Queries */}
@@ -657,6 +738,15 @@ export default function Home() {
               )}
             </div>
 
+            {/* 3D Space Tracker */}
+            <button
+              onClick={() => { setTrackerMode("earth"); setShow3DTracker(true); }}
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-xs font-mono text-cyan-300 hover:text-white transition-all shadow-sm shadow-cyan-500/10"
+              title="Launch Interactive 3D Satellite & Moon Tracker"
+            >
+              <Globe2 className="w-3.5 h-3.5 text-cyan-400 animate-spin-slow" />
+              <span>3D Tracker</span>
+            </button>
             {/* 8K Space Gallery Button */}
             <button
               onClick={() => setShowGallery(true)}
@@ -761,6 +851,13 @@ export default function Home() {
             )}
           </div>
         </header>
+
+        {/* Interactive 3D Earth & Moon Space Tracker */}
+        <Interactive3DSpaceTracker
+          isOpen={show3DTracker}
+          onClose={() => setShow3DTracker(false)}
+          initialMode={trackerMode}
+        />
 
         {/* Community 8K Space Gallery */}
         <CommunityGalleryModal
@@ -979,6 +1076,15 @@ export default function Home() {
                                 </button>
 
                                 <button
+                                  onClick={() => handleSpeak(msg.content, msg.id)}
+                                  className={`p-1 rounded hover:bg-slate-800 transition-all ${
+                                    speakingId === msg.id ? "text-cyan-400 animate-pulse" : "text-slate-400 hover:text-cyan-300"
+                                  }`}
+                                  title={speakingId === msg.id ? "Stop voice audio" : "Listen to audio response"}
+                                >
+                                  {speakingId === msg.id ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                                </button>
+                                <button
                                   onClick={() => {
                                     setShareData({
                                       title: msg.intent || "ISRO Space Mission Intelligence",
@@ -1125,6 +1231,18 @@ export default function Home() {
               rows={1}
               className="flex-1 bg-transparent border-none focus:ring-0 text-white font-sans text-sm resize-none placeholder:text-slate-500 py-2 px-3 custom-scrollbar leading-relaxed"
             />
+            <button
+              type="button"
+              onClick={handleVoiceInput}
+              className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0 ${
+                isListening
+                  ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/40"
+                  : "bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+              }`}
+              title={isListening ? "Listening... Click to stop" : "Voice AI Input (Speak in English/Hindi)"}
+            >
+              {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4" />}
+            </button>
             <button
               onClick={() => handleSend()}
               disabled={!input.trim() || isProcessing}
