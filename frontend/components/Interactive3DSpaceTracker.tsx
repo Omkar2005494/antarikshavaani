@@ -258,8 +258,101 @@ export default function Interactive3DSpaceTracker({
       scene.add(globe);
     }
 
-    // 5. Satellites / Lunar Sites
-    const satelliteMeshes: { mesh: THREE.Mesh; data: SatelliteData; orbitLine: THREE.Line }[] = [];
+    // 5. High-Fidelity 3D ISRO Satellite Assembly Builder
+    const createSpacecraftModel = (sat: SatelliteData): THREE.Group => {
+      const group = new THREE.Group();
+
+      // 1. Central Spacecraft Bus (Golden Kapton MLI thermal blanket)
+      const busGeom = new THREE.BoxGeometry(0.14, 0.14, 0.22);
+      const busMat = new THREE.MeshStandardMaterial({
+        color: 0xeab308, // Gold Kapton foil
+        metalness: 0.85,
+        roughness: 0.25,
+      });
+      const bus = new THREE.Mesh(busGeom, busMat);
+      group.add(bus);
+
+      // White ceramic radiator face
+      const radGeom = new THREE.PlaneGeometry(0.12, 0.2);
+      const radMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+      const rad1 = new THREE.Mesh(radGeom, radMat);
+      rad1.position.x = 0.071;
+      rad1.rotation.y = Math.PI / 2;
+      group.add(rad1);
+
+      // 2. Dual Photovoltaic Solar Array Wings (Deep Navy Silicon Cells)
+      const panelGeom = new THREE.BoxGeometry(0.36, 0.13, 0.012);
+      const panelMat = new THREE.MeshStandardMaterial({
+        color: 0x1e3a8a, // Photovoltaic silicon blue
+        metalness: 0.8,
+        roughness: 0.2,
+      });
+      const hingeMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 });
+
+      // Left Wing & Hinge Boom
+      const leftWing = new THREE.Mesh(panelGeom, panelMat);
+      leftWing.position.x = -0.28;
+      group.add(leftWing);
+
+      const leftHingeGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.1);
+      const leftHinge = new THREE.Mesh(leftHingeGeom, hingeMat);
+      leftHinge.position.x = -0.12;
+      leftHinge.rotation.z = Math.PI / 2;
+      group.add(leftHinge);
+
+      // Right Wing & Hinge Boom
+      const rightWing = new THREE.Mesh(panelGeom, panelMat);
+      rightWing.position.x = 0.28;
+      group.add(rightWing);
+
+      const rightHingeGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.1);
+      const rightHinge = new THREE.Mesh(rightHingeGeom, hingeMat);
+      rightHinge.position.x = 0.12;
+      rightHinge.rotation.z = Math.PI / 2;
+      group.add(rightHinge);
+
+      // 3. Parabolic Communications Dish Antenna (Nadir-Facing)
+      const dishGeom = new THREE.SphereGeometry(0.08, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.4);
+      const dishMat = new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        metalness: 0.9,
+        roughness: 0.2,
+        side: THREE.DoubleSide,
+      });
+      const dish = new THREE.Mesh(dishGeom, dishMat);
+      dish.position.z = 0.14;
+      dish.rotation.x = Math.PI;
+      group.add(dish);
+
+      // 4. Mission-Specific Payload Optics
+      if (sat.id === "cartosat") {
+        // High-resolution camera cylinder barrel
+        const camGeom = new THREE.CylinderGeometry(0.035, 0.045, 0.12, 16);
+        const camMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9 });
+        const cam = new THREE.Mesh(camGeom, camMat);
+        cam.position.y = -0.09;
+        group.add(cam);
+      } else if (sat.id === "aditya") {
+        // Solar coronagraph sunshade tube
+        const tubeGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.16, 16);
+        const tubeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.7 });
+        const tube = new THREE.Mesh(tubeGeom, tubeMat);
+        tube.position.y = 0.12;
+        group.add(tube);
+      }
+
+      // 5. Active Telemetry Beacon LED
+      const beaconGeom = new THREE.SphereGeometry(0.025, 8, 8);
+      const beaconMat = new THREE.MeshBasicMaterial({ color: sat.color });
+      const beacon = new THREE.Mesh(beaconGeom, beaconMat);
+      beacon.position.z = 0.18;
+      group.add(beacon);
+
+      group.scale.set(1.4, 1.4, 1.4);
+      return group;
+    };
+
+    const satelliteMeshes: { group: THREE.Group; data: SatelliteData; orbitLine: THREE.Line }[] = [];
     const siteMeshes: { mesh: THREE.Mesh; data: LunarSiteData }[] = [];
 
     if (mode === "earth") {
@@ -274,13 +367,11 @@ export default function Interactive3DSpaceTracker({
         orbitLine.rotation.z = sat.tilt * 0.4;
         scene.add(orbitLine);
 
-        // Satellite node with glow
-        const satGeom = new THREE.SphereGeometry(0.1, 16, 16);
-        const satMat = new THREE.MeshBasicMaterial({ color: sat.color });
-        const satMesh = new THREE.Mesh(satGeom, satMat);
-        scene.add(satMesh);
+        // Realistic 3D Spacecraft Model
+        const satModel = createSpacecraftModel(sat);
+        scene.add(satModel);
 
-        satelliteMeshes.push({ mesh: satMesh, data: sat, orbitLine });
+        satelliteMeshes.push({ group: satModel, data: sat, orbitLine });
       });
     } else {
       LUNAR_SITES.forEach((site) => {
@@ -389,13 +480,16 @@ export default function Interactive3DSpaceTracker({
       }
 
       if (mode === "earth") {
-        satelliteMeshes.forEach(({ mesh, data, orbitLine }) => {
+        satelliteMeshes.forEach(({ group, data, orbitLine }) => {
           data.angle += data.speed;
           const x = Math.cos(data.angle) * data.radius;
           const z = Math.sin(data.angle) * data.radius;
           const pos = new THREE.Vector3(x, 0, z);
           pos.applyEuler(orbitLine.rotation);
-          mesh.position.copy(pos);
+          group.position.copy(pos);
+
+          // Spacecraft nadir-pointing orientation: dish always faces Earth (0,0,0)
+          group.lookAt(0, 0, 0);
         });
       }
 
