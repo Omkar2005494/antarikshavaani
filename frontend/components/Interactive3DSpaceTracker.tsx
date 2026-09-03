@@ -3,12 +3,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { X, Globe, Moon, Play, Pause, Satellite, Compass, Maximize2 } from "lucide-react";
+import { X, Globe, Moon, Play, Pause, Satellite, Compass, Target, RotateCcw, MessageSquare } from "lucide-react";
 
 interface Interactive3DSpaceTrackerProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: "earth" | "moon";
+  onQueryMission?: (query: string) => void;
 }
 
 interface SatelliteData {
@@ -155,6 +156,7 @@ export default function Interactive3DSpaceTracker({
   isOpen,
   onClose,
   initialMode = "earth",
+  onQueryMission,
 }: Interactive3DSpaceTrackerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<"earth" | "moon">(initialMode);
@@ -164,6 +166,14 @@ export default function Interactive3DSpaceTracker({
 
   const [selectedSatellite, setSelectedSatellite] = useState<SatelliteData | null>(SATELLITES[0]);
   const [selectedSite, setSelectedSite] = useState<LunarSiteData | null>(null);
+  const [cameraLocked, setCameraLocked] = useState(true);
+  const cameraLockedRef = useRef(true);
+  cameraLockedRef.current = cameraLocked;
+
+  const targetFocusRef = useRef<{ id: string; type: "sat" | "site" | "overview" }>({
+    id: "cartosat",
+    type: "sat",
+  });
 
   useEffect(() => {
     if (!isOpen || !containerRef.current) return;
@@ -183,17 +193,22 @@ export default function Interactive3DSpaceTracker({
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // 2. Standard OrbitControls (Rotates the ENTIRE structure in 3D)
+    // 2. OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.enableZoom = true;
-    controls.minDistance = 2.8;
-    controls.maxDistance = 20.0;
-    controls.autoRotate = isRotatingRef.current;
-    controls.autoRotateSpeed = 0.6;
+    controls.minDistance = 2.4;
+    controls.maxDistance = 22.0;
+    controls.autoRotate = false; // We manage rotation dynamically
 
-    // 3. Starfield Background
+    // User drag breaks camera lock so user can explore freely
+    controls.addEventListener("start", () => {
+      cameraLockedRef.current = false;
+      setCameraLocked(false);
+    });
+
+    // 3. Starfield
     const starGeometry = new THREE.BufferGeometry();
     const starCount = 2000;
     const starPositions = new Float32Array(starCount * 3);
@@ -225,7 +240,6 @@ export default function Interactive3DSpaceTracker({
     let atmosphereMesh: THREE.Mesh | null = null;
 
     if (mode === "earth") {
-      // Real NASA Blue Marble Texture
       const earthMap = textureLoader.load("/textures/earth_day.jpg");
       const globeMaterial = new THREE.MeshStandardMaterial({
         map: earthMap,
@@ -235,7 +249,6 @@ export default function Interactive3DSpaceTracker({
       globe = new THREE.Mesh(globeGeometry, globeMaterial);
       scene.add(globe);
 
-      // Rotating Cloud Layer
       const cloudsMap = textureLoader.load("/textures/earth_clouds.png");
       const cloudsGeometry = new THREE.SphereGeometry(globeRadius * 1.018, 64, 64);
       const cloudsMaterial = new THREE.MeshStandardMaterial({
@@ -247,7 +260,6 @@ export default function Interactive3DSpaceTracker({
       cloudsMesh = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
       scene.add(cloudsMesh);
 
-      // Blue Atmospheric Glow Halo
       const atmosphereGeometry = new THREE.SphereGeometry(globeRadius * 1.055, 64, 64);
       const atmosphereMaterial = new THREE.MeshBasicMaterial({
         color: 0x38bdf8,
@@ -258,7 +270,6 @@ export default function Interactive3DSpaceTracker({
       atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
       scene.add(atmosphereMesh);
     } else {
-      // Real NASA LROC Moon Texture
       const moonMap = textureLoader.load("/textures/moon.jpg");
       const globeMaterial = new THREE.MeshStandardMaterial({
         map: moonMap,
@@ -273,17 +284,13 @@ export default function Interactive3DSpaceTracker({
     const createSpacecraftModel = (sat: SatelliteData): THREE.Group => {
       const group = new THREE.Group();
 
-      // Central Spacecraft Bus (Golden Kapton MLI thermal blanket)
+      // Golden Kapton Bus
       const busGeom = new THREE.BoxGeometry(0.14, 0.14, 0.22);
-      const busMat = new THREE.MeshStandardMaterial({
-        color: 0xeab308,
-        metalness: 0.85,
-        roughness: 0.25,
-      });
+      const busMat = new THREE.MeshStandardMaterial({ color: 0xeab308, metalness: 0.85, roughness: 0.25 });
       const bus = new THREE.Mesh(busGeom, busMat);
       group.add(bus);
 
-      // White ceramic radiator face
+      // Radiator
       const radGeom = new THREE.PlaneGeometry(0.12, 0.2);
       const radMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
       const rad1 = new THREE.Mesh(radGeom, radMat);
@@ -291,16 +298,11 @@ export default function Interactive3DSpaceTracker({
       rad1.rotation.y = Math.PI / 2;
       group.add(rad1);
 
-      // Dual Photovoltaic Solar Array Wings (Navy Blue Silicon Cells)
+      // Solar Wings
       const panelGeom = new THREE.BoxGeometry(0.36, 0.13, 0.012);
-      const panelMat = new THREE.MeshStandardMaterial({
-        color: 0x1e3a8a,
-        metalness: 0.8,
-        roughness: 0.2,
-      });
+      const panelMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.8, roughness: 0.2 });
       const hingeMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 });
 
-      // Left Wing
       const leftWing = new THREE.Mesh(panelGeom, panelMat);
       leftWing.position.x = -0.28;
       group.add(leftWing);
@@ -311,7 +313,6 @@ export default function Interactive3DSpaceTracker({
       leftHinge.rotation.z = Math.PI / 2;
       group.add(leftHinge);
 
-      // Right Wing
       const rightWing = new THREE.Mesh(panelGeom, panelMat);
       rightWing.position.x = 0.28;
       group.add(rightWing);
@@ -322,51 +323,47 @@ export default function Interactive3DSpaceTracker({
       rightHinge.rotation.z = Math.PI / 2;
       group.add(rightHinge);
 
-      // Parabolic Communications Dish Antenna (Nadir-Facing)
+      // Parabolic Dish Antenna
       const dishGeom = new THREE.SphereGeometry(0.08, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.4);
-      const dishMat = new THREE.MeshStandardMaterial({
-        color: 0xf59e0b,
-        metalness: 0.9,
-        roughness: 0.2,
-        side: THREE.DoubleSide,
-      });
+      const dishMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.2, side: THREE.DoubleSide });
       const dish = new THREE.Mesh(dishGeom, dishMat);
       dish.position.z = 0.14;
       dish.rotation.x = Math.PI;
       group.add(dish);
 
-      // Mission Payload Optics
-      if (sat.id === "cartosat") {
-        const camGeom = new THREE.CylinderGeometry(0.035, 0.045, 0.12, 16);
-        const camMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9 });
-        const cam = new THREE.Mesh(camGeom, camMat);
-        cam.position.y = -0.09;
-        group.add(cam);
-      } else if (sat.id === "aditya") {
-        const tubeGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.16, 16);
-        const tubeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.7 });
-        const tube = new THREE.Mesh(tubeGeom, tubeMat);
-        tube.position.y = 0.12;
-        group.add(tube);
-      }
-
-      // Active Telemetry Beacon LED
+      // Beacon LED
       const beaconGeom = new THREE.SphereGeometry(0.025, 8, 8);
       const beaconMat = new THREE.MeshBasicMaterial({ color: sat.color });
       const beacon = new THREE.Mesh(beaconGeom, beaconMat);
       beacon.position.z = 0.18;
       group.add(beacon);
 
-      group.scale.set(1.3, 1.3, 1.3);
+      group.scale.set(1.4, 1.4, 1.4);
       return group;
     };
+
+    // 7. Holographic Selection Reticle
+    const reticleGroup = new THREE.Group();
+    const reticleRingGeom = new THREE.RingGeometry(0.35, 0.38, 32);
+    const reticleRingMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+    const reticleRing = new THREE.Mesh(reticleRingGeom, reticleRingMat);
+    reticleGroup.add(reticleRing);
+
+    // Crosshairs
+    const chMat = new THREE.LineBasicMaterial({ color: 0x38bdf8 });
+    const chPoints1 = [new THREE.Vector3(-0.45, 0, 0), new THREE.Vector3(-0.38, 0, 0)];
+    const chLine1 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(chPoints1), chMat);
+    reticleGroup.add(chLine1);
+    const chPoints2 = [new THREE.Vector3(0.38, 0, 0), new THREE.Vector3(0.45, 0, 0)];
+    const chLine2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(chPoints2), chMat);
+    reticleGroup.add(chLine2);
+    scene.add(reticleGroup);
 
     const satelliteMeshes: { group: THREE.Group; data: SatelliteData; orbitLine: THREE.Line }[] = [];
     const siteMeshes: { mesh: THREE.Mesh; data: LunarSiteData }[] = [];
 
     if (mode === "earth") {
       SATELLITES.forEach((sat) => {
-        // Orbit ring
         const orbitCurve = new THREE.EllipseCurve(0, 0, sat.radius, sat.radius, 0, 2 * Math.PI, false, 0);
         const points = orbitCurve.getPoints(80);
         const orbitGeom = new THREE.BufferGeometry().setFromPoints(points.map((p) => new THREE.Vector3(p.x, 0, p.y)));
@@ -376,7 +373,6 @@ export default function Interactive3DSpaceTracker({
         orbitLine.rotation.z = sat.tilt * 0.4;
         scene.add(orbitLine);
 
-        // Realistic 3D Spacecraft Model
         const satModel = createSpacecraftModel(sat);
         scene.add(satModel);
 
@@ -401,14 +397,13 @@ export default function Interactive3DSpaceTracker({
       });
     }
 
-    // 7. Animation Loop
+    // 8. Animation & Camera Flight Loop
     let animId: number;
+    let clock = new THREE.Clock();
+
     const animate = () => {
       animId = requestAnimationFrame(animate);
-
-      // Auto-rotation via OrbitControls
-      controls.autoRotate = isRotatingRef.current;
-      controls.update();
+      const delta = clock.getDelta();
 
       // Earth spins on its axis
       globe.rotation.y += 0.001;
@@ -417,6 +412,7 @@ export default function Interactive3DSpaceTracker({
       }
 
       // Update satellite orbits
+      let activeSatMesh: THREE.Group | null = null;
       if (mode === "earth") {
         satelliteMeshes.forEach(({ group, data, orbitLine }) => {
           data.angle += data.speed;
@@ -426,15 +422,63 @@ export default function Interactive3DSpaceTracker({
           pos.applyEuler(orbitLine.rotation);
           group.position.copy(pos);
           group.lookAt(0, 0, 0);
+
+          if (targetFocusRef.current.type === "sat" && targetFocusRef.current.id === data.id) {
+            activeSatMesh = group;
+          }
         });
       }
 
+      // Handle Reticle and Camera Flight
+      if (mode === "earth" && activeSatMesh) {
+        const satPos = (activeSatMesh as THREE.Group).position;
+        reticleGroup.position.copy(satPos);
+        reticleGroup.lookAt(camera.position);
+        reticleGroup.visible = true;
+
+        // Smoothly fly camera to lock on satellite if locked
+        if (cameraLockedRef.current) {
+          controls.target.lerp(satPos, 0.06);
+
+          // Position camera at a close-up cinematic angle
+          const targetCamPos = satPos.clone().add(new THREE.Vector3(1.2, 0.9, 1.4));
+          camera.position.lerp(targetCamPos, 0.05);
+        }
+      } else if (mode === "moon") {
+        const activeSite = LUNAR_SITES.find((s) => s.id === targetFocusRef.current.id);
+        if (activeSite) {
+          const worldPos = new THREE.Vector3(activeSite.x, activeSite.y, activeSite.z).applyEuler(globe.rotation);
+          reticleGroup.position.copy(worldPos);
+          reticleGroup.lookAt(camera.position);
+          reticleGroup.visible = true;
+
+          if (cameraLockedRef.current) {
+            controls.target.lerp(worldPos, 0.06);
+            const targetCamPos = worldPos.clone().add(new THREE.Vector3(1.0, 0.8, 1.2));
+            camera.position.lerp(targetCamPos, 0.05);
+          }
+        }
+      } else if (targetFocusRef.current.type === "overview") {
+        reticleGroup.visible = false;
+        controls.target.lerp(new THREE.Vector3(0, 0, 0), 0.06);
+        camera.position.lerp(new THREE.Vector3(0, 3.5, 9.5), 0.05);
+      }
+
+      // Idle auto-rotation when user isn't dragging and in overview mode
+      if (isRotatingRef.current && !cameraLockedRef.current && targetFocusRef.current.type === "overview") {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.6;
+      } else {
+        controls.autoRotate = false;
+      }
+
+      controls.update();
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // 8. ResizeObserver
+    // 9. ResizeObserver
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const w = entry.contentRect.width;
@@ -461,6 +505,33 @@ export default function Interactive3DSpaceTracker({
     };
   }, [isOpen, mode]);
 
+  const handleSelectSatellite = (sat: SatelliteData) => {
+    setSelectedSatellite(sat);
+    targetFocusRef.current = { id: sat.id, type: "sat" };
+    cameraLockedRef.current = true;
+    setCameraLocked(true);
+  };
+
+  const handleSelectLunarSite = (site: LunarSiteData) => {
+    setSelectedSite(site);
+    targetFocusRef.current = { id: site.id, type: "site" };
+    cameraLockedRef.current = true;
+    setCameraLocked(true);
+  };
+
+  const handleResetOverview = () => {
+    targetFocusRef.current = { id: "overview", type: "overview" };
+    cameraLockedRef.current = false;
+    setCameraLocked(false);
+  };
+
+  const handleAskAboutSatellite = () => {
+    if (selectedSatellite && onQueryMission) {
+      onQueryMission(`Tell me all real-time telemetry, mission payload, and orbital details of ISRO ${selectedSatellite.name} (NORAD #${selectedSatellite.norad})`);
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -468,7 +539,7 @@ export default function Interactive3DSpaceTracker({
       className="fixed inset-0 z-50 w-screen h-screen bg-[#070e1d] overflow-hidden flex flex-col animate-fadeIn select-none"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* 3D WebGL Canvas (100% Fullscreen, Edge-to-Edge, Zero Border) */}
+      {/* 3D WebGL Canvas (100% Fullscreen, Edge-to-Edge) */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing z-0" />
 
       {/* Floating Top Control HUD */}
@@ -483,20 +554,30 @@ export default function Interactive3DSpaceTracker({
                 {mode === "earth" ? "NASA Blue Marble • ISRO Fleet" : "NASA LROC Moon • Chandrayaan-3"}
               </h3>
               <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                Full-Screen 3D
+                Camera Lock Active
               </span>
             </div>
             <p className="text-[10px] font-mono text-slate-400">
-              Click & drag anywhere to rotate 360° in 3D • Scroll to zoom
+              Click any spacecraft below to fly camera directly to it • Drag to explore
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Reset Overview Button */}
+          <button
+            onClick={handleResetOverview}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900/90 backdrop-blur-2xl hover:bg-slate-800 text-xs font-mono text-slate-300 hover:text-white border border-slate-800 shadow-2xl transition-all"
+            title="Reset Camera to Planet Overview"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">Overview</span>
+          </button>
+
           {/* Mode Switcher */}
           <div className="flex items-center p-1 rounded-xl bg-slate-900/90 backdrop-blur-2xl border border-slate-800 shadow-2xl">
             <button
-              onClick={() => { setMode("earth"); setSelectedSite(null); setSelectedSatellite(SATELLITES[0]); }}
+              onClick={() => { setMode("earth"); setSelectedSite(null); handleSelectSatellite(SATELLITES[0]); }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
                 mode === "earth" ? "bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20" : "text-slate-400 hover:text-white"
               }`}
@@ -505,7 +586,7 @@ export default function Interactive3DSpaceTracker({
               <span className="hidden sm:inline">Earth (NASA)</span>
             </button>
             <button
-              onClick={() => { setMode("moon"); setSelectedSatellite(null); setSelectedSite(LUNAR_SITES[0]); }}
+              onClick={() => { setMode("moon"); setSelectedSatellite(null); handleSelectLunarSite(LUNAR_SITES[0]); }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
                 mode === "moon" ? "bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20" : "text-slate-400 hover:text-white"
               }`}
@@ -518,7 +599,7 @@ export default function Interactive3DSpaceTracker({
           <button
             onClick={() => setIsRotating(!isRotating)}
             className="p-2.5 rounded-xl bg-slate-900/90 backdrop-blur-2xl hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors shadow-2xl"
-            title={isRotating ? "Pause 360° Auto-Orbit" : "Resume 360° Auto-Orbit"}
+            title={isRotating ? "Pause 360° Orbit" : "Resume 360° Orbit"}
           >
             {isRotating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </button>
@@ -539,11 +620,13 @@ export default function Interactive3DSpaceTracker({
           <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 flex items-center gap-1">
             <Compass className="w-3 h-3 text-cyan-400" /> Active Mission Telemetry
           </span>
-          <span className="text-[9px] font-mono text-emerald-400">IDSN Live</span>
+          <span className="text-[9px] font-mono text-emerald-400 flex items-center gap-1">
+            <Target className="w-2.5 h-2.5 animate-pulse" /> LOCKED
+          </span>
         </div>
 
         {mode === "earth" && selectedSatellite && (
-          <div className="space-y-2 text-xs font-mono">
+          <div className="space-y-2.5 text-xs font-mono">
             <div className="flex items-center justify-between">
               <span className="text-white font-bold text-sm">{selectedSatellite.name}</span>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
@@ -554,13 +637,38 @@ export default function Interactive3DSpaceTracker({
               <p><span className="text-slate-500">Orbit:</span> {selectedSatellite.orbit}</p>
               <p><span className="text-slate-500">Altitude:</span> <span className="text-cyan-300">{selectedSatellite.altitude}</span></p>
               <p><span className="text-slate-500">Speed:</span> <span className="text-emerald-300">{selectedSatellite.velocity}</span></p>
-              <p><span className="text-slate-500">Telemetry:</span> {selectedSatellite.status}</p>
+              <p><span className="text-slate-500">Payload:</span> {selectedSatellite.status}</p>
+            </div>
+
+            <div className="pt-2 border-t border-slate-800/80 flex flex-col gap-1.5">
+              <button
+                onClick={() => {
+                  cameraLockedRef.current = true;
+                  setCameraLocked(true);
+                }}
+                className={`w-full py-1.5 rounded-lg text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all ${
+                  cameraLocked ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                }`}
+              >
+                <Target className="w-3 h-3" />
+                <span>{cameraLocked ? "Camera Locked on Spacecraft" : "Lock Camera to Satellite"}</span>
+              </button>
+
+              {onQueryMission && (
+                <button
+                  onClick={handleAskAboutSatellite}
+                  className="w-full py-1.5 rounded-lg text-[11px] font-mono bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700/80 flex items-center justify-center gap-1.5 transition-all"
+                >
+                  <MessageSquare className="w-3 h-3" />
+                  <span>Ask AI in Chat</span>
+                </button>
+              )}
             </div>
           </div>
         )}
 
         {mode === "moon" && selectedSite && (
-          <div className="space-y-2 text-xs font-mono">
+          <div className="space-y-2.5 text-xs font-mono">
             <div className="flex items-center justify-between">
               <span className="text-white font-bold text-sm">{selectedSite.name}</span>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
@@ -573,38 +681,50 @@ export default function Interactive3DSpaceTracker({
                 {selectedSite.discovery}
               </p>
             </div>
+            <button
+              onClick={() => {
+                cameraLockedRef.current = true;
+                setCameraLocked(true);
+              }}
+              className="w-full py-1.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-500 text-slate-950 flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20"
+            >
+              <Target className="w-3 h-3" />
+              <span>Zoom Into Landing Site</span>
+            </button>
           </div>
         )}
       </div>
 
       {/* Floating Bottom Selector Pills */}
-      <div className="absolute bottom-6 left-4 right-4 flex items-center justify-center gap-2 overflow-x-auto custom-scrollbar z-10 pointer-events-auto">
+      <div className="absolute bottom-6 left-4 right-4 flex items-center justify-center gap-2.5 overflow-x-auto custom-scrollbar z-10 pointer-events-auto">
         {mode === "earth" ? (
           SATELLITES.map((sat) => (
             <button
               key={sat.id}
-              onClick={() => setSelectedSatellite(sat)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-mono transition-all shrink-0 border backdrop-blur-2xl shadow-xl ${
-                selectedSatellite?.id === sat.id
-                  ? "bg-cyan-500/25 border-cyan-400 text-white font-bold shadow-cyan-500/20"
-                  : "bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200"
+              onClick={() => handleSelectSatellite(sat)}
+              className={`px-4 py-2.5 rounded-2xl text-xs font-mono transition-all shrink-0 border backdrop-blur-2xl shadow-xl flex items-center gap-2 ${
+                selectedSatellite?.id === sat.id && cameraLocked
+                  ? "bg-cyan-500 text-slate-950 font-bold border-cyan-300 shadow-cyan-500/30 scale-105"
+                  : "bg-slate-900/85 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700"
               }`}
             >
-              {sat.name}
+              <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: `#${sat.color.toString(16).padStart(6, "0")}` }} />
+              <span>{sat.name}</span>
             </button>
           ))
         ) : (
           LUNAR_SITES.map((site) => (
             <button
               key={site.id}
-              onClick={() => setSelectedSite(site)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-mono transition-all shrink-0 border backdrop-blur-2xl shadow-xl ${
-                selectedSite?.id === site.id
-                  ? "bg-emerald-500/25 border-emerald-400 text-white font-bold shadow-emerald-500/20"
-                  : "bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200"
+              onClick={() => handleSelectLunarSite(site)}
+              className={`px-4 py-2.5 rounded-2xl text-xs font-mono transition-all shrink-0 border backdrop-blur-2xl shadow-xl flex items-center gap-2 ${
+                selectedSite?.id === site.id && cameraLocked
+                  ? "bg-emerald-500 text-slate-950 font-bold border-emerald-300 shadow-emerald-500/30 scale-105"
+                  : "bg-slate-900/85 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700"
               }`}
             >
-              {site.name.split("(")[0]}
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: `#${site.color.toString(16).padStart(6, "0")}` }} />
+              <span>{site.name.split("(")[0]}</span>
             </button>
           ))
         )}

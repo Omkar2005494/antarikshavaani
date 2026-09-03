@@ -857,6 +857,7 @@ export default function Home() {
           isOpen={show3DTracker}
           onClose={() => setShow3DTracker(false)}
           initialMode={trackerMode}
+          onQueryMission={(q) => handleSend(q)}
         />
 
         {/* Community 8K Space Gallery */}
