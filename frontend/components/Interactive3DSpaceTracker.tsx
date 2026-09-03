@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { X, Globe, Moon, Play, Pause, Satellite, Compass, Radio, CheckCircle2 } from "lucide-react";
+import { X, Globe, Moon, Play, Pause, Satellite, Compass } from "lucide-react";
 
 interface Interactive3DSpaceTrackerProps {
   isOpen: boolean;
@@ -46,7 +46,7 @@ const SATELLITES: SatelliteData[] = [
     altitude: "505 km",
     velocity: "7.61 km/s",
     norad: "44804",
-    status: "ACTIVE • NOMINAL",
+    status: "ACTIVE • HIGH-RES OPTICAL",
     radius: 3.3,
     speed: 0.015,
     color: 0x38bdf8,
@@ -117,12 +117,12 @@ const LUNAR_SITES: LunarSiteData[] = [
     name: "Shiv Shakti Point (Chandrayaan-3)",
     lat: "69.373° S",
     lon: "32.319° E",
-    discovery: "In-situ 0.42 wt% Sulfur detected by Pragyan LIBS; 61.4°C thermal drop by ChaSTE",
-    status: "CONFIRMED LANDING",
+    discovery: "Pragyan LIBS detected 0.42 wt% Sulfur; ChaSTE recorded 61.4°C subsurface gradient",
+    status: "HISTORIC LANDING SITE",
     color: 0x34d399,
-    x: 0.6,
-    y: -1.7,
-    z: 0.9,
+    x: 0.5,
+    y: -1.8,
+    z: 0.7,
   },
   {
     id: "tiranga",
@@ -132,167 +132,23 @@ const LUNAR_SITES: LunarSiteData[] = [
     discovery: "IIR 3.0µm water-ice absorption confirmed (2,100 PPM at Cabeus PSR)",
     status: "SURFACE IMPACT SITE",
     color: 0x38bdf8,
-    x: 0.4,
-    y: -1.75,
-    z: 0.7,
+    x: 0.3,
+    y: -1.85,
+    z: 0.6,
   },
   {
     id: "manzinus",
     name: "Manzinus C Crater Rim",
     lat: "44.9° S",
     lon: "26.3° E",
-    discovery: "Deep Permanently Shadowed Region (PSR) with hydroxyl OH retention",
-    status: "HIGH-PRIORITY SCIENCE",
+    discovery: "Deep Permanently Shadowed Region (PSR) with cold-trapped hydroxyl OH volatiles",
+    status: "HIGH-PRIORITY TARGET",
     color: 0xfbbf24,
-    x: 0.8,
-    y: -1.2,
-    z: 1.2,
+    x: 0.7,
+    y: -1.3,
+    z: 1.1,
   },
 ];
-
-// Generates procedural texture for Earth with continents & oceans
-function createEarthCanvasTexture(): THREE.CanvasTexture {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 512;
-  const ctx = canvas.getContext("2d")!;
-
-  // Deep Ocean Gradient
-  const oceanGrad = ctx.createLinearGradient(0, 0, 0, 512);
-  oceanGrad.addColorStop(0, "#082f49");
-  oceanGrad.addColorStop(0.5, "#0369a1");
-  oceanGrad.addColorStop(1, "#082f49");
-  ctx.fillStyle = oceanGrad;
-  ctx.fillRect(0, 0, 1024, 512);
-
-  // Continents Landmass Shapes
-  ctx.fillStyle = "#15803d"; // Forest green
-  
-  // Eurasia & India
-  ctx.beginPath();
-  ctx.ellipse(650, 180, 140, 80, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Indian Subcontinent (Prominent triangle)
-  ctx.fillStyle = "#16a34a";
-  ctx.beginPath();
-  ctx.moveTo(680, 180);
-  ctx.lineTo(720, 260);
-  ctx.lineTo(640, 240);
-  ctx.closePath();
-  ctx.fill();
-
-  // Africa
-  ctx.fillStyle = "#15803d";
-  ctx.beginPath();
-  ctx.ellipse(520, 260, 70, 100, 0.1, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Americas
-  ctx.beginPath();
-  ctx.ellipse(250, 160, 80, 90, -0.2, 0, Math.PI * 2); // North
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(320, 320, 60, 90, 0.3, 0, Math.PI * 2); // South
-  ctx.fill();
-
-  // Australia
-  ctx.beginPath();
-  ctx.ellipse(820, 340, 50, 40, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Polar Ice Caps
-  ctx.fillStyle = "#f8fafc";
-  ctx.fillRect(0, 0, 1024, 30);
-  ctx.fillRect(0, 480, 1024, 32);
-
-  // Cloud swirls
-  ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
-  for (let i = 0; i < 16; i++) {
-    ctx.beginPath();
-    ctx.arc(60 + i * 65, 120 + Math.sin(i) * 50, 35, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(40 + i * 65, 300 + Math.cos(i) * 60, 45, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // Latitude / Longitude coordinate lines
-  ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
-  ctx.lineWidth = 1;
-  for (let lat = 60; lat < 512; lat += 60) {
-    ctx.beginPath();
-    ctx.moveTo(0, lat);
-    ctx.lineTo(1024, lat);
-    ctx.stroke();
-  }
-  for (let lon = 100; lon < 1024; lon += 100) {
-    ctx.beginPath();
-    ctx.moveTo(lon, 0);
-    ctx.lineTo(lon, 512);
-    ctx.stroke();
-  }
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  return texture;
-}
-
-// Generates procedural texture for Moon with basaltic craters
-function createMoonCanvasTexture(): THREE.CanvasTexture {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 512;
-  const ctx = canvas.getContext("2d")!;
-
-  // Grey basaltic regolith base
-  ctx.fillStyle = "#64748b";
-  ctx.fillRect(0, 0, 1024, 512);
-
-  // Dark Lunar Maria basins
-  ctx.fillStyle = "#334155";
-  ctx.beginPath();
-  ctx.ellipse(320, 200, 120, 90, 0.2, 0, Math.PI * 2); // Oceanus Procellarum
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(560, 180, 80, 60, 0, 0, Math.PI * 2); // Mare Imbrium
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(700, 220, 70, 50, -0.2, 0, Math.PI * 2); // Mare Tranquillitatis
-  ctx.fill();
-
-  // Impact craters
-  ctx.fillStyle = "#94a3b8";
-  ctx.strokeStyle = "#cbd5e1";
-  ctx.lineWidth = 2;
-  const craterSeeds = [
-    [150, 120, 25], [240, 360, 35], [450, 300, 20], [620, 390, 40],
-    [800, 150, 30], [890, 320, 22], [500, 440, 28]
-  ];
-  craterSeeds.forEach(([cx, cy, r]) => {
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-  });
-
-  // South Pole beacon (Shiv Shakti Point location highlight)
-  ctx.fillStyle = "#34d399";
-  ctx.beginPath();
-  ctx.arc(710, 460, 8, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = "rgba(52, 211, 153, 0.6)";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(710, 460, 18, 0, Math.PI * 2);
-  ctx.stroke();
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  return texture;
-}
 
 export default function Interactive3DSpaceTracker({
   isOpen,
@@ -312,13 +168,13 @@ export default function Interactive3DSpaceTracker({
     if (!isOpen || !containerRef.current) return;
 
     const container = containerRef.current;
-    let width = container.clientWidth || 800;
-    let height = container.clientHeight || 500;
+    let width = container.clientWidth || 900;
+    let height = container.clientHeight || 600;
 
     // 1. Scene & Camera
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 2.8, 8.5);
+    camera.position.set(0, 2.5, 8.5);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(width, height);
@@ -328,50 +184,79 @@ export default function Interactive3DSpaceTracker({
 
     // 2. Starfield
     const starGeometry = new THREE.BufferGeometry();
-    const starCount = 1400;
+    const starCount = 1500;
     const starPositions = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount * 3; i += 3) {
-      starPositions[i] = (Math.random() - 0.5) * 140;
-      starPositions[i + 1] = (Math.random() - 0.5) * 140;
-      starPositions[i + 2] = (Math.random() - 0.5) * 140;
+      starPositions[i] = (Math.random() - 0.5) * 150;
+      starPositions[i + 1] = (Math.random() - 0.5) * 150;
+      starPositions[i + 2] = (Math.random() - 0.5) * 150;
     }
     starGeometry.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
-    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.25, transparent: true, opacity: 0.85 });
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.28, transparent: true, opacity: 0.9 });
     const starField = new THREE.Points(starGeometry, starMaterial);
     scene.add(starField);
 
-    // 3. Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
+    // 3. Lighting (Sunlight + Ambient)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xffffff, 2.2);
-    sunLight.position.set(12, 8, 10);
+    const sunLight = new THREE.DirectionalLight(0xffffff, 2.6);
+    sunLight.position.set(15, 8, 12);
     scene.add(sunLight);
 
-    // 4. Globe Sphere with Procedural Map Texture
-    const globeRadius = 2.0;
+    // 4. Authentic NASA Blue Marble Globe / LROC Moon
+    const globeRadius = 2.1;
     const globeGeometry = new THREE.SphereGeometry(globeRadius, 64, 64);
-    
-    const texture = mode === "earth" ? createEarthCanvasTexture() : createMoonCanvasTexture();
-    const globeMaterial = new THREE.MeshStandardMaterial({
-      map: texture,
-      roughness: mode === "earth" ? 0.6 : 0.9,
-      metalness: mode === "earth" ? 0.1 : 0.05,
-    });
+    const textureLoader = new THREE.TextureLoader();
 
-    const globe = new THREE.Mesh(globeGeometry, globeMaterial);
-    scene.add(globe);
+    let globe: THREE.Mesh;
+    let cloudsMesh: THREE.Mesh | null = null;
+    let atmosphereMesh: THREE.Mesh | null = null;
 
-    // Atmosphere Glow
-    const atmosphereGeometry = new THREE.SphereGeometry(globeRadius * 1.04, 64, 64);
-    const atmosphereMaterial = new THREE.MeshBasicMaterial({
-      color: mode === "earth" ? 0x38bdf8 : 0x94a3b8,
-      transparent: true,
-      opacity: 0.15,
-      side: THREE.BackSide,
-    });
-    const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
-    scene.add(atmosphere);
+    if (mode === "earth") {
+      // Real NASA Blue Marble Texture
+      const earthMap = textureLoader.load("/textures/earth_day.jpg");
+      const globeMaterial = new THREE.MeshStandardMaterial({
+        map: earthMap,
+        roughness: 0.55,
+        metalness: 0.1,
+      });
+      globe = new THREE.Mesh(globeGeometry, globeMaterial);
+      scene.add(globe);
+
+      // Independent Rotating Cloud Layer
+      const cloudsMap = textureLoader.load("/textures/earth_clouds.png");
+      const cloudsGeometry = new THREE.SphereGeometry(globeRadius * 1.018, 64, 64);
+      const cloudsMaterial = new THREE.MeshStandardMaterial({
+        map: cloudsMap,
+        transparent: true,
+        opacity: 0.45,
+        blending: THREE.AdditiveBlending,
+      });
+      cloudsMesh = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+      scene.add(cloudsMesh);
+
+      // Blue Rayleigh Atmospheric Glow
+      const atmosphereGeometry = new THREE.SphereGeometry(globeRadius * 1.06, 64, 64);
+      const atmosphereMaterial = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.18,
+        side: THREE.BackSide,
+      });
+      atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+      scene.add(atmosphereMesh);
+    } else {
+      // Real NASA LROC Moon Texture
+      const moonMap = textureLoader.load("/textures/moon.jpg");
+      const globeMaterial = new THREE.MeshStandardMaterial({
+        map: moonMap,
+        roughness: 0.9,
+        metalness: 0.05,
+      });
+      globe = new THREE.Mesh(globeGeometry, globeMaterial);
+      scene.add(globe);
+    }
 
     // 5. Satellites / Lunar Sites
     const satelliteMeshes: { mesh: THREE.Mesh; data: SatelliteData; orbitLine: THREE.Line }[] = [];
@@ -399,17 +284,26 @@ export default function Interactive3DSpaceTracker({
       });
     } else {
       LUNAR_SITES.forEach((site) => {
+        // Holographic Landing Pin
         const pinGeom = new THREE.SphereGeometry(0.08, 16, 16);
         const pinMat = new THREE.MeshBasicMaterial({ color: site.color });
         const pinMesh = new THREE.Mesh(pinGeom, pinMat);
         pinMesh.position.set(site.x, site.y, site.z);
         globe.add(pinMesh);
 
+        // Pulsing Beacon Ring
+        const ringGeom = new THREE.RingGeometry(0.09, 0.13, 32);
+        const ringMat = new THREE.MeshBasicMaterial({ color: site.color, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+        const ringMesh = new THREE.Mesh(ringGeom, ringMat);
+        ringMesh.position.set(site.x, site.y, site.z);
+        ringMesh.lookAt(0, 0, 0);
+        globe.add(ringMesh);
+
         siteMeshes.push({ mesh: pinMesh, data: site });
       });
     }
 
-    // 6. Mouse / Touch Drag Controls
+    // 6. Interactive Drag & Zoom Controls
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
 
@@ -423,10 +317,16 @@ export default function Interactive3DSpaceTracker({
       const dx = e.clientX - prevMouse.x;
       const dy = e.clientY - prevMouse.y;
 
-      globe.rotation.y += dx * 0.007;
-      globe.rotation.x += dy * 0.007;
-      atmosphere.rotation.y += dx * 0.007;
-      atmosphere.rotation.x += dy * 0.007;
+      globe.rotation.y += dx * 0.006;
+      globe.rotation.x += dy * 0.006;
+      if (cloudsMesh) {
+        cloudsMesh.rotation.y += dx * 0.006;
+        cloudsMesh.rotation.x += dy * 0.006;
+      }
+      if (atmosphereMesh) {
+        atmosphereMesh.rotation.y += dx * 0.006;
+        atmosphereMesh.rotation.x += dy * 0.006;
+      }
 
       prevMouse = { x: e.clientX, y: e.clientY };
     };
@@ -437,7 +337,7 @@ export default function Interactive3DSpaceTracker({
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      camera.position.z = Math.max(4.0, Math.min(13.0, camera.position.z + e.deltaY * 0.008));
+      camera.position.z = Math.max(3.8, Math.min(14.0, camera.position.z + e.deltaY * 0.008));
     };
 
     // Mobile Touch
@@ -453,10 +353,12 @@ export default function Interactive3DSpaceTracker({
       const dx = e.touches[0].clientX - prevMouse.x;
       const dy = e.touches[0].clientY - prevMouse.y;
 
-      globe.rotation.y += dx * 0.007;
-      globe.rotation.x += dy * 0.007;
-      atmosphere.rotation.y += dx * 0.007;
-      atmosphere.rotation.x += dy * 0.007;
+      globe.rotation.y += dx * 0.006;
+      globe.rotation.x += dy * 0.006;
+      if (cloudsMesh) {
+        cloudsMesh.rotation.y += dx * 0.006;
+        cloudsMesh.rotation.x += dy * 0.006;
+      }
 
       prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     };
@@ -480,8 +382,10 @@ export default function Interactive3DSpaceTracker({
       animId = requestAnimationFrame(animate);
 
       if (isRotatingRef.current && !isDragging) {
-        globe.rotation.y += 0.003;
-        atmosphere.rotation.y += 0.003;
+        globe.rotation.y += 0.002;
+        if (cloudsMesh) {
+          cloudsMesh.rotation.y += 0.0027; // Clouds rotate slightly faster
+        }
       }
 
       if (mode === "earth") {
@@ -500,7 +404,7 @@ export default function Interactive3DSpaceTracker({
 
     animate();
 
-    // 8. Robust ResizeObserver (guarantees non-zero dimensions)
+    // 8. ResizeObserver
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const w = entry.contentRect.width;
@@ -530,8 +434,6 @@ export default function Interactive3DSpaceTracker({
       }
       renderer.dispose();
       globeGeometry.dispose();
-      globeMaterial.dispose();
-      texture.dispose();
     };
   }, [isOpen, mode]);
 
@@ -555,14 +457,14 @@ export default function Interactive3DSpaceTracker({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-white tracking-tight">
-                  {mode === "earth" ? "ISRO Satellite Fleet 3D Orbit Radar" : "Chandrayaan Lunar Surface 3D Navigator"}
+                  {mode === "earth" ? "NASA Blue Marble • ISRO Orbit Radar" : "NASA LROC Moon • Chandrayaan-3 Explorer"}
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                  WebGL 3D Active
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                  NASA 2K Satellite Imagery
                 </span>
               </div>
               <p className="text-[11px] font-mono text-slate-400">
-                Drag to rotate • Scroll to zoom • Grounded on ISRO & NORAD ephemeris
+                Drag to rotate 360° • Scroll to zoom • Live ISRO & NORAD ephemeris
               </p>
             </div>
           </div>
@@ -577,7 +479,7 @@ export default function Interactive3DSpaceTracker({
                 }`}
               >
                 <Globe className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Earth Fleet</span>
+                <span className="hidden sm:inline">Earth (NASA)</span>
               </button>
               <button
                 onClick={() => { setMode("moon"); setSelectedSatellite(null); setSelectedSite(LUNAR_SITES[0]); }}
@@ -586,7 +488,7 @@ export default function Interactive3DSpaceTracker({
                 }`}
               >
                 <Moon className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Moon Surface</span>
+                <span className="hidden sm:inline">Moon (LROC)</span>
               </button>
             </div>
 
