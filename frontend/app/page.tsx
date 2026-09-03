@@ -803,23 +803,14 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Quick 3D Tracker Action Pill */}
-            <button
-              onClick={() => { setTrackerMode("earth"); setShow3DTracker(true); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-mono text-cyan-300 hover:text-white transition-all shadow-sm shadow-cyan-500/20"
-              title="Launch 3D Planet & Space Tracker"
-            >
-              <Globe2 className="w-3.5 h-3.5 text-cyan-400 animate-spin-slow" />
-              <span className="hidden sm:inline">3D Tracker</span>
-            </button>
-
             {/* Quick New Chat Button */}
             <button
               onClick={handleNewChat}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent hover:border-white/10 transition-all"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent hover:border-white/10 transition-all flex items-center gap-1.5 text-xs font-mono"
               title="Start New Query"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-cyan-400" />
+              <span className="hidden sm:inline text-slate-300">New Query</span>
             </button>
           </div>
         </header>
