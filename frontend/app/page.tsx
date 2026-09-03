@@ -593,12 +593,12 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen h-[100dvh] bg-[#070e1d] text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20 relative">
+    <div className="flex h-screen h-[100dvh] cosmic-void-bg text-slate-100 font-sans antialiased overflow-hidden selection:bg-cyan-500/20 selection:text-cyan-200 relative">
       <SpaceCanvas />
       
       {/* Minimalist Collapsible Sidebar (Claude / ChatGPT Style) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0c1322]/95 backdrop-blur-2xl border-r border-slate-800/80 transition-all duration-300 ease-in-out flex flex-col ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#030712]/95 backdrop-blur-3xl border-r border-white/10 transition-all duration-300 ease-in-out flex flex-col ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -692,7 +692,7 @@ export default function Home() {
         </div>
 
         {/* Minimalist Top Navbar */}
-        <header className="h-14 shrink-0 flex items-center justify-between px-4 sm:px-6 border-b border-slate-800/60 bg-[#070e1d]/80 backdrop-blur-xl">
+        <header className="h-14 shrink-0 flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.08] bg-[#030712]/70 backdrop-blur-2xl z-30">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -706,10 +706,10 @@ export default function Home() {
               onClick={handleNewChat}
               className="flex items-center gap-2 text-left group"
             >
-              <span className="font-semibold text-sm tracking-tight text-white group-hover:text-cyan-400 transition-colors">
+              <span className="font-display font-bold text-base tracking-tight bg-gradient-to-r from-white via-slate-100 to-cyan-300 bg-clip-text text-transparent group-hover:to-cyan-200 transition-colors">
                 AntarikshaVaani
               </span>
-              <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded-md">
+              <span className="px-2 py-0.5 text-[10px] font-mono font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/25 rounded-full">
                 v2.0
               </span>
             </button>
@@ -741,7 +741,7 @@ export default function Home() {
             {/* 3D Space Tracker */}
             <button
               onClick={() => { setTrackerMode("earth"); setShow3DTracker(true); }}
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-xs font-mono text-cyan-300 hover:text-white transition-all shadow-sm shadow-cyan-500/10"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-xs font-mono text-cyan-300 hover:text-white transition-all shadow-sm shadow-cyan-500/20 backdrop-blur-xl"
               title="Launch Interactive 3D Satellite & Moon Tracker"
             >
               <Globe2 className="w-3.5 h-3.5 text-cyan-400 animate-spin-slow" />
@@ -750,7 +750,7 @@ export default function Home() {
             {/* 8K Space Gallery Button */}
             <button
               onClick={() => setShowGallery(true)}
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-xs font-mono text-slate-300 hover:text-cyan-300 transition-all shadow-sm"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-500/40 text-xs font-mono text-slate-300 hover:text-cyan-300 transition-all shadow-sm backdrop-blur-xl"
               title="Open Community 8K Space Gallery"
             >
               <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
@@ -902,10 +902,10 @@ export default function Home() {
             /* Minimalist Empty State (ChatGPT / Claude Style) */
             <div className="min-h-[65vh] flex flex-col items-center justify-center text-center max-w-5xl mx-auto my-auto space-y-8">
               <div className="space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 via-slate-900 to-slate-950 border border-cyan-500/30 mx-auto flex items-center justify-center shadow-xl shadow-cyan-500/5">
+                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-cyan-500/20 via-slate-900/80 to-slate-950 border border-cyan-500/30 mx-auto flex items-center justify-center shadow-2xl shadow-cyan-500/10 ring-1 ring-cyan-500/20">
                   <Satellite className="w-7 h-7 text-cyan-400" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-white tracking-tight leading-tight">
                   What would you like to explore in <span className="text-cyan-400">ISRO Missions</span>?
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
@@ -926,7 +926,7 @@ export default function Home() {
                         handleSend(starter.query);
                       }
                     }}
-                    className="p-4 rounded-xl bg-slate-900/70 hover:bg-slate-900 border border-slate-800/80 hover:border-cyan-500/40 transition-all text-left group shadow-sm hover:shadow-md flex flex-col justify-between"
+                    className="glass-card p-4 sm:p-5 rounded-2xl border border-white/[0.08] hover:border-cyan-500/40 transition-all text-left group shadow-lg hover:shadow-cyan-950/20 flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-1">
@@ -1222,7 +1222,7 @@ export default function Home() {
 
         {/* Minimalist Floating Input Dock (ChatGPT / Claude Style) */}
         <div className="absolute bottom-16 sm:bottom-5 left-1/2 -translate-x-1/2 w-full max-w-4xl xl:max-w-5xl px-4 z-40">
-          <div className="bg-slate-900/90 backdrop-blur-2xl border border-slate-800 rounded-2xl p-2 shadow-2xl shadow-black/40 focus-within:border-cyan-500/50 transition-all flex items-end gap-2">
+          <div className="glass-panel rounded-3xl p-2.5 sm:p-3 border border-white/10 shadow-2xl shadow-black/60 focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/20 transition-all flex items-end gap-2.5">
             <textarea
               ref={textareaRef}
               value={input}
@@ -1247,7 +1247,7 @@ export default function Home() {
             <button
               onClick={() => handleSend()}
               disabled={!input.trim() || isProcessing}
-              className="w-8 h-8 rounded-xl bg-cyan-400 text-slate-950 flex items-center justify-center hover:bg-cyan-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed shrink-0 font-bold shadow-md shadow-cyan-500/20"
+              className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed shrink-0 font-bold shadow-lg shadow-cyan-500/30 hover:scale-105 active:scale-95"
               title="Send Message"
             >
               <ArrowUp className="w-4 h-4 stroke-[2.5]" />
