@@ -120,6 +120,41 @@ const INDIC_LANGUAGES = [
   { code: "tamil", label: "🇮🇳 தமிழ் (Tamil Script)" }
 ];
 
+
+  const getFollowUpSuggestions = (intent?: string, content?: string): string[] => {
+    const text = (content || "").toLowerCase();
+    if (text.includes("water") || text.includes("ice") || text.includes("cabeus")) {
+      return [
+        "How will LuPEX drill into Cabeus water-ice?",
+        "Compare Chandrayaan-1 M3 vs Chandrayaan-2 IIRS",
+        "What is the exact temperature in Cabeus Crater?"
+      ];
+    } else if (text.includes("sulfur") || text.includes("pragyan") || text.includes("chaste")) {
+      return [
+        "Why is sulfur discovery crucial for lunar volcanism?",
+        "How did ChaSTE measure 61.4°C thermal gradient?",
+        "Explain RAMBHA-LP lunar daytime plasma readings"
+      ];
+    } else if (text.includes("aditya") || text.includes("solar") || text.includes("flare")) {
+      return [
+        "How does Aditya-L1 orbit in a Halo orbit at L1?",
+        "What are the 7 scientific payloads on Aditya-L1?",
+        "How does SWOC warn Earth about Coronal Mass Ejections?"
+      ];
+    } else if (text.includes("satellite") || text.includes("fleet") || text.includes("radar")) {
+      return [
+        "Show real-time 3D orbit of Cartosat-3",
+        "How does RISAT-2BR1 see through clouds at night?",
+        "What is GSAT-30's telecommunication bandwidth?"
+      ];
+    }
+    return [
+      "Explain Chandrayaan-4 Sample Return Mission",
+      "How is Gaganyaan crew module thermal shield tested?",
+      "What is Bharatiya Antariksha Station (BAS) roadmap?"
+    ];
+  };
+
 export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -1116,6 +1151,25 @@ export default function Home() {
 
                             {/* Clean Formatted Text */}
                             <FormattedText text={msg.content} />
+
+                            {/* Smart Contextual Follow-up Suggestions */}
+                            {!msg.isThinking && (
+                              <div className="pt-2 flex flex-wrap items-center gap-2">
+                                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mr-1">
+                                  Suggested:
+                                </span>
+                                {getFollowUpSuggestions(msg.intent, msg.content).map((suggestion, sIdx) => (
+                                  <button
+                                    key={sIdx}
+                                    onClick={() => handleSend(suggestion)}
+                                    className="px-3 py-1.5 rounded-xl bg-white/[0.03] hover:bg-cyan-500/10 border border-white/[0.08] hover:border-cyan-500/30 text-xs font-mono text-slate-300 hover:text-cyan-300 transition-all flex items-center gap-1.5 shadow-sm group"
+                                  >
+                                    <Sparkles className="w-3 h-3 text-cyan-400 group-hover:rotate-12 transition-transform" />
+                                    <span>{suggestion}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
 
                             {/* Citations Footer */}
                             {msg.citations && msg.citations.length > 0 && (
