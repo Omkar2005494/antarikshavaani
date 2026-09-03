@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { X, Globe, Moon, Play, Pause, Satellite, Compass } from "lucide-react";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { X, Globe, Moon, Play, Pause, Satellite, Compass, Maximize2 } from "lucide-react";
 
 interface Interactive3DSpaceTrackerProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ const SATELLITES: SatelliteData[] = [
     norad: "44804",
     status: "ACTIVE • HIGH-RES OPTICAL",
     radius: 3.3,
-    speed: 0.015,
+    speed: 0.012,
     color: 0x38bdf8,
     angle: 0,
     tilt: 0.8,
@@ -62,7 +63,7 @@ const SATELLITES: SatelliteData[] = [
     norad: "44857",
     status: "ACTIVE • X-BAND SAR",
     radius: 3.6,
-    speed: 0.012,
+    speed: 0.01,
     color: 0x34d399,
     angle: Math.PI / 3,
     tilt: 0.6,
@@ -76,7 +77,7 @@ const SATELLITES: SatelliteData[] = [
     norad: "51656",
     status: "ACTIVE • C-BAND SAR",
     radius: 3.4,
-    speed: 0.014,
+    speed: 0.011,
     color: 0xa78bfa,
     angle: Math.PI,
     tilt: 1.2,
@@ -89,8 +90,8 @@ const SATELLITES: SatelliteData[] = [
     velocity: "3.07 km/s",
     norad: "45026",
     status: "ACTIVE • Ku/C-BAND",
-    radius: 4.8,
-    speed: 0.004,
+    radius: 5.0,
+    speed: 0.003,
     color: 0xfbbf24,
     angle: Math.PI * 1.5,
     tilt: 0.1,
@@ -103,8 +104,8 @@ const SATELLITES: SatelliteData[] = [
     velocity: "1.42 km/s",
     norad: "57790",
     status: "ACTIVE • SOLAR CORONA",
-    radius: 5.6,
-    speed: 0.002,
+    radius: 6.0,
+    speed: 0.0015,
     color: 0xf97316,
     angle: Math.PI * 0.7,
     tilt: 0.3,
@@ -168,13 +169,13 @@ export default function Interactive3DSpaceTracker({
     if (!isOpen || !containerRef.current) return;
 
     const container = containerRef.current;
-    let width = container.clientWidth || 900;
-    let height = container.clientHeight || 600;
+    let width = container.clientWidth || window.innerWidth;
+    let height = container.clientHeight || window.innerHeight;
 
     // 1. Scene & Camera
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 2.5, 8.5);
+    camera.position.set(0, 3.5, 9.5);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(width, height);
@@ -182,29 +183,39 @@ export default function Interactive3DSpaceTracker({
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // 2. Starfield
+    // 2. Standard OrbitControls (Rotates the ENTIRE structure in 3D)
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enableZoom = true;
+    controls.minDistance = 2.8;
+    controls.maxDistance = 20.0;
+    controls.autoRotate = isRotatingRef.current;
+    controls.autoRotateSpeed = 0.6;
+
+    // 3. Starfield Background
     const starGeometry = new THREE.BufferGeometry();
-    const starCount = 1500;
+    const starCount = 2000;
     const starPositions = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount * 3; i += 3) {
-      starPositions[i] = (Math.random() - 0.5) * 150;
-      starPositions[i + 1] = (Math.random() - 0.5) * 150;
-      starPositions[i + 2] = (Math.random() - 0.5) * 150;
+      starPositions[i] = (Math.random() - 0.5) * 180;
+      starPositions[i + 1] = (Math.random() - 0.5) * 180;
+      starPositions[i + 2] = (Math.random() - 0.5) * 180;
     }
     starGeometry.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
-    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.28, transparent: true, opacity: 0.9 });
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.28, transparent: true, opacity: 0.85 });
     const starField = new THREE.Points(starGeometry, starMaterial);
     scene.add(starField);
 
-    // 3. Lighting (Sunlight + Ambient)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    // 4. Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     scene.add(ambientLight);
 
     const sunLight = new THREE.DirectionalLight(0xffffff, 2.6);
-    sunLight.position.set(15, 8, 12);
+    sunLight.position.set(16, 9, 14);
     scene.add(sunLight);
 
-    // 4. Authentic NASA Blue Marble Globe / LROC Moon
+    // 5. Authentic NASA Blue Marble Globe / LROC Moon
     const globeRadius = 2.1;
     const globeGeometry = new THREE.SphereGeometry(globeRadius, 64, 64);
     const textureLoader = new THREE.TextureLoader();
@@ -224,7 +235,7 @@ export default function Interactive3DSpaceTracker({
       globe = new THREE.Mesh(globeGeometry, globeMaterial);
       scene.add(globe);
 
-      // Independent Rotating Cloud Layer
+      // Rotating Cloud Layer
       const cloudsMap = textureLoader.load("/textures/earth_clouds.png");
       const cloudsGeometry = new THREE.SphereGeometry(globeRadius * 1.018, 64, 64);
       const cloudsMaterial = new THREE.MeshStandardMaterial({
@@ -236,12 +247,12 @@ export default function Interactive3DSpaceTracker({
       cloudsMesh = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
       scene.add(cloudsMesh);
 
-      // Blue Rayleigh Atmospheric Glow
-      const atmosphereGeometry = new THREE.SphereGeometry(globeRadius * 1.06, 64, 64);
+      // Blue Atmospheric Glow Halo
+      const atmosphereGeometry = new THREE.SphereGeometry(globeRadius * 1.055, 64, 64);
       const atmosphereMaterial = new THREE.MeshBasicMaterial({
         color: 0x38bdf8,
         transparent: true,
-        opacity: 0.18,
+        opacity: 0.2,
         side: THREE.BackSide,
       });
       atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
@@ -258,14 +269,14 @@ export default function Interactive3DSpaceTracker({
       scene.add(globe);
     }
 
-    // 5. High-Fidelity 3D ISRO Satellite Assembly Builder
+    // 6. High-Fidelity 3D ISRO Satellite Assembly Builder
     const createSpacecraftModel = (sat: SatelliteData): THREE.Group => {
       const group = new THREE.Group();
 
-      // 1. Central Spacecraft Bus (Golden Kapton MLI thermal blanket)
+      // Central Spacecraft Bus (Golden Kapton MLI thermal blanket)
       const busGeom = new THREE.BoxGeometry(0.14, 0.14, 0.22);
       const busMat = new THREE.MeshStandardMaterial({
-        color: 0xeab308, // Gold Kapton foil
+        color: 0xeab308,
         metalness: 0.85,
         roughness: 0.25,
       });
@@ -280,16 +291,16 @@ export default function Interactive3DSpaceTracker({
       rad1.rotation.y = Math.PI / 2;
       group.add(rad1);
 
-      // 2. Dual Photovoltaic Solar Array Wings (Deep Navy Silicon Cells)
+      // Dual Photovoltaic Solar Array Wings (Navy Blue Silicon Cells)
       const panelGeom = new THREE.BoxGeometry(0.36, 0.13, 0.012);
       const panelMat = new THREE.MeshStandardMaterial({
-        color: 0x1e3a8a, // Photovoltaic silicon blue
+        color: 0x1e3a8a,
         metalness: 0.8,
         roughness: 0.2,
       });
       const hingeMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 });
 
-      // Left Wing & Hinge Boom
+      // Left Wing
       const leftWing = new THREE.Mesh(panelGeom, panelMat);
       leftWing.position.x = -0.28;
       group.add(leftWing);
@@ -300,7 +311,7 @@ export default function Interactive3DSpaceTracker({
       leftHinge.rotation.z = Math.PI / 2;
       group.add(leftHinge);
 
-      // Right Wing & Hinge Boom
+      // Right Wing
       const rightWing = new THREE.Mesh(panelGeom, panelMat);
       rightWing.position.x = 0.28;
       group.add(rightWing);
@@ -311,7 +322,7 @@ export default function Interactive3DSpaceTracker({
       rightHinge.rotation.z = Math.PI / 2;
       group.add(rightHinge);
 
-      // 3. Parabolic Communications Dish Antenna (Nadir-Facing)
+      // Parabolic Communications Dish Antenna (Nadir-Facing)
       const dishGeom = new THREE.SphereGeometry(0.08, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.4);
       const dishMat = new THREE.MeshStandardMaterial({
         color: 0xf59e0b,
@@ -324,16 +335,14 @@ export default function Interactive3DSpaceTracker({
       dish.rotation.x = Math.PI;
       group.add(dish);
 
-      // 4. Mission-Specific Payload Optics
+      // Mission Payload Optics
       if (sat.id === "cartosat") {
-        // High-resolution camera cylinder barrel
         const camGeom = new THREE.CylinderGeometry(0.035, 0.045, 0.12, 16);
         const camMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9 });
         const cam = new THREE.Mesh(camGeom, camMat);
         cam.position.y = -0.09;
         group.add(cam);
       } else if (sat.id === "aditya") {
-        // Solar coronagraph sunshade tube
         const tubeGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.16, 16);
         const tubeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.7 });
         const tube = new THREE.Mesh(tubeGeom, tubeMat);
@@ -341,14 +350,14 @@ export default function Interactive3DSpaceTracker({
         group.add(tube);
       }
 
-      // 5. Active Telemetry Beacon LED
+      // Active Telemetry Beacon LED
       const beaconGeom = new THREE.SphereGeometry(0.025, 8, 8);
       const beaconMat = new THREE.MeshBasicMaterial({ color: sat.color });
       const beacon = new THREE.Mesh(beaconGeom, beaconMat);
       beacon.position.z = 0.18;
       group.add(beacon);
 
-      group.scale.set(1.4, 1.4, 1.4);
+      group.scale.set(1.3, 1.3, 1.3);
       return group;
     };
 
@@ -375,14 +384,12 @@ export default function Interactive3DSpaceTracker({
       });
     } else {
       LUNAR_SITES.forEach((site) => {
-        // Holographic Landing Pin
         const pinGeom = new THREE.SphereGeometry(0.08, 16, 16);
         const pinMat = new THREE.MeshBasicMaterial({ color: site.color });
         const pinMesh = new THREE.Mesh(pinGeom, pinMat);
         pinMesh.position.set(site.x, site.y, site.z);
         globe.add(pinMesh);
 
-        // Pulsing Beacon Ring
         const ringGeom = new THREE.RingGeometry(0.09, 0.13, 32);
         const ringMat = new THREE.MeshBasicMaterial({ color: site.color, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
         const ringMesh = new THREE.Mesh(ringGeom, ringMat);
@@ -394,91 +401,22 @@ export default function Interactive3DSpaceTracker({
       });
     }
 
-    // 6. Interactive Drag & Zoom Controls
-    let isDragging = false;
-    let prevMouse = { x: 0, y: 0 };
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      prevMouse = { x: e.clientX, y: e.clientY };
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const dx = e.clientX - prevMouse.x;
-      const dy = e.clientY - prevMouse.y;
-
-      globe.rotation.y += dx * 0.006;
-      globe.rotation.x += dy * 0.006;
-      if (cloudsMesh) {
-        cloudsMesh.rotation.y += dx * 0.006;
-        cloudsMesh.rotation.x += dy * 0.006;
-      }
-      if (atmosphereMesh) {
-        atmosphereMesh.rotation.y += dx * 0.006;
-        atmosphereMesh.rotation.x += dy * 0.006;
-      }
-
-      prevMouse = { x: e.clientX, y: e.clientY };
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      camera.position.z = Math.max(3.8, Math.min(14.0, camera.position.z + e.deltaY * 0.008));
-    };
-
-    // Mobile Touch
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        isDragging = true;
-        prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      }
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (!isDragging || e.touches.length !== 1) return;
-      const dx = e.touches[0].clientX - prevMouse.x;
-      const dy = e.touches[0].clientY - prevMouse.y;
-
-      globe.rotation.y += dx * 0.006;
-      globe.rotation.x += dy * 0.006;
-      if (cloudsMesh) {
-        cloudsMesh.rotation.y += dx * 0.006;
-        cloudsMesh.rotation.x += dy * 0.006;
-      }
-
-      prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    };
-
-    const onTouchEnd = () => {
-      isDragging = false;
-    };
-
-    const dom = renderer.domElement;
-    dom.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    dom.addEventListener("wheel", onWheel, { passive: false });
-    dom.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("touchend", onTouchEnd);
-
     // 7. Animation Loop
     let animId: number;
     const animate = () => {
       animId = requestAnimationFrame(animate);
 
-      if (isRotatingRef.current && !isDragging) {
-        globe.rotation.y += 0.002;
-        if (cloudsMesh) {
-          cloudsMesh.rotation.y += 0.0027; // Clouds rotate slightly faster
-        }
+      // Auto-rotation via OrbitControls
+      controls.autoRotate = isRotatingRef.current;
+      controls.update();
+
+      // Earth spins on its axis
+      globe.rotation.y += 0.001;
+      if (cloudsMesh) {
+        cloudsMesh.rotation.y += 0.0015;
       }
 
+      // Update satellite orbits
       if (mode === "earth") {
         satelliteMeshes.forEach(({ group, data, orbitLine }) => {
           data.angle += data.speed;
@@ -487,8 +425,6 @@ export default function Interactive3DSpaceTracker({
           const pos = new THREE.Vector3(x, 0, z);
           pos.applyEuler(orbitLine.rotation);
           group.position.copy(pos);
-
-          // Spacecraft nadir-pointing orientation: dish always faces Earth (0,0,0)
           group.lookAt(0, 0, 0);
         });
       }
@@ -515,16 +451,10 @@ export default function Interactive3DSpaceTracker({
     return () => {
       cancelAnimationFrame(animId);
       ro.disconnect();
-      dom.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      dom.removeEventListener("wheel", onWheel);
-      dom.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
+      controls.dispose();
 
-      if (container && dom && container.contains(dom)) {
-        container.removeChild(dom);
+      if (container && renderer.domElement && container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
       }
       renderer.dispose();
       globeGeometry.dispose();
@@ -535,155 +465,149 @@ export default function Interactive3DSpaceTracker({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-xl animate-fadeIn"
-      onClick={onClose}
+      className="fixed inset-0 z-50 w-screen h-screen bg-[#070e1d] overflow-hidden flex flex-col animate-fadeIn select-none"
+      onClick={(e) => e.stopPropagation()}
     >
-      <div 
-        className="relative w-full max-w-6xl h-[92vh] bg-[#0c1322] border border-slate-800 rounded-3xl shadow-2xl shadow-cyan-950/50 flex flex-col overflow-hidden text-slate-100"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Top Header Bar */}
-        <div className="px-4 sm:px-6 py-3.5 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/60 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 shadow-md shadow-cyan-500/20">
-              <Satellite className="w-4 h-4 stroke-[2.5]" />
+      {/* 3D WebGL Canvas (100% Fullscreen, Edge-to-Edge, Zero Border) */}
+      <div ref={containerRef} className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing z-0" />
+
+      {/* Floating Top Control HUD */}
+      <header className="relative z-10 p-4 sm:p-6 flex items-center justify-between pointer-events-none">
+        <div className="flex items-center gap-3 bg-slate-900/85 backdrop-blur-2xl px-4 py-2.5 rounded-2xl border border-slate-800 shadow-2xl pointer-events-auto">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 shadow-md shadow-cyan-500/20">
+            <Satellite className="w-4 h-4 stroke-[2.5]" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-white tracking-tight">
+                {mode === "earth" ? "NASA Blue Marble • ISRO Fleet" : "NASA LROC Moon • Chandrayaan-3"}
+              </h3>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                Full-Screen 3D
+              </span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-white tracking-tight">
-                  {mode === "earth" ? "NASA Blue Marble • ISRO Orbit Radar" : "NASA LROC Moon • Chandrayaan-3 Explorer"}
-                </h3>
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                  NASA 2K Satellite Imagery
-                </span>
-              </div>
-              <p className="text-[11px] font-mono text-slate-400">
-                Drag to rotate 360° • Scroll to zoom • Live ISRO & NORAD ephemeris
+            <p className="text-[10px] font-mono text-slate-400">
+              Click & drag anywhere to rotate 360° in 3D • Scroll to zoom
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Mode Switcher */}
+          <div className="flex items-center p-1 rounded-xl bg-slate-900/90 backdrop-blur-2xl border border-slate-800 shadow-2xl">
+            <button
+              onClick={() => { setMode("earth"); setSelectedSite(null); setSelectedSatellite(SATELLITES[0]); }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                mode === "earth" ? "bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Earth (NASA)</span>
+            </button>
+            <button
+              onClick={() => { setMode("moon"); setSelectedSatellite(null); setSelectedSite(LUNAR_SITES[0]); }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                mode === "moon" ? "bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Moon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Moon (LROC)</span>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setIsRotating(!isRotating)}
+            className="p-2.5 rounded-xl bg-slate-900/90 backdrop-blur-2xl hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors shadow-2xl"
+            title={isRotating ? "Pause 360° Auto-Orbit" : "Resume 360° Auto-Orbit"}
+          >
+            {isRotating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
+
+          <button
+            onClick={onClose}
+            className="p-2.5 rounded-xl bg-slate-900/90 backdrop-blur-2xl hover:bg-red-500/20 hover:text-red-400 text-slate-300 border border-slate-800 transition-colors shadow-2xl"
+            title="Exit Full-Screen 3D Tracker"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </header>
+
+      {/* Floating Telemetry Inspector HUD (Left Side) */}
+      <div className="absolute top-24 left-4 sm:left-6 max-w-xs w-full p-4 rounded-2xl bg-slate-900/85 backdrop-blur-2xl border border-slate-800 shadow-2xl space-y-3 z-10 pointer-events-auto">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 flex items-center gap-1">
+            <Compass className="w-3 h-3 text-cyan-400" /> Active Mission Telemetry
+          </span>
+          <span className="text-[9px] font-mono text-emerald-400">IDSN Live</span>
+        </div>
+
+        {mode === "earth" && selectedSatellite && (
+          <div className="space-y-2 text-xs font-mono">
+            <div className="flex items-center justify-between">
+              <span className="text-white font-bold text-sm">{selectedSatellite.name}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                NORAD #{selectedSatellite.norad}
+              </span>
+            </div>
+            <div className="space-y-1 text-slate-300 text-[11px]">
+              <p><span className="text-slate-500">Orbit:</span> {selectedSatellite.orbit}</p>
+              <p><span className="text-slate-500">Altitude:</span> <span className="text-cyan-300">{selectedSatellite.altitude}</span></p>
+              <p><span className="text-slate-500">Speed:</span> <span className="text-emerald-300">{selectedSatellite.velocity}</span></p>
+              <p><span className="text-slate-500">Telemetry:</span> {selectedSatellite.status}</p>
+            </div>
+          </div>
+        )}
+
+        {mode === "moon" && selectedSite && (
+          <div className="space-y-2 text-xs font-mono">
+            <div className="flex items-center justify-between">
+              <span className="text-white font-bold text-sm">{selectedSite.name}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                {selectedSite.status}
+              </span>
+            </div>
+            <div className="space-y-1 text-slate-300 text-[11px]">
+              <p><span className="text-slate-500">Coordinates:</span> <span className="text-cyan-300">{selectedSite.lat}, {selectedSite.lon}</span></p>
+              <p className="text-[10px] text-slate-400 leading-relaxed pt-1 bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+                {selectedSite.discovery}
               </p>
             </div>
           </div>
+        )}
+      </div>
 
-          <div className="flex items-center gap-2">
-            {/* Mode Switcher */}
-            <div className="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800">
-              <button
-                onClick={() => { setMode("earth"); setSelectedSite(null); setSelectedSatellite(SATELLITES[0]); }}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all ${
-                  mode === "earth" ? "bg-cyan-500 text-slate-950 font-bold shadow-sm" : "text-slate-400 hover:text-white"
-                }`}
-              >
-                <Globe className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Earth (NASA)</span>
-              </button>
-              <button
-                onClick={() => { setMode("moon"); setSelectedSatellite(null); setSelectedSite(LUNAR_SITES[0]); }}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all ${
-                  mode === "moon" ? "bg-cyan-500 text-slate-950 font-bold shadow-sm" : "text-slate-400 hover:text-white"
-                }`}
-              >
-                <Moon className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Moon (LROC)</span>
-              </button>
-            </div>
-
+      {/* Floating Bottom Selector Pills */}
+      <div className="absolute bottom-6 left-4 right-4 flex items-center justify-center gap-2 overflow-x-auto custom-scrollbar z-10 pointer-events-auto">
+        {mode === "earth" ? (
+          SATELLITES.map((sat) => (
             <button
-              onClick={() => setIsRotating(!isRotating)}
-              className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-colors"
-              title={isRotating ? "Pause Rotation" : "Play Rotation"}
+              key={sat.id}
+              onClick={() => setSelectedSatellite(sat)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-mono transition-all shrink-0 border backdrop-blur-2xl shadow-xl ${
+                selectedSatellite?.id === sat.id
+                  ? "bg-cyan-500/25 border-cyan-400 text-white font-bold shadow-cyan-500/20"
+                  : "bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200"
+              }`}
             >
-              {isRotating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              {sat.name}
             </button>
-
+          ))
+        ) : (
+          LUNAR_SITES.map((site) => (
             <button
-              onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              key={site.id}
+              onClick={() => setSelectedSite(site)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-mono transition-all shrink-0 border backdrop-blur-2xl shadow-xl ${
+                selectedSite?.id === site.id
+                  ? "bg-emerald-500/25 border-emerald-400 text-white font-bold shadow-emerald-500/20"
+                  : "bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200"
+              }`}
             >
-              <X className="w-5 h-5" />
+              {site.name.split("(")[0]}
             </button>
-          </div>
-        </div>
-
-        {/* 3D Canvas Area */}
-        <div className="relative flex-1 w-full h-full bg-[#070e1d] overflow-hidden">
-          <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
-
-          {/* Telemetry Inspector Overlay */}
-          <div className="absolute top-4 left-4 max-w-xs w-full p-4 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 shadow-2xl space-y-3 pointer-events-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 flex items-center gap-1">
-                <Compass className="w-3 h-3 text-cyan-400" /> Active Mission Telemetry
-              </span>
-              <span className="text-[9px] font-mono text-emerald-400">IDSN Live</span>
-            </div>
-
-            {mode === "earth" && selectedSatellite && (
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex items-center justify-between">
-                  <span className="text-white font-bold text-sm">{selectedSatellite.name}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-                    NORAD #{selectedSatellite.norad}
-                  </span>
-                </div>
-                <div className="space-y-1 text-slate-300 text-[11px]">
-                  <p><span className="text-slate-500">Orbit:</span> {selectedSatellite.orbit}</p>
-                  <p><span className="text-slate-500">Altitude:</span> <span className="text-cyan-300">{selectedSatellite.altitude}</span></p>
-                  <p><span className="text-slate-500">Orbital Speed:</span> <span className="text-emerald-300">{selectedSatellite.velocity}</span></p>
-                  <p><span className="text-slate-500">Telemetry:</span> {selectedSatellite.status}</p>
-                </div>
-              </div>
-            )}
-
-            {mode === "moon" && selectedSite && (
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex items-center justify-between">
-                  <span className="text-white font-bold text-sm">{selectedSite.name}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                    {selectedSite.status}
-                  </span>
-                </div>
-                <div className="space-y-1 text-slate-300 text-[11px]">
-                  <p><span className="text-slate-500">Coordinates:</span> <span className="text-cyan-300">{selectedSite.lat}, {selectedSite.lon}</span></p>
-                  <p className="text-[10px] text-slate-400 leading-relaxed pt-1 bg-slate-950/60 p-2 rounded-lg border border-slate-800">
-                    {selectedSite.discovery}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Quick Object Selector Pills (Bottom) */}
-          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-center gap-2 overflow-x-auto custom-scrollbar pointer-events-auto">
-            {mode === "earth" ? (
-              SATELLITES.map((sat) => (
-                <button
-                  key={sat.id}
-                  onClick={() => setSelectedSatellite(sat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all shrink-0 border backdrop-blur-md ${
-                    selectedSatellite?.id === sat.id
-                      ? "bg-cyan-500/20 border-cyan-400 text-white font-bold shadow-lg shadow-cyan-500/20"
-                      : "bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  {sat.name}
-                </button>
-              ))
-            ) : (
-              LUNAR_SITES.map((site) => (
-                <button
-                  key={site.id}
-                  onClick={() => setSelectedSite(site)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all shrink-0 border backdrop-blur-md ${
-                    selectedSite?.id === site.id
-                      ? "bg-emerald-500/20 border-emerald-400 text-white font-bold shadow-lg shadow-emerald-500/20"
-                      : "bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  {site.name.split("(")[0]}
-                </button>
-              ))
-            )}
-          </div>
-        </div>
+          ))
+        )}
       </div>
     </div>
   );
