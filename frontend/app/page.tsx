@@ -684,12 +684,7 @@ export default function Home() {
       {/* Main Clean Canvas */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
         
-        {/* Subtle Indian Tricolor Line at top */}
-        <div className="h-[2px] w-full flex shrink-0">
-          <div className="w-1/3 bg-[#ff9933]" />
-          <div className="w-1/3 bg-white" />
-          <div className="w-1/3 bg-[#138808]" />
-        </div>
+
 
         {/* Minimalist Top Navbar */}
         <header className="h-14 shrink-0 flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.08] bg-[#030712]/70 backdrop-blur-2xl z-30">
@@ -901,15 +896,20 @@ export default function Home() {
           {messages.length === 0 ? (
             /* Minimalist Empty State (ChatGPT / Claude Style) */
             <div className="min-h-[65vh] flex flex-col items-center justify-center text-center max-w-5xl mx-auto my-auto space-y-8">
-              <div className="space-y-3">
-                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-cyan-500/20 via-slate-900/80 to-slate-950 border border-cyan-500/30 mx-auto flex items-center justify-center shadow-2xl shadow-cyan-500/10 ring-1 ring-cyan-500/20">
-                  <Satellite className="w-7 h-7 text-cyan-400" />
+              <div className="space-y-4 max-w-2xl mx-auto">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl shadow-lg shadow-black/20">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[11px] font-mono tracking-wider text-slate-300 uppercase font-semibold">
+                    ISRO Planetary Data Ground-Truth
+                  </span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-white tracking-tight leading-tight">
-                  What would you like to explore in <span className="text-cyan-400">ISRO Missions</span>?
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
-                  Instant conversational intelligence for Chandrayaan-2/3 lunar spectroscopy, Aditya-L1 space weather, and satellite fleet telemetry.
+
+                <h1 className="text-3xl sm:text-5xl font-display font-bold text-white tracking-tight leading-[1.15]">
+                  Explore India&apos;s Space Missions
+                </h1>
+
+                <p className="text-sm sm:text-base text-slate-400 max-w-lg mx-auto leading-relaxed">
+                  Real-time conversational intelligence for Chandrayaan lunar data, Aditya-L1 solar observations, and active satellites in orbit.
                 </p>
               </div>
 
