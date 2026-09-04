@@ -116,43 +116,57 @@ class UltraSpaceImageGenerator:
         backup_url = MISSION_BLUEPRINTS["satellite"]["backup_hd"]
         final_prompt = None
 
-        # If user provided a comprehensive custom prompt (>= 12 words), prioritize their exact scene
-        is_comprehensive_user_prompt = len(clean_subj.split()) >= 12
+        # If user provided a comprehensive custom prompt (>= 10 words), prioritize their exact scene
+        is_comprehensive_user_prompt = len(clean_subj.split()) >= 10
+
+        # Robust regex-based domain matching (avoids 'stationary' matching 'station'!)
+        is_chandrayaan = bool(re.search(r"\b(chandrayaan|vikram|pragyan|lunar lander|moon lander)\b", p))
+        is_aditya = bool(re.search(r"\b(aditya|solar flare|cme|lagrange|velc|suit)\b", p))
+        is_gaganyaan = bool(re.search(r"\b(gaganyaan|crew module|vyommitra|astronaut)\b", p))
+        is_mars = bool(re.search(r"\b(mars|mangalyaan|mom)\b", p))
+        is_station = bool(re.search(r"\b(space station|antariksh station|modular station|habitat|docking|bas)\b", p)) and not is_chandrayaan
+
+        if is_chandrayaan:
+            title = MISSION_BLUEPRINTS["chandrayaan"]["title"]
+            backup_url = MISSION_BLUEPRINTS["chandrayaan"]["backup_hd"]
+        elif is_aditya:
+            title = MISSION_BLUEPRINTS["aditya"]["title"]
+            backup_url = MISSION_BLUEPRINTS["aditya"]["backup_hd"]
+        elif is_gaganyaan:
+            title = MISSION_BLUEPRINTS["gaganyaan"]["title"]
+            backup_url = MISSION_BLUEPRINTS["gaganyaan"]["backup_hd"]
+        elif is_mars:
+            title = MISSION_BLUEPRINTS["mars"]["title"]
+            backup_url = MISSION_BLUEPRINTS["mars"]["backup_hd"]
+        elif is_station:
+            title = MISSION_BLUEPRINTS["station"]["title"]
+            backup_url = MISSION_BLUEPRINTS["station"]["backup_hd"]
 
         if is_comprehensive_user_prompt:
-            final_prompt = clean_subj
-            if any(w in p for w in ["station", "bas"]):
-                title = MISSION_BLUEPRINTS["station"]["title"]
-            elif any(w in p for w in ["chandrayaan", "pragyan", "vikram"]):
-                title = MISSION_BLUEPRINTS["chandrayaan"]["title"]
-            elif any(w in p for w in ["aditya"]):
-                title = MISSION_BLUEPRINTS["aditya"]["title"]
-            elif any(w in p for w in ["gaganyaan"]):
-                title = MISSION_BLUEPRINTS["gaganyaan"]["title"]
-            elif any(w in p for w in ["mars", "mangalyaan"]):
-                title = MISSION_BLUEPRINTS["mars"]["title"]
+            # If user asks for lander, strictly ensure no concept-bleeding words like "wheels" attach to it
+            cleaned_custom_prompt = clean_subj
+            if "lander" in p and any(w in p for w in ["wheel", "rover", "drive"]):
+                # Ensure the diffusion model explicitly keeps lander on 4 landing legs
+                cleaned_custom_prompt = re.sub(
+                    r"\b(6-wheeled|six-wheeled|wheels?|tire tracks?|drives?)\b",
+                    "separate robotic rover tracks",
+                    cleaned_custom_prompt,
+                    flags=re.IGNORECASE
+                )
+                cleaned_custom_prompt += ", stationary lunar lander resting solely on four titanium landing legs with round flat footpads, zero wheels on the lander"
+            final_prompt = cleaned_custom_prompt
         else:
-            # 1. Match verified mission CAD blueprint for short user queries
-            if any(w in p for w in ["station", "bas", "habitat", "docking", "antariksh station"]):
-                title = MISSION_BLUEPRINTS["station"]["title"]
-                backup_url = MISSION_BLUEPRINTS["station"]["backup_hd"]
-                final_prompt = MISSION_BLUEPRINTS["station"]["subject"]
-            elif any(w in p for w in ["chandrayaan", "pragyan", "vikram", "lunar", "moon"]):
-                title = MISSION_BLUEPRINTS["chandrayaan"]["title"]
-                backup_url = MISSION_BLUEPRINTS["chandrayaan"]["backup_hd"]
-                final_prompt = f"{clean_subj}, " + MISSION_BLUEPRINTS["chandrayaan"]["subject"]
-            elif any(w in p for w in ["aditya", "solar flare", "cme", "lagrange"]):
-                title = MISSION_BLUEPRINTS["aditya"]["title"]
-                backup_url = MISSION_BLUEPRINTS["aditya"]["backup_hd"]
+            # Match verified mission CAD blueprint for short user queries
+            if is_chandrayaan:
+                final_prompt = MISSION_BLUEPRINTS["chandrayaan"]["subject"]
+            elif is_aditya:
                 final_prompt = MISSION_BLUEPRINTS["aditya"]["subject"]
-            elif any(w in p for w in ["gaganyaan", "crew module", "capsule", "astronaut"]):
-                title = MISSION_BLUEPRINTS["gaganyaan"]["title"]
-                backup_url = MISSION_BLUEPRINTS["gaganyaan"]["backup_hd"]
+            elif is_gaganyaan:
                 final_prompt = MISSION_BLUEPRINTS["gaganyaan"]["subject"]
-            elif any(w in p for w in ["mars", "mangalyaan"]):
-                title = MISSION_BLUEPRINTS["mars"]["title"]
-                backup_url = MISSION_BLUEPRINTS["mars"]["backup_hd"]
+            elif is_mars:
                 final_prompt = MISSION_BLUEPRINTS["mars"]["subject"]
+            elif is_station:
+                final_prompt = MISSION_BLUEPRINTS["station"]["subject"]
 
         if not final_prompt:
             final_prompt = self._director_synthesis(clean_subj)
