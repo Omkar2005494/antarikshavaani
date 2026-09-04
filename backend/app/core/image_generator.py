@@ -26,7 +26,7 @@ MISSION_BLUEPRINTS = {
     },
     "chandrayaan": {
         "title": "Chandrayaan-3 Shiv Shakti Lunar Polar Site",
-        "subject": "ISRO Chandrayaan-3 Vikram lander and Pragyan rover on the Moon south pole surface at Shiv Shakti Point, crisp wheel tracks pressed into fine grey basaltic regolith dust, crinkled golden Kapton polyimide MLI foil reflecting harsh unfiltered sunlight, stark zero-lux cast shadows, dark starry cosmos with small blue Earth glowing in distance, authentic lunar surface documentary photograph, Hasselblad 80mm lens, razor-sharp 8k",
+        "subject": "Authentic ISRO Chandrayaan-3 Vikram lander standing firmly on the Moon south pole regolith at Shiv Shakti Point. The stationary square lander rests securely on four splayed titanium landing legs with circular flat footpads, zero wheels on the lander body, crinkled golden Kapton polyimide MLI foil reflecting harsh unfiltered sunlight, stark zero-lux cast shadows. In the foreground on fine grey basaltic regolith dust, a separate small miniature six-wheeled Pragyan robotic rover drives away leaving Ashoka Chakra tracks. Dark starry cosmos with small blue Earth glowing in distance, authentic lunar surface documentary photograph, Hasselblad 80mm lens, razor-sharp 8k",
         "backup_hd": "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=85&w=2560&auto=format&fit=crop"
     },
     "aditya": {
@@ -51,12 +51,13 @@ MISSION_BLUEPRINTS = {
     }
 }
 
-# Deep exclusion filter to kill all AI artifacts, plastic look, cartoons, and blur
+# Deep exclusion filter to kill all AI artifacts, rover-lander hybrids, monster wheels, and cartoon looks
 DEEP_NEGATIVE_PROMPT = (
-    "face, human, girl, anime, cartoon, illustration, drawing, painting, 3d render, CGI, video game, "
-    "smooth plastic, fake bloom, chromatic aberration, fruit, banana, food, text, watermark, logo, "
-    "deformed legs, extra wheels, missing parts, blurry, lowres, out of focus, motion blur, oversaturated, "
-    "atmospheric fog on moon, fake clouds in space"
+    "wheels on lander, tires on lander, lander with wheels, monster truck wheels, rover lander fusion, "
+    "rover lander hybrid, car, truck, buggy, automobile, vehicle fusion, face, human, girl, anime, "
+    "cartoon, illustration, drawing, painting, 3d render, CGI, video game, smooth plastic, fake bloom, "
+    "chromatic aberration, text, watermark, logo, deformed legs, extra wheels, missing parts, blurry, "
+    "lowres, out of focus, motion blur, oversaturated, atmospheric fog on moon, fake clouds in space"
 )
 
 class UltraSpaceImageGenerator:

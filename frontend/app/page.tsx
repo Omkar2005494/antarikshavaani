@@ -957,7 +957,7 @@ export default function Home() {
         />
 
         {/* Scrollable Conversation Stream */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-8 lg:px-12 py-6 pb-44 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-8 lg:px-12 py-6 pb-64 custom-scrollbar">
           {messages.length === 0 ? (
             /* Minimalist Empty State (ChatGPT / Claude Style) */
             <div className="min-h-[65vh] flex flex-col items-center justify-center text-center max-w-5xl mx-auto my-auto space-y-8">

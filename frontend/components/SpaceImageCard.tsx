@@ -127,7 +127,7 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
       </div>
 
       {/* Image Viewport with Instant Zero-Hang Render */}
-      <div className="relative aspect-video w-full bg-slate-950 overflow-hidden group">
+      <div className="relative aspect-video max-h-[520px] w-full bg-slate-950 overflow-hidden group">
         {!isLoaded && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 text-slate-400 bg-slate-950/95 z-10">
             <div className="w-9 h-9 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin shadow-lg shadow-cyan-500/20" />
