@@ -34,3 +34,9 @@ ENV/
 .DS_Store
 Thumbs.db
 *.log
+
+# Databases & Runtime Data
+*.db
+*.sqlite3
+backend/app/database/*.db
+
