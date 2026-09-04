@@ -115,27 +115,43 @@ class UltraSpaceImageGenerator:
         backup_url = MISSION_BLUEPRINTS["satellite"]["backup_hd"]
         final_prompt = None
 
-        # 1. Match verified mission CAD blueprint
-        if any(w in p for w in ["station", "bas", "habitat", "docking", "antariksh station"]):
-            title = MISSION_BLUEPRINTS["station"]["title"]
-            backup_url = MISSION_BLUEPRINTS["station"]["backup_hd"]
-            final_prompt = MISSION_BLUEPRINTS["station"]["subject"]
-        elif any(w in p for w in ["chandrayaan", "pragyan", "vikram", "lunar", "moon"]):
-            title = MISSION_BLUEPRINTS["chandrayaan"]["title"]
-            backup_url = MISSION_BLUEPRINTS["chandrayaan"]["backup_hd"]
-            final_prompt = f"{clean_subj}, " + MISSION_BLUEPRINTS["chandrayaan"]["subject"]
-        elif any(w in p for w in ["aditya", "solar flare", "cme", "lagrange"]):
-            title = MISSION_BLUEPRINTS["aditya"]["title"]
-            backup_url = MISSION_BLUEPRINTS["aditya"]["backup_hd"]
-            final_prompt = MISSION_BLUEPRINTS["aditya"]["subject"]
-        elif any(w in p for w in ["gaganyaan", "crew module", "capsule", "astronaut"]):
-            title = MISSION_BLUEPRINTS["gaganyaan"]["title"]
-            backup_url = MISSION_BLUEPRINTS["gaganyaan"]["backup_hd"]
-            final_prompt = MISSION_BLUEPRINTS["gaganyaan"]["subject"]
-        elif any(w in p for w in ["mars", "mangalyaan"]):
-            title = MISSION_BLUEPRINTS["mars"]["title"]
-            backup_url = MISSION_BLUEPRINTS["mars"]["backup_hd"]
-            final_prompt = MISSION_BLUEPRINTS["mars"]["subject"]
+        # If user provided a comprehensive custom prompt (>= 12 words), prioritize their exact scene
+        is_comprehensive_user_prompt = len(clean_subj.split()) >= 12
+
+        if is_comprehensive_user_prompt:
+            final_prompt = clean_subj
+            if any(w in p for w in ["station", "bas"]):
+                title = MISSION_BLUEPRINTS["station"]["title"]
+            elif any(w in p for w in ["chandrayaan", "pragyan", "vikram"]):
+                title = MISSION_BLUEPRINTS["chandrayaan"]["title"]
+            elif any(w in p for w in ["aditya"]):
+                title = MISSION_BLUEPRINTS["aditya"]["title"]
+            elif any(w in p for w in ["gaganyaan"]):
+                title = MISSION_BLUEPRINTS["gaganyaan"]["title"]
+            elif any(w in p for w in ["mars", "mangalyaan"]):
+                title = MISSION_BLUEPRINTS["mars"]["title"]
+        else:
+            # 1. Match verified mission CAD blueprint for short user queries
+            if any(w in p for w in ["station", "bas", "habitat", "docking", "antariksh station"]):
+                title = MISSION_BLUEPRINTS["station"]["title"]
+                backup_url = MISSION_BLUEPRINTS["station"]["backup_hd"]
+                final_prompt = MISSION_BLUEPRINTS["station"]["subject"]
+            elif any(w in p for w in ["chandrayaan", "pragyan", "vikram", "lunar", "moon"]):
+                title = MISSION_BLUEPRINTS["chandrayaan"]["title"]
+                backup_url = MISSION_BLUEPRINTS["chandrayaan"]["backup_hd"]
+                final_prompt = f"{clean_subj}, " + MISSION_BLUEPRINTS["chandrayaan"]["subject"]
+            elif any(w in p for w in ["aditya", "solar flare", "cme", "lagrange"]):
+                title = MISSION_BLUEPRINTS["aditya"]["title"]
+                backup_url = MISSION_BLUEPRINTS["aditya"]["backup_hd"]
+                final_prompt = MISSION_BLUEPRINTS["aditya"]["subject"]
+            elif any(w in p for w in ["gaganyaan", "crew module", "capsule", "astronaut"]):
+                title = MISSION_BLUEPRINTS["gaganyaan"]["title"]
+                backup_url = MISSION_BLUEPRINTS["gaganyaan"]["backup_hd"]
+                final_prompt = MISSION_BLUEPRINTS["gaganyaan"]["subject"]
+            elif any(w in p for w in ["mars", "mangalyaan"]):
+                title = MISSION_BLUEPRINTS["mars"]["title"]
+                backup_url = MISSION_BLUEPRINTS["mars"]["backup_hd"]
+                final_prompt = MISSION_BLUEPRINTS["mars"]["subject"]
 
         if not final_prompt:
             final_prompt = self._director_synthesis(clean_subj)
@@ -157,7 +173,12 @@ class UltraSpaceImageGenerator:
         elif aspect_ratio == "9:16":
             width, height = 1080, 1920
 
-        safe_prompt = final_prompt[:600]
+        # Safe prompt handling up to 1200 chars (FLUX T5-XXL token limit friendly) without mid-word truncation
+        if len(final_prompt) > 1200:
+            safe_prompt = final_prompt[:1200].rsplit(" ", 1)[0]
+        else:
+            safe_prompt = final_prompt
+
         encoded_prompt = urllib.parse.quote(safe_prompt)
         encoded_negative = urllib.parse.quote(DEEP_NEGATIVE_PROMPT)
 
