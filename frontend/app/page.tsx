@@ -1361,7 +1361,7 @@ export default function Home() {
                   )}
                 </div>
               ))}
-              <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} className="h-44 sm:h-36 shrink-0 pointer-events-none" />
             </div>
           )}
         </div>

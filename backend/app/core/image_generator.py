@@ -26,7 +26,7 @@ MISSION_BLUEPRINTS = {
     },
     "chandrayaan": {
         "title": "Chandrayaan-3 Shiv Shakti Lunar Polar Site",
-        "subject": "Authentic ISRO Chandrayaan-3 Vikram lander standing firmly on the Moon south pole regolith at Shiv Shakti Point. The stationary square lander rests securely on four splayed titanium landing legs with circular flat footpads, zero wheels on the lander body, crinkled golden Kapton polyimide MLI foil reflecting harsh unfiltered sunlight, stark zero-lux cast shadows. In the foreground on fine grey basaltic regolith dust, a separate small miniature six-wheeled Pragyan robotic rover drives away leaving Ashoka Chakra tracks. Dark starry cosmos with small blue Earth glowing in distance, authentic lunar surface documentary photograph, Hasselblad 80mm lens, razor-sharp 8k",
+        "subject": "Authentic ISRO Chandrayaan-3 Vikram lunar lander spacecraft standing on the Moon south pole surface at Shiv Shakti Point. Modern boxy cuboid spacecraft bus wrapped in crinkled gold Kapton MLI foil insulation, flat side solar panels, four splayed titanium truss landing legs with circular footpads, thruster quads, dish antenna. Completely realistic modern spaceflight documentary photography, stark zero-diffusion lunar sunlight, pitch black space with distant blue Earth, Hasselblad 8k",
         "backup_hd": "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=85&w=2560&auto=format&fit=crop"
     },
     "aditya": {
@@ -51,8 +51,9 @@ MISSION_BLUEPRINTS = {
     }
 }
 
-# Deep exclusion filter to kill all AI artifacts, rover-lander hybrids, monster wheels, and cartoon looks
+# Deep exclusion filter to kill all AI artifacts, rover-lander hybrids, steampunk bells, and cartoon looks
 DEEP_NEGATIVE_PROMPT = (
+    "steampunk, brass, bronze, bell shape, temple, boiler, tower, Victorian, antique, dome, round cylinder, "
     "wheels on lander, tires on lander, lander with wheels, monster truck wheels, rover lander fusion, "
     "rover lander hybrid, car, truck, buggy, automobile, vehicle fusion, face, human, girl, anime, "
     "cartoon, illustration, drawing, painting, 3d render, CGI, video game, smooth plastic, fake bloom, "

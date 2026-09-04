@@ -64,8 +64,9 @@ export default function SpaceImageCard({ data }: { data: SpaceImageData }) {
     setIsLoaded(false);
     setUsedFallback(false);
     const newSeed = Math.floor(Math.random() * 900000) + 100000;
-    const basePrompt = (data.enhanced_prompt || data.prompt).slice(0, 140);
-    const newUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(basePrompt)}?width=1280&height=720&model=turbo&nologo=true&seed=${newSeed}`;
+    const basePrompt = data.enhanced_prompt || data.prompt;
+    const negFilter = encodeURIComponent("steampunk, brass, bell shape, temple, boiler, dome, round cylinder, Victorian, antique, wheels on lander, tires, car, buggy, cartoon, drawing");
+    const newUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(basePrompt)}?width=1280&height=720&model=flux&nologo=true&seed=${newSeed}&negative=${negFilter}`;
     setCurrentUrl(newUrl);
   };
 
